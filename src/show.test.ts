@@ -1,5 +1,5 @@
 import Show from './show';
-import Universe from './universe';
+import Universe from './fixture-universe';
 import Fixture from './fixture';
 
 const universe = new Universe(1);

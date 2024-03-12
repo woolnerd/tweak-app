@@ -1,31 +1,37 @@
-import Universe from './universe';
-import { FixtureMap } from './universe';
+import FixtureUniverse from './fixture-universe';
+import Universe, { FixtureMap } from './fixture-universe';
 
-describe('universe', () => {
-  const universe = new Universe(1);
+describe('Universe', () => {
+  let universe: Universe;
+  let fixtureMap1: FixtureMap;
+  let fixtureMap2: FixtureMap;
 
-  const fixtureMap1: FixtureMap = {
-    fixtureId: '123',
-    startAddress: 41,
-    endAddress: 60,
-  };
+  beforeEach(() => {
+    universe = new FixtureUniverse(1);
 
-  const fixtureMap2: FixtureMap = {
-    fixtureId: '456',
-    startAddress: 1,
-    endAddress: 20,
-  };
+    fixtureMap1 = {
+      fixtureId: '123',
+      startAddress: 41,
+      endAddress: 60,
+    };
 
-  universe.addFixture(fixtureMap1);
-  universe.addFixture(fixtureMap2);
+    fixtureMap2 = {
+      fixtureId: '456',
+      startAddress: 1,
+      endAddress: 20,
+    };
 
-  const display = universe.buildUniverse();
+    universe.addFixture(fixtureMap1);
+    universe.addFixture(fixtureMap2);
+  });
 
   it('assigns universe number to 1', () => {
     expect(universe.number).toEqual(1);
   });
 
   it('displays utilized fixture channels', () => {
+    const display = universe.buildUniverse();
+
     expect(display[1]).toBe('456');
     expect(display[20]).toBe('456');
     expect(display[10]).toBe('456');
@@ -39,8 +45,6 @@ describe('universe', () => {
     expect(display[0]).toBeNull();
     expect(display[511]).toBeNull();
     expect(display[512]).toBe(undefined);
-
-    console.log(display);
   });
 
   it('returns fixtures sorted by starting index', () => {
