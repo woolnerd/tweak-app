@@ -7,4 +7,6 @@
       "@/*": ["src/*"]
     }
   },
+  "emitDecoratorMetadata": true,
+  "experimentalDecorators": true,
 }

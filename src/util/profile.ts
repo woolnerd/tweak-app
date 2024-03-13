@@ -1,3 +1,9 @@
+/**
+ * Profile
+ * this is where the dmxvalues are interpreted and routed to the appropriate channel.
+ * A light fixture has an array of profiles.
+ * The profile
+ */
 export default class Profile {}
 
 const testProfile = {
