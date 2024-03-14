@@ -5,7 +5,7 @@ import {
   ManyToMany,
   JoinTable,
   ManyToOne,
-} from 'typeorm';
+} from 'typeorm/browser';
 import { Profile } from './profile';
 import { Manufacturer } from './manufacturer';
 import { FixtureAssignment } from './fixture-assignment';
