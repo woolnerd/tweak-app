@@ -1,4 +1,4 @@
-import Fixture from './fixture';
+import Fixture from '../fixture';
 
 const fixture = new Fixture('123');
 

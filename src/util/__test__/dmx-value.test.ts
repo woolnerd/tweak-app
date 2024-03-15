@@ -1,4 +1,4 @@
-import { DmxValue } from './dmx-value';
+import { DmxValue } from '../dmx-value';
 
 describe('DmxValue', () => {
   it('creates a valid DmxValue object', () => {

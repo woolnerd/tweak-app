@@ -4,7 +4,7 @@ import {
   Column,
   ManyToMany,
   JoinTable,
-} from 'typeorm';
+} from 'typeorm/browser';
 import { SceneList } from './scene-list';
 import { FixtureAssignment } from './fixture-assignment';
 

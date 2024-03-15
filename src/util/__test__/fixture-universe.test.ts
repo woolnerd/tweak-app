@@ -1,5 +1,5 @@
-import FixtureUniverse from './fixture-universe';
-import Universe, { FixtureMap } from './fixture-universe';
+import FixtureUniverse from '../fixture-universe';
+import Universe, { FixtureMap } from '../fixture-universe';
 
 describe('Universe', () => {
   let universe: Universe;

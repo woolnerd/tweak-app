@@ -4,7 +4,7 @@ import {
   Column,
   ManyToMany,
   JoinTable,
-} from 'typeorm';
+} from 'typeorm/browser';
 import { Profile } from './profile';
 import { Fixture } from './fixture';
 import { Scene } from './scene';

@@ -1,4 +1,4 @@
-import { ChannelNumber } from './channel-number';
+import { ChannelNumber } from '../channel-number';
 
 describe('ChannelNumber', () => {
   it('creates a valid ChannelNumber object', () => {

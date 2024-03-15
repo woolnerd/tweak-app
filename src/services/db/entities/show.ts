@@ -4,7 +4,7 @@ import {
   Column,
   Timestamp,
   OneToMany,
-} from 'typeorm';
+} from 'typeorm/browser';
 
 import { SceneList } from './scene-list';
 

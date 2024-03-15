@@ -5,7 +5,7 @@ import {
   ManyToMany,
   JoinTable,
   ManyToOne,
-} from 'typeorm';
+} from 'typeorm/browser';
 import { Scene } from './scene';
 import { Show } from './show';
 

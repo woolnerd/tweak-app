@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToMany,
+} from 'typeorm/browser';
 import { Fixture } from './fixture';
 import { FixtureAssignment } from './fixture-assignment';
 
@@ -19,7 +25,10 @@ export class Profile {
   @Column()
   channels: string;
 
-  @ManyToMany(() => FixtureAssignment)
+  @OneToMany(
+    () => FixtureAssignment,
+    (fixtureAssignment) => fixtureAssignment.profiles
+  )
   fixtureAssignments: FixtureAssignment[];
 
   @ManyToMany(() => Fixture)
