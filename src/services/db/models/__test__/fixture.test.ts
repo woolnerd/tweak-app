@@ -1,5 +1,3 @@
-// fixtureModel.test.ts
-
 import { createFixture } from '../fixture';
 import { Fixture } from '@prisma/client';
 import { fixtureCreateMock } from '@/__mocks__/@prisma/client';
