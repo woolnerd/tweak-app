@@ -20,13 +20,12 @@ model Fixture {
 }
 
 model Profile {
-  id                  Int                  @id @default(autoincrement())
-  name                String
-  channels            String
-  fixtureAssignment   FixtureAssignment?   @relation(fields: [fixtureAssignmentId], references: [id])
-  fixtureAssignmentId Int?
-  profilesOnFixtures  ProfilesOnFixtures[]
-  patches             Patch[]
+  id                 Int                  @id @default(autoincrement())
+  name               String
+  channels           String
+  fixtureAssignments FixtureAssignment[]
+  profilesOnFixtures ProfilesOnFixtures[]
+  patches            Patch[]
 }
 
 model ProfilesOnFixtures {
@@ -39,13 +38,15 @@ model ProfilesOnFixtures {
 }
 
 model FixtureAssignment {
-  id       Int       @id @default(autoincrement())
-  title    String
-  channel  Int
-  value    Int
-  fixtures Fixture[]
-  profiles Profile[]
-  scenes   Scene[]
+  id        Int     @id @default(autoincrement())
+  title     String
+  channel   Int
+  value     Int
+  fixture   Fixture @relation(fields: [fixtureId], references: [id])
+  fixtureId Int
+  profile   Profile @relation(fields: [profileId], references: [id])
+  profileId Int
+  scenes    Scene[]
 }
 
 model Manufacturer {
