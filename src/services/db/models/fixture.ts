@@ -1,19 +1,35 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import prisma from '@/lib/prisma';
+import { Key } from 'react';
 
-const prisma = new PrismaClient();
+export type CreatedFixture = Prisma.PromiseReturnType<typeof createFixture>;
 
 export async function createFixture(
-  name: string,
-  notes?: string,
-  manufacturerId?: number
+  fixture: Prisma.FixtureCreateInput,
+  manufacturerId: number
 ) {
   return await prisma.fixture.create({
     data: {
-      name,
-      notes,
-      manufacturerId,
+      ...fixture,
+      manufacturer: {
+        connect: { id: manufacturerId },
+      },
     },
-  } as any);
+  });
 }
 
-// Other CRUD functions...
+export async function updateFixture(
+  fixtureId: number,
+  updateField: Prisma.FixtureUpdateInput
+) {
+  return await prisma.fixture.update({
+    where: { id: fixtureId },
+    data: { ...updateField },
+  });
+}
+
+export async function deleteFixture(fixtureId: number) {
+  return await prisma.fixture.delete({
+    where: { id: fixtureId },
+  });
+}

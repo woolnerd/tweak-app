@@ -39,7 +39,7 @@ model ProfilesOnFixtures {
 
 model FixtureAssignment {
   id        Int     @id @default(autoincrement())
-  title     String
+  title     String?
   channel   Int
   value     Int
   fixture   Fixture @relation(fields: [fixtureId], references: [id])

@@ -1,16 +1,16 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, FixtureAssignment, Prisma } from '@prisma/client';
 const prisma = new PrismaClient();
 
-export interface FixtureAssignment {
-  title: string;
-  channel: number;
-  value: number;
-  fixtureId: number;
-  profileId: number;
-}
+// export interface FixtureAssignment {
+//   title?: string;
+//   channel: number;
+//   value: number;
+//   fixtureId: number;
+//   profileId: number;
+// }
 
 export async function createFixtureAssignment(
-  fixtureAssignment: FixtureAssignment
+  fixtureAssignment: Prisma.FixtureAssignmentCreateInput
 ) {
   return await prisma.fixtureAssignment.create({ data: fixtureAssignment });
 }

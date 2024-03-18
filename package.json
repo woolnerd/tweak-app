@@ -42,6 +42,7 @@
     "@types/react-test-renderer": "^18.0.7",
     "babel-jest": "^29.7.0",
     "babel-plugin-transform-typescript-metadata": "^0.3.2",
+    "jest-mock-extended": "^3.0.5",
     "prisma": "^5.11.0",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
@@ -51,7 +52,10 @@
     "preset": "jest-expo",
     "transformIgnorePatterns": [
       "/node_modules/(?!(react-native|my-project|react-native-button)/)/"
-    ]
+    ],
+    "clearMocks": true,
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": ["/home/davewoolner/projects/light-net/src/__mocks__/prisma-mock.ts"]
   },
   "private": true
 }
