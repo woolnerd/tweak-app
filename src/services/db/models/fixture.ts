@@ -1,8 +1,5 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, Fixture } from '@prisma/client';
 import prisma from '@/lib/prisma';
-import { Key } from 'react';
-
-export type CreatedFixture = Prisma.PromiseReturnType<typeof createFixture>;
 
 export async function createFixture(
   fixture: Prisma.FixtureCreateInput,
@@ -18,13 +15,18 @@ export async function createFixture(
   });
 }
 
-export async function updateFixture(
-  fixtureId: number,
-  updateField: Prisma.FixtureUpdateInput
-) {
+export async function getAllFixtures() {
+  return await prisma.fixture.findMany();
+}
+
+export async function getFixture(fixtureId: number) {
+  return await prisma.fixture.findUnique({ where: { id: fixtureId } });
+}
+
+export async function updateFixture(fixture: Fixture) {
   return await prisma.fixture.update({
-    where: { id: fixtureId },
-    data: { ...updateField },
+    where: { id: fixture.id },
+    data: fixture,
   });
 }
 
