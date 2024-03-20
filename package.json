@@ -56,6 +56,15 @@
     "testEnvironment": "node",
     "setupFilesAfterEnv": [
       "/home/davewoolner/projects/tweak-app/src/__mocks__/@prisma/prisma-mock.ts"
+    ],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "**/*.{js,jsx,ts,tsx}",
+      "**/models/**",
+      "!**/coverage/**",
+      "!**/node_modules/**",
+      "!**/babel.config.js",
+      "!**/jest.setup.js"
     ]
   },
   "private": true
