@@ -1,5 +1,5 @@
 {
-  "name": "light-net",
+  "name": "tweak-app",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -54,7 +54,9 @@
     ],
     "clearMocks": true,
     "testEnvironment": "node",
-    "setupFilesAfterEnv": ["/home/davewoolner/projects/light-net/src/__mocks__/@prisma/prisma-mock.ts"]
+    "setupFilesAfterEnv": [
+      "/home/davewoolner/projects/tweak-app/src/__mocks__/@prisma/prisma-mock.ts"
+    ]
   },
   "private": true
 }
