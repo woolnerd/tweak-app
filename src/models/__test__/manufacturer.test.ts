@@ -1,6 +1,6 @@
 import { createManufacturer, getAllManufacturers } from '../manufacturer';
 import { Manufacturer, Prisma } from '@prisma/client';
-import { prismaMock } from '@/__mocks__/prisma-mock';
+import { prismaMock } from '@/__mocks__/@prisma/prisma-mock';
 
 describe('Manufacturer model', () => {
   test('creates a manufacturer', async () => {
@@ -13,13 +13,14 @@ describe('Manufacturer model', () => {
 
     prismaMock.manufacturer.create.mockResolvedValue(manufacturer);
 
-    await expect(createManufacturer(manufacturer)).resolves.toBe({
+    await expect(createManufacturer(manufacturer)).resolves.toEqual({
       id: 1,
       name: 'Arri',
       website: 'www.arri.com',
       notes: 'Test notes',
     });
   });
+
   test('getAllManufacturers should accept options', async () => {
     const manufacturers = [
       {
@@ -32,12 +33,24 @@ describe('Manufacturer model', () => {
         id: 2,
         name: 'Astera',
         website: 'www.astera.com',
-        notes: null,
+        notes: 'Test notes2',
       },
     ];
 
     prismaMock.manufacturer.findMany.mockResolvedValue(manufacturers);
 
-    await expect(getAllManufacturers()).resolves.toBe(manufacturers);
+    await expect(getAllManufacturers({ fixtures: true })).resolves.toEqual(
+      manufacturers
+    );
+
+    expect(prismaMock.manufacturer.findMany).toHaveBeenCalledWith({
+      include: { fixtures: true },
+    });
+
+    await expect(getAllManufacturers()).resolves.toEqual(manufacturers);
+
+    expect(prismaMock.manufacturer.findMany).toHaveBeenCalledWith({
+      include: {},
+    });
   });
 });

@@ -13,7 +13,7 @@ export async function createFixtureAssignment(
   return await prisma.fixtureAssignment.create({ data: fixtureAssignment });
 }
 
-export async function getAllFixtureAssignments(options: GetAllOptions) {
+export async function getAllFixtureAssignments(options: GetAllOptions = {}) {
   return await prisma.fixtureAssignment.findMany({ include: options });
 }
 

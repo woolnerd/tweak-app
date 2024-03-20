@@ -9,7 +9,6 @@
     "web": "expo start --web",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:debug": "jest --transformIgnorePatterns \"node_modules/(?!typeorm)/\" --env=jsdom",
     "ts:check": "tsc"
   },
   "dependencies": {
@@ -51,11 +50,11 @@
   "jest": {
     "preset": "jest-expo",
     "transformIgnorePatterns": [
-      "/node_modules/(?!(react-native|my-project|react-native-button)/)/"
+      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
     ],
     "clearMocks": true,
     "testEnvironment": "node",
-    "setupFilesAfterEnv": ["/home/davewoolner/projects/light-net/src/__mocks__/prisma-mock.ts"]
+    "setupFilesAfterEnv": ["/home/davewoolner/projects/light-net/src/__mocks__/@prisma/prisma-mock.ts"]
   },
   "private": true
 }

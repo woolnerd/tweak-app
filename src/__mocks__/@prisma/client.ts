@@ -1,13 +1,16 @@
-export const fixtureCreateMock = jest.fn();
-export const fixtureAssignmentMock = jest.fn();
+const mock = jest.fn();
 
 export const PrismaClient = jest.fn().mockImplementation(() => ({
   fixture: {
-    create: fixtureCreateMock,
+    create: mock,
   },
   fixtureAssignment: {
-    create: fixtureAssignmentMock,
-    delete: fixtureAssignmentMock,
-    findMany: fixtureAssignmentMock,
+    create: mock,
+    delete: mock,
+    findMany: mock,
+  },
+  manufacturer: {
+    create: mock,
+    findMany: mock,
   },
 }));
