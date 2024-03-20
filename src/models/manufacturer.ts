@@ -1,5 +1,5 @@
-import { PrismaClient, Manufacturer, Prisma } from '@prisma/client';
-const prisma = new PrismaClient();
+import { Manufacturer, Prisma } from '@prisma/client';
+import { prismaMock } from '@/__mocks__/prisma';
 
 interface GetAllOptions {
   fixtures?: boolean;
@@ -8,26 +8,28 @@ interface GetAllOptions {
 export async function createManufacturer(
   manufacturer: Prisma.ManufacturerCreateInput
 ) {
-  return await prisma.manufacturer.create({ data: manufacturer });
+  return await prismaMock.manufacturer.create({ data: manufacturer });
 }
 
 export async function getAllManufacturers(options: GetAllOptions = {}) {
-  return await prisma.manufacturer.findMany({ include: options });
+  return await prismaMock.manufacturer.findMany({ include: options });
 }
 
 export async function getManufacturer(manufacturerId: number) {
-  return await prisma.manufacturer.findUnique({
+  return await prismaMock.manufacturer.findUnique({
     where: { id: manufacturerId },
   });
 }
 
 export async function updateManufacturer(manufacturer: Manufacturer) {
-  return await prisma.manufacturer.update({
+  return await prismaMock.manufacturer.update({
     where: { id: manufacturer.id },
     data: manufacturer,
   });
 }
 
 export async function deleteManufacturer(manufacturerId: number) {
-  return await prisma.manufacturer.delete({ where: { id: manufacturerId } });
+  return await prismaMock.manufacturer.delete({
+    where: { id: manufacturerId },
+  });
 }

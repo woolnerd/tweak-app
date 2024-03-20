@@ -6,7 +6,7 @@ import {
   updateFixture,
 } from '../fixture';
 import { Prisma } from '@prisma/client';
-import { prismaMock } from '@/__mocks__/@prisma/prisma-mock';
+import { prismaMock } from '@/__mocks__/prisma';
 
 const mockFixture = {
   id: 1,
@@ -27,7 +27,7 @@ describe('Fixture model', () => {
     };
 
     prismaMock.fixture.create.mockResolvedValue(mockFixture);
-    const result = await createFixture(fixture, 1); //second arg is not implemented by test
+    const result = await createFixture(fixture, 1);
     expect(result.name).toEqual(fixture.name);
     expect(result.notes).toEqual(fixture.notes);
     expect(result.manufacturerId).toEqual(fixture.manufacturer?.connect?.id);

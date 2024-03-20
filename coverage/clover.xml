@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1710952357832" clover="3.2.0">
-  <project timestamp="1710952357832" name="All files">
-    <metrics statements="169" coveredstatements="60" conditionals="24" coveredconditionals="18" methods="65" coveredmethods="31" elements="258" coveredelements="109" complexity="0" loc="169" ncloc="169" packages="52" files="74" classes="74"/>
+<coverage generated="1710956592702" clover="3.2.0">
+  <project timestamp="1710956592703" name="All files">
+    <metrics statements="174" coveredstatements="18" conditionals="24" coveredconditionals="2" methods="70" coveredmethods="15" elements="268" coveredelements="35" complexity="0" loc="174" ncloc="174" packages="52" files="74" classes="74"/>
     <package name="tweak-app">
       <metrics statements="37" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="17" coveredmethods="0"/>
       <file name="App.tsx" path="/home/davewoolner/projects/tweak-app/App.tsx">
@@ -420,11 +420,11 @@
       <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <file name="prisma.ts" path="/home/davewoolner/projects/tweak-app/src/lib/prisma.ts">
         <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="3" count="11" type="stmt"/>
+        <line num="3" count="4" type="stmt"/>
       </file>
     </package>
     <package name="tweak-app.src.models">
-      <metrics statements="17" coveredstatements="12" conditionals="2" coveredconditionals="2" methods="15" coveredmethods="10"/>
+      <metrics statements="22" coveredstatements="17" conditionals="2" coveredconditionals="2" methods="20" coveredmethods="15"/>
       <file name="fixture-assignment.ts" path="/home/davewoolner/projects/tweak-app/src/models/fixture-assignment.ts">
         <metrics statements="6" coveredstatements="4" conditionals="1" coveredconditionals="1" methods="5" coveredmethods="3"/>
         <line num="2" count="1" type="stmt"/>
@@ -458,57 +458,62 @@
         <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       </file>
       <file name="scene.ts" path="/home/davewoolner/projects/tweak-app/src/models/scene.ts">
-        <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="5"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="11" count="2" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="26" count="1" type="stmt"/>
       </file>
     </package>
     <package name="tweak-app.src.util">
-      <metrics statements="55" coveredstatements="47" conditionals="16" coveredconditionals="16" methods="25" coveredmethods="21"/>
+      <metrics statements="55" coveredstatements="0" conditionals="16" coveredconditionals="0" methods="25" coveredmethods="0"/>
       <file name="channel-number.ts" path="/home/davewoolner/projects/tweak-app/src/util/channel-number.ts">
-        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-        <line num="5" count="7" type="stmt"/>
-        <line num="6" count="7" type="stmt"/>
-        <line num="8" count="7" type="stmt"/>
+        <metrics statements="3" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="5" count="0" type="stmt"/>
+        <line num="6" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
       </file>
       <file name="dmx-value.ts" path="/home/davewoolner/projects/tweak-app/src/util/dmx-value.ts">
-        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-        <line num="5" count="7" type="stmt"/>
-        <line num="6" count="7" type="stmt"/>
-        <line num="8" count="7" type="stmt"/>
+        <metrics statements="3" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="5" count="0" type="stmt"/>
+        <line num="6" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
       </file>
       <file name="fixture-universe.ts" path="/home/davewoolner/projects/tweak-app/src/util/fixture-universe.ts">
-        <metrics statements="26" coveredstatements="21" conditionals="12" coveredconditionals="12" methods="11" coveredmethods="9"/>
-        <line num="11" count="2" type="stmt"/>
-        <line num="15" count="7" type="stmt"/>
-        <line num="19" count="19" type="stmt"/>
-        <line num="23" count="16" type="stmt"/>
-        <line num="25" count="12" type="stmt"/>
-        <line num="28" count="12" type="stmt"/>
+        <metrics statements="26" coveredstatements="0" conditionals="12" coveredconditionals="0" methods="11" coveredmethods="0"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
         <line num="32" count="0" type="stmt"/>
         <line num="34" count="0" type="stmt"/>
         <line num="36" count="0" type="stmt"/>
         <line num="37" count="0" type="stmt"/>
         <line num="38" count="0" type="stmt"/>
-        <line num="44" count="17" type="stmt"/>
-        <line num="46" count="17" type="stmt"/>
-        <line num="47" count="16" type="stmt"/>
-        <line num="48" count="320" type="stmt"/>
-        <line num="52" count="17" type="stmt"/>
-        <line num="59" count="14" type="stmt"/>
-        <line num="60" count="261" type="cond" truecount="4" falsecount="0"/>
-        <line num="63" count="13" type="stmt"/>
-        <line num="70" count="13" type="stmt"/>
-        <line num="74" count="16" type="cond" truecount="4" falsecount="0"/>
-        <line num="75" count="2" type="stmt"/>
-        <line num="78" count="14" type="cond" truecount="2" falsecount="0"/>
-        <line num="79" count="1" type="stmt"/>
-        <line num="82" count="13" type="cond" truecount="2" falsecount="0"/>
-        <line num="83" count="1" type="stmt"/>
+        <line num="44" count="0" type="stmt"/>
+        <line num="46" count="0" type="stmt"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="48" count="0" type="stmt"/>
+        <line num="52" count="0" type="stmt"/>
+        <line num="59" count="0" type="stmt"/>
+        <line num="60" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="70" count="0" type="stmt"/>
+        <line num="74" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="75" count="0" type="stmt"/>
+        <line num="78" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="79" count="0" type="stmt"/>
+        <line num="82" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="83" count="0" type="stmt"/>
       </file>
       <file name="fixture.ts" path="/home/davewoolner/projects/tweak-app/src/util/fixture.ts">
-        <metrics statements="5" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="1"/>
-        <line num="35" count="2" type="stmt"/>
-        <line num="36" count="2" type="stmt"/>
-        <line num="37" count="2" type="stmt"/>
+        <metrics statements="5" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="0"/>
+        <line num="35" count="0" type="stmt"/>
+        <line num="36" count="0" type="stmt"/>
+        <line num="37" count="0" type="stmt"/>
         <line num="41" count="0" type="stmt"/>
         <line num="45" count="0" type="stmt"/>
       </file>
@@ -517,13 +522,13 @@
         <line num="9" count="0" type="stmt"/>
       </file>
       <file name="ranged-value.ts" path="/home/davewoolner/projects/tweak-app/src/util/ranged-value.ts">
-        <metrics statements="6" coveredstatements="6" conditionals="4" coveredconditionals="4" methods="2" coveredmethods="2"/>
-        <line num="7" count="14" type="stmt"/>
-        <line num="8" count="14" type="stmt"/>
-        <line num="10" count="14" type="cond" truecount="2" falsecount="0"/>
-        <line num="11" count="10" type="stmt"/>
-        <line num="13" count="4" type="stmt"/>
-        <line num="20" count="14" type="cond" truecount="2" falsecount="0"/>
+        <metrics statements="6" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="10" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="20" count="0" type="cond" truecount="0" falsecount="2"/>
       </file>
       <file name="scene.ts" path="/home/davewoolner/projects/tweak-app/src/util/scene.ts">
         <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
@@ -532,21 +537,21 @@
         <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       </file>
       <file name="universe.ts" path="/home/davewoolner/projects/tweak-app/src/util/universe.ts">
-        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
-        <line num="6" count="10" type="stmt"/>
-        <line num="7" count="10" type="stmt"/>
-        <line num="11" count="1" type="stmt"/>
+        <metrics statements="3" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <line num="6" count="0" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
       </file>
       <file name="value-universe.ts" path="/home/davewoolner/projects/tweak-app/src/util/value-universe.ts">
-        <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="5"/>
-        <line num="9" count="3" type="stmt"/>
-        <line num="13" count="2" type="stmt"/>
-        <line num="17" count="3" type="stmt"/>
-        <line num="21" count="1" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="24" count="2" type="stmt"/>
-        <line num="25" count="2" type="stmt"/>
-        <line num="28" count="1" type="stmt"/>
+        <metrics statements="8" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="0"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="21" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
       </file>
     </package>
   </project>

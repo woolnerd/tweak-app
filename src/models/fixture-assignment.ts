@@ -1,5 +1,6 @@
 import { PrismaClient, FixtureAssignment, Prisma } from '@prisma/client';
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
+import { prismaMock } from '@/__mocks__/prisma';
 
 interface GetAllOptions {
   scenes?: boolean;
@@ -10,15 +11,15 @@ interface GetAllOptions {
 export async function createFixtureAssignment(
   fixtureAssignment: Prisma.FixtureAssignmentCreateInput
 ) {
-  return await prisma.fixtureAssignment.create({ data: fixtureAssignment });
+  return await prismaMock.fixtureAssignment.create({ data: fixtureAssignment });
 }
 
 export async function getAllFixtureAssignments(options: GetAllOptions = {}) {
-  return await prisma.fixtureAssignment.findMany({ include: options });
+  return await prismaMock.fixtureAssignment.findMany({ include: options });
 }
 
 export async function getFixtureAssignment(fixtureAssignmentId: number) {
-  return await prisma.fixtureAssignment.findUnique({
+  return await prismaMock.fixtureAssignment.findUnique({
     where: { id: fixtureAssignmentId },
   });
 }
@@ -26,12 +27,12 @@ export async function getFixtureAssignment(fixtureAssignmentId: number) {
 export async function updateFixtureAssignment(
   fixtureAssignment: FixtureAssignment
 ) {
-  return await prisma.fixtureAssignment.update({
+  return await prismaMock.fixtureAssignment.update({
     where: { id: fixtureAssignment.id },
     data: fixtureAssignment,
   });
 }
 
 export async function deleteFixtureAssignment(id: number) {
-  return await prisma.fixtureAssignment.delete({ where: { id } });
+  return await prismaMock.fixtureAssignment.delete({ where: { id } });
 }

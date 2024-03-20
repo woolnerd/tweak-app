@@ -1,6 +1,6 @@
 import { createManufacturer, getAllManufacturers } from '../manufacturer';
 import { Manufacturer, Prisma } from '@prisma/client';
-import { prismaMock } from '@/__mocks__/@prisma/prisma-mock';
+import { prismaMock } from '@/__mocks__/prisma';
 
 describe('Manufacturer model', () => {
   test('creates a manufacturer', async () => {

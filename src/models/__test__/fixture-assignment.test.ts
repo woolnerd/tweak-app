@@ -4,8 +4,7 @@ import {
   deleteFixtureAssignment,
 } from '../fixture-assignment';
 import { Prisma, PrismaClient } from '@prisma/client';
-
-const prismaMock = new PrismaClient();
+import { prismaMock } from '@/__mocks__/prisma';
 
 describe('Fixture Assignment Model', () => {
   afterEach(() => {
