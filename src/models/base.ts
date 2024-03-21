@@ -1,7 +1,9 @@
-export default abstract class Base<T, K> {
+import { Prisma } from '@prisma/client';
+
+export default abstract class Base<T, K extends { id: number }> {
   protected abstract prisma: any;
 
-  async create(data: T): Promise<K> {
+  async create(data: T, options?: {}): Promise<K> {
     return await this.prisma.create({ data });
   }
 
@@ -13,7 +15,7 @@ export default abstract class Base<T, K> {
     return await this.prisma.findUnique({ where: { id } });
   }
 
-  async update(data: T & { id: number }): Promise<K> {
+  async update(data: K): Promise<K> {
     const { id, ...restData } = data;
     return await this.prisma.update({
       where: { id },
