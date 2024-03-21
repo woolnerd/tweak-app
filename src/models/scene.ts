@@ -1,29 +1,20 @@
-import { Prisma, Scene, SceneList } from '@prisma/client';
+import { Prisma, Scene } from '@prisma/client';
 import prisma from '@/lib/prisma';
+import Base from './base';
 
-export async function createScene(scene: Prisma.SceneCreateInput) {
-  return await prisma.scene.create({
-    data: scene,
-  });
-}
+export class SceneModel extends Base<Prisma.SceneCreateInput, Scene> {
+  prisma = prisma.scene;
+  public getAllOptions: Prisma.SceneFindManyArgs;
 
-export async function getAllScenes() {
-  return await prisma.scene.findMany({ orderBy: { orderNumber: 'asc' } });
-}
+  constructor(getAllOptions = {}) {
+    super();
+    this.getAllOptions =
+      Object.keys(getAllOptions).length > 0
+        ? getAllOptions
+        : { orderBy: { orderNumber: 'asc' } };
+  }
 
-export async function getScene(sceneId: number) {
-  return await prisma.scene.findUnique({ where: { id: sceneId } });
-}
-
-export async function updateScene(scene: Scene) {
-  return await prisma.scene.update({
-    where: { id: scene.id },
-    data: scene,
-  });
-}
-
-export async function deleteScene(sceneId: number) {
-  return await prisma.scene.delete({
-    where: { id: sceneId },
-  });
+  async getAll(options = this.getAllOptions): Promise<Scene[]> {
+    return await prisma.scene.findMany(options);
+  }
 }

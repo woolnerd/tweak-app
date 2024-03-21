@@ -1,10 +1,4 @@
-import {
-  createScene,
-  deleteScene,
-  getAllScenes,
-  getScene,
-  updateScene,
-} from '../scene';
+import { SceneModel } from '../scene';
 import { Prisma, Scene } from '@prisma/client';
 import { prismaMock } from '@/__mocks__/prisma';
 
@@ -28,7 +22,7 @@ describe('Scene model', () => {
     };
 
     prismaMock.scene.create.mockResolvedValue(mockScene);
-    const result = await createScene(scene);
+    const result = await new SceneModel().create(scene);
     expect(result.name).toEqual(scene.name);
     expect(prismaMock.scene.create).toHaveBeenCalledTimes(1);
   });
@@ -36,7 +30,9 @@ describe('Scene model', () => {
   test("should get scene by it's id", async () => {
     prismaMock.scene.findUnique.mockResolvedValue(mockScene);
 
-    await expect(getScene(mockScene.id)).resolves.toEqual(mockScene);
+    await expect(new SceneModel().getById(mockScene.id)).resolves.toEqual(
+      mockScene
+    );
   });
 
   test('should find all scenes', async () => {
@@ -55,14 +51,14 @@ describe('Scene model', () => {
 
     prismaMock.scene.findMany.mockResolvedValue(mockScenes);
 
-    await expect(getAllScenes()).resolves.toHaveLength(2);
-    await expect(getAllScenes()).resolves.toBe(mockScenes);
+    await expect(new SceneModel().getAll()).resolves.toHaveLength(2);
+    await expect(new SceneModel().getAll()).resolves.toBe(mockScenes);
   });
 
   test('should update a scene', async () => {
     prismaMock.scene.update.mockResolvedValue(mockScene);
 
-    await expect(updateScene(mockScene)).resolves.toEqual({
+    await expect(new SceneModel().update(mockScene)).resolves.toEqual({
       id: 1,
       name: 'Test Scene',
       orderNumber: 1,
@@ -74,6 +70,6 @@ describe('Scene model', () => {
   test('should delete a scene', async () => {
     prismaMock.scene.delete.mockResolvedValue(mockScene);
 
-    await expect(deleteScene(1)).resolves.toEqual(mockScene);
+    await expect(new SceneModel().delete(1)).resolves.toEqual(mockScene);
   });
 });
