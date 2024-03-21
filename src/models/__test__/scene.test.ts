@@ -11,12 +11,14 @@ import { prismaMock } from '@/__mocks__/prisma';
 const mockScene: Scene = {
   id: 1,
   name: 'Test Scene',
+  orderNumber: 1,
 };
 
 describe('Scene model', () => {
   test('should create a new scene', async () => {
     const scene: Prisma.SceneCreateInput = {
       name: 'Test Scene',
+      orderNumber: 1,
       sceneLists: {
         connect: [{ id: 1 }, { id: 2 }],
       },
@@ -42,10 +44,12 @@ describe('Scene model', () => {
       {
         id: 1,
         name: 'Test Scene1',
+        orderNumber: 1,
       },
       {
         id: 2,
         name: 'Test Scene2',
+        orderNumber: 2,
       },
     ];
 
@@ -61,6 +65,7 @@ describe('Scene model', () => {
     await expect(updateScene(mockScene)).resolves.toEqual({
       id: 1,
       name: 'Test Scene',
+      orderNumber: 1,
     });
 
     expect(prismaMock.scene.update).toHaveBeenCalledTimes(1);

@@ -60,6 +60,7 @@ model Manufacturer {
 model Scene {
   id                 Int                 @id @default(autoincrement())
   name               String
+  orderNumber        Int
   sceneLists         SceneList[]
   fixtureAssignments FixtureAssignment[]
 }
@@ -74,6 +75,7 @@ model SceneList {
 
 model Show {
   id         Int         @id @default(autoincrement())
+  name       String      @unique
   createdAt  DateTime    @default(now())
   updatedAt  DateTime
   sceneLists SceneList[]

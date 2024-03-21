@@ -8,7 +8,7 @@ export async function createScene(scene: Prisma.SceneCreateInput) {
 }
 
 export async function getAllScenes() {
-  return await prisma.scene.findMany();
+  return await prisma.scene.findMany({ orderBy: { orderNumber: 'asc' } });
 }
 
 export async function getScene(sceneId: number) {
