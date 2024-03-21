@@ -1,35 +1,22 @@
-import { Manufacturer, Prisma } from '@prisma/client';
-import { prismaMock } from '@/__mocks__/prisma';
+import { Manufacturer as ManufacturerType, Prisma } from '@prisma/client';
+import prisma from '@/lib/prisma';
+import Base from './base';
 
-interface GetAllOptions {
-  fixtures?: boolean;
-}
+export default class Manufacturer extends Base<
+  Prisma.ManufacturerCreateInput,
+  ManufacturerType
+> {
+  readonly prisma = prisma.manufacturer;
+  private DEFAULT_OPTIONS: Prisma.ManufacturerFindManyArgs = {
+    include: { fixtures: true },
+  };
 
-export async function createManufacturer(
-  manufacturer: Prisma.ManufacturerCreateInput
-) {
-  return await prismaMock.manufacturer.create({ data: manufacturer });
-}
+  async getAll(inputOptions: Prisma.ManufacturerFindManyArgs = {}) {
+    const options =
+      Object.keys(inputOptions).length > 0
+        ? inputOptions
+        : this.DEFAULT_OPTIONS;
 
-export async function getAllManufacturers(options: GetAllOptions = {}) {
-  return await prismaMock.manufacturer.findMany({ include: options });
-}
-
-export async function getManufacturer(manufacturerId: number) {
-  return await prismaMock.manufacturer.findUnique({
-    where: { id: manufacturerId },
-  });
-}
-
-export async function updateManufacturer(manufacturer: Manufacturer) {
-  return await prismaMock.manufacturer.update({
-    where: { id: manufacturer.id },
-    data: manufacturer,
-  });
-}
-
-export async function deleteManufacturer(manufacturerId: number) {
-  return await prismaMock.manufacturer.delete({
-    where: { id: manufacturerId },
-  });
+    return await prisma.manufacturer.findMany(options);
+  }
 }

@@ -3,18 +3,16 @@ import prisma from '@/lib/prisma';
 import Base from './base';
 
 export default class Scene extends Base<Prisma.SceneCreateInput, SceneType> {
-  prisma = prisma.scene;
-  public getAllOptions: Prisma.SceneFindManyArgs;
+  readonly prisma = prisma.scene;
 
-  constructor(getAllOptions = {}) {
+  constructor() {
     super();
-    this.getAllOptions =
-      Object.keys(getAllOptions).length > 0
-        ? getAllOptions
-        : { orderBy: { orderNumber: 'asc' } };
   }
 
-  async getAll(options = this.getAllOptions): Promise<SceneType[]> {
+  async getAll(options: Prisma.SceneFindManyArgs = {}): Promise<SceneType[]> {
+    Object.keys(options).length > 0
+      ? options
+      : { orderBy: { orderNumber: 'asc' } };
     return await prisma.scene.findMany(options);
   }
 }

@@ -1,13 +1,13 @@
 import { Prisma } from '@prisma/client';
 
 export default abstract class Base<T, K extends { id: number }> {
-  protected abstract prisma: any;
+  abstract readonly prisma: any;
 
   async create(data: T, options?: {}): Promise<K> {
     return await this.prisma.create({ data });
   }
 
-  async getAll(): Promise<K[]> {
+  async getAll(options?: {}): Promise<K[]> {
     return await this.prisma.findMany();
   }
 
