@@ -17,7 +17,7 @@ const mockProfile: Profile = {
 };
 
 describe('Profile model', () => {
-  test('should create a new profile', async () => {
+  test('should create a new profile with nested relations', async () => {
     const profile: Prisma.ProfileCreateInput = {
       name: 'Test Profile',
       channels,
@@ -33,9 +33,28 @@ describe('Profile model', () => {
     };
 
     prismaMock.profile.create.mockResolvedValue(mockProfile);
+
     await expect(createProfile(profile)).resolves.toEqual(mockProfile);
+
     expect(prismaMock.profile.create).toHaveBeenCalledTimes(1);
+
+    expect(prismaMock.profile.create).toHaveBeenCalledWith({
+      data: {
+        name: 'Test Profile',
+        channels,
+        profilesOnFixtures: {
+          connect: { fixtureId_profileId: { fixtureId: 1, profileId: 1 } },
+        },
+        patches: {
+          connect: { id: 1 },
+        },
+        fixtureAssignments: {
+          connect: { id: 1 },
+        },
+      },
+    });
   });
+  // });
 
   test("should get profile by it's id", async () => {
     prismaMock.profile.findUnique.mockResolvedValue(mockProfile);

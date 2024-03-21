@@ -1,9 +1,22 @@
 import { Prisma, Patch } from '@prisma/client';
 import prisma from '@/lib/prisma';
 
-export async function createPatch(patch: Prisma.PatchCreateInput) {
+export async function createPatch(
+  patch: Prisma.PatchCreateInput,
+  sceneId: number
+) {
   if (patch.startAddress > patch.endAddress) {
     throw Error('Starting address cannot be greater then ending address.');
+  }
+
+  const isOverlap = await checkOverlap(
+    patch.startAddress,
+    patch.endAddress,
+    sceneId
+  );
+
+  if (isOverlap) {
+    throw new Error('Address overlaps with current patch address in scene');
   }
 
   return await prisma.patch.create({
@@ -11,29 +24,35 @@ export async function createPatch(patch: Prisma.PatchCreateInput) {
   });
 }
 
-export async function checkIfPatchAddressIsAvailableInShow(
+export async function checkOverlap(
   startAddressForCheck: number,
   endAddressForCheck: number,
   showIdForCheck: number
 ) {
-  await prisma.patch.findFirst({
+  const overlaps = await prisma.patch.findMany({
     where: {
       showId: showIdForCheck,
-      AND: {
-        startAddress: { gte: startAddressForCheck, lte: endAddressForCheck },
-        endAddress: { lte: endAddressForCheck },
-      },
+      OR: [
+        {
+          AND: [
+            { startAddress: { lte: startAddressForCheck } },
+            { endAddress: { gte: startAddressForCheck } },
+          ],
+        },
+        {
+          AND: [
+            { startAddress: { lte: endAddressForCheck } },
+            { endAddress: { gte: endAddressForCheck } },
+          ],
+        },
+      ],
     },
   });
+
+  return overlaps.length > 0;
 }
 
-// 1..10
-// 5..15
-
-// 50..60
-// 40..55
-
-export async function getAllPatchs() {
+export async function getAllPatches() {
   return await prisma.patch.findMany();
 }
 
