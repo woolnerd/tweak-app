@@ -1,8 +1,8 @@
-import { Prisma, Scene } from '@prisma/client';
+import { Prisma, Scene as SceneType } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import Base from './base';
 
-export class SceneModel extends Base<Prisma.SceneCreateInput, Scene> {
+export default class Scene extends Base<Prisma.SceneCreateInput, SceneType> {
   prisma = prisma.scene;
   public getAllOptions: Prisma.SceneFindManyArgs;
 
@@ -14,7 +14,7 @@ export class SceneModel extends Base<Prisma.SceneCreateInput, Scene> {
         : { orderBy: { orderNumber: 'asc' } };
   }
 
-  async getAll(options = this.getAllOptions): Promise<Scene[]> {
+  async getAll(options = this.getAllOptions): Promise<SceneType[]> {
     return await prisma.scene.findMany(options);
   }
 }

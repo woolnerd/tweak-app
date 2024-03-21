@@ -1,16 +1,10 @@
-import {
-  createProfile,
-  deleteProfile,
-  getAllProfiles,
-  getProfile,
-  updateProfile,
-} from '../profile';
-import { Prisma, Profile } from '@prisma/client';
+import Profile from '../profile';
+import { Prisma, Profile as ProfileType } from '@prisma/client';
 import { prismaMock } from '@/__mocks__/prisma';
 
 const channels = JSON.stringify({ 1: 'Red', 2: 'Green', 3: 'Blue' });
 
-const mockProfile: Profile = {
+const mockProfile: ProfileType = {
   id: 1,
   name: 'Test Profile',
   channels,
@@ -34,7 +28,7 @@ describe('Profile model', () => {
 
     prismaMock.profile.create.mockResolvedValue(mockProfile);
 
-    await expect(createProfile(profile)).resolves.toEqual(mockProfile);
+    await expect(new Profile().create(profile)).resolves.toEqual(mockProfile);
 
     expect(prismaMock.profile.create).toHaveBeenCalledTimes(1);
 
@@ -59,7 +53,9 @@ describe('Profile model', () => {
   test("should get profile by it's id", async () => {
     prismaMock.profile.findUnique.mockResolvedValue(mockProfile);
 
-    await expect(getProfile(mockProfile.id)).resolves.toEqual(mockProfile);
+    await expect(new Profile().getById(mockProfile.id)).resolves.toEqual(
+      mockProfile
+    );
   });
 
   test('should find all profiles', async () => {
@@ -78,14 +74,14 @@ describe('Profile model', () => {
 
     prismaMock.profile.findMany.mockResolvedValue(mockProfiles);
 
-    await expect(getAllProfiles()).resolves.toHaveLength(2);
-    await expect(getAllProfiles()).resolves.toBe(mockProfiles);
+    await expect(new Profile().getAll()).resolves.toHaveLength(2);
+    await expect(new Profile().getAll()).resolves.toBe(mockProfiles);
   });
 
   test('should update a profile', async () => {
     prismaMock.profile.update.mockResolvedValue(mockProfile);
 
-    await expect(updateProfile(mockProfile)).resolves.toEqual({
+    await expect(new Profile().update(mockProfile)).resolves.toEqual({
       id: 1,
       name: 'Test Profile',
       channels,
@@ -97,6 +93,6 @@ describe('Profile model', () => {
   test('should delete a profile', async () => {
     prismaMock.profile.delete.mockResolvedValue(mockProfile);
 
-    await expect(deleteProfile(1)).resolves.toEqual(mockProfile);
+    await expect(new Profile().delete(1)).resolves.toEqual(mockProfile);
   });
 });

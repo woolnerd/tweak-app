@@ -1,8 +1,8 @@
-import { ShowModel } from '../show';
-import { Prisma, Show } from '@prisma/client';
+import Show from '../show';
+import { Prisma, Show as ShowType } from '@prisma/client';
 import { prismaMock } from '@/__mocks__/prisma';
 
-const mockShow: Show = {
+const mockShow: ShowType = {
   id: 1,
   name: 'Test Show',
   createdAt: new Date(),
@@ -17,7 +17,7 @@ describe('Show model', () => {
       updatedAt: new Date(),
     };
 
-    const show = new ShowModel();
+    const show = new Show();
     prismaMock.show.create.mockResolvedValue(mockShow);
 
     await expect(show.create(data)).resolves.toEqual(mockShow);
@@ -32,13 +32,13 @@ describe('Show model', () => {
       },
     });
 
-    expect(show).toBeInstanceOf(ShowModel);
+    expect(show).toBeInstanceOf(Show);
   });
 
   test("should get show by it's id", async () => {
     prismaMock.show.findUnique.mockResolvedValue(mockShow);
 
-    const newShow = new ShowModel();
+    const newShow = new Show();
 
     await expect(newShow.getById(mockShow.id)).resolves.toEqual(mockShow);
   });
@@ -61,7 +61,7 @@ describe('Show model', () => {
 
     prismaMock.show.findMany.mockResolvedValue(mockShows);
 
-    const show = new ShowModel();
+    const show = new Show();
 
     await expect(show.getAll()).resolves.toHaveLength(2);
     await expect(show.getAll()).resolves.toBe(mockShows);
@@ -70,7 +70,7 @@ describe('Show model', () => {
   test('should update a show', async () => {
     prismaMock.show.update.mockResolvedValue(mockShow);
 
-    const show = new ShowModel();
+    const show = new Show();
 
     await expect(show.update(mockShow)).resolves.toEqual({
       id: 1,
@@ -85,7 +85,7 @@ describe('Show model', () => {
   test('should delete a show', async () => {
     prismaMock.show.delete.mockResolvedValue(mockShow);
 
-    const show = new ShowModel();
+    const show = new Show();
 
     await expect(show.delete(1)).resolves.toEqual(mockShow);
   });
