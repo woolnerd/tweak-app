@@ -1,9 +1,8 @@
+import FixtureAssignment from '../fixture-assignment';
 import {
-  createFixtureAssignment,
-  getAllFixtureAssignments,
-  deleteFixtureAssignment,
-} from '../fixture-assignment';
-import { Prisma, PrismaClient } from '@prisma/client';
+  Prisma,
+  FixtureAssignment as FixtureAssignmentType,
+} from '@prisma/client';
 import { prismaMock } from '@/__mocks__/prisma';
 
 describe('Fixture Assignment Model', () => {
@@ -11,7 +10,7 @@ describe('Fixture Assignment Model', () => {
     jest.clearAllMocks();
   });
 
-  test('createFixtureAssignment', async () => {
+  test('should create a new fixture assignment', async () => {
     const fixtureAssignmentData: Prisma.FixtureAssignmentCreateInput = {
       title: 'Test Assignment',
       channel: 1,
@@ -24,7 +23,7 @@ describe('Fixture Assignment Model', () => {
       fixtureAssignmentData
     );
 
-    const result = await createFixtureAssignment(fixtureAssignmentData);
+    const result = await new FixtureAssignment().create(fixtureAssignmentData);
     expect(prismaMock.fixtureAssignment.create).toHaveBeenCalledTimes(1);
     expect(result).toEqual(fixtureAssignmentData);
     expect(prismaMock.fixtureAssignment.create).toHaveBeenCalledWith({
@@ -32,7 +31,7 @@ describe('Fixture Assignment Model', () => {
     });
   });
 
-  test('getAllFixtureAssignments', async () => {
+  test('should get all fixture assignments', async () => {
     const fixtureAssignmentsData = [
       {
         id: 1,
@@ -56,13 +55,58 @@ describe('Fixture Assignment Model', () => {
       fixtureAssignmentsData
     );
 
-    const result = await getAllFixtureAssignments();
+    const result = await new FixtureAssignment().getAll();
 
     expect(result).toEqual(fixtureAssignmentsData);
     expect(prismaMock.fixtureAssignment.findMany).toHaveBeenCalledTimes(1);
     expect(prismaMock.fixtureAssignment.findMany).toHaveBeenCalledWith({
-      include: {},
+      include: { fixture: false, scenes: false, profile: false },
     });
+  });
+
+  test("should get fixture assignment by it's id", async () => {
+    const fixtureAssignment: FixtureAssignmentType = {
+      id: 1,
+      title: 'Test Fixture Assignment',
+      channel: 10,
+      value: 255,
+      fixtureId: 1,
+      profileId: 1,
+    };
+
+    prismaMock.fixtureAssignment.findUnique.mockResolvedValue(
+      fixtureAssignment
+    );
+
+    await expect(
+      new FixtureAssignment().getById(fixtureAssignment.id)
+    ).resolves.toEqual(fixtureAssignment);
+  });
+
+  test('should update a fixture assignment', async () => {
+    const fixtureAssignment: FixtureAssignmentType = {
+      id: 1,
+      title: 'Test Fixture Assignment',
+      channel: 10,
+      value: 255,
+      fixtureId: 1,
+      profileId: 1,
+    };
+
+    prismaMock.fixtureAssignment.update.mockResolvedValue(fixtureAssignment);
+
+    await expect(
+      new FixtureAssignment().update(fixtureAssignment)
+    ).resolves.toEqual({
+      id: 1,
+      title: 'Test Fixture Assignment',
+      channel: 10,
+      value: 255,
+      fixtureId: 1,
+      profileId: 1,
+    });
+
+    expect(prismaMock.fixtureAssignment.update).toHaveBeenCalledTimes(1);
   });
 
   test('deleteFixtureAssignment', async () => {
@@ -72,7 +116,7 @@ describe('Fixture Assignment Model', () => {
       id: assignmentId,
     });
 
-    const result = await deleteFixtureAssignment(assignmentId);
+    const result = await new FixtureAssignment().delete(assignmentId);
 
     expect(result).toEqual({ id: assignmentId });
     expect(prismaMock.fixtureAssignment.delete).toHaveBeenCalledWith({

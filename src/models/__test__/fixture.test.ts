@@ -1,14 +1,8 @@
-import {
-  createFixture,
-  deleteFixture,
-  getAllFixtures,
-  getFixture,
-  updateFixture,
-} from '../fixture';
-import { Prisma } from '@prisma/client';
+import Fixture from '../fixture';
+import { Prisma, Fixture as FixtureType } from '@prisma/client';
 import { prismaMock } from '@/__mocks__/prisma';
 
-const mockFixture = {
+const mockFixture: FixtureType = {
   id: 1,
   name: 'Test Fixture',
   notes: 'Test notes',
@@ -27,7 +21,7 @@ describe('Fixture model', () => {
     };
 
     prismaMock.fixture.create.mockResolvedValue(mockFixture);
-    const result = await createFixture(fixture, 1);
+    const result = await new Fixture().create(fixture, { manufacturerId: 1 });
     expect(result.name).toEqual(fixture.name);
     expect(result.notes).toEqual(fixture.notes);
     expect(result.manufacturerId).toEqual(fixture.manufacturer?.connect?.id);
@@ -45,7 +39,7 @@ describe('Fixture model', () => {
 
     prismaMock.fixture.findUnique.mockResolvedValue(fixture);
 
-    await expect(getFixture(fixture.id)).resolves.toEqual(fixture);
+    await expect(new Fixture().getById(fixture.id)).resolves.toEqual(fixture);
   });
 
   test('should find all fixtures', async () => {
@@ -67,8 +61,8 @@ describe('Fixture model', () => {
     ];
     prismaMock.fixture.findMany.mockResolvedValue(fixtures);
 
-    await expect(getAllFixtures()).resolves.toHaveLength(2);
-    await expect(getAllFixtures()).resolves.toBe(fixtures);
+    await expect(new Fixture().getAll()).resolves.toHaveLength(2);
+    await expect(new Fixture().getAll()).resolves.toBe(fixtures);
   });
 
   test('should update a fixture', async () => {
@@ -82,7 +76,7 @@ describe('Fixture model', () => {
 
     prismaMock.fixture.update.mockResolvedValue(fixture);
 
-    await expect(updateFixture(fixture)).resolves.toEqual({
+    await expect(new Fixture().update(fixture)).resolves.toEqual({
       id: 1,
       name: 'Test Fixture',
       notes: 'Test notes',
@@ -96,6 +90,6 @@ describe('Fixture model', () => {
   test('should delete a fixture', async () => {
     prismaMock.fixture.delete.mockResolvedValue(mockFixture);
 
-    await expect(deleteFixture(1)).resolves.toEqual(mockFixture);
+    await expect(new Fixture().delete(1)).resolves.toEqual(mockFixture);
   });
 });
