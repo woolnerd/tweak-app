@@ -84,6 +84,20 @@ describe('Patch model', () => {
     );
   });
 
+  test('a start address greater than end address throws exception', async () => {
+    const patch: Prisma.PatchCreateInput = {
+      fixture: { connect: { id: 1 } },
+      profile: { connect: { id: 1 } },
+      startAddress: 20,
+      endAddress: 1,
+      show: { connect: { id: 1 } },
+    };
+
+    await expect(new Patch().create(patch, { sceneId: 1 })).rejects.toThrow(
+      'Starting address cannot be greater then ending address.'
+    );
+  });
+
   test("should get patch by it's id", async () => {
     prismaMock.patch.findUnique.mockResolvedValue(mockPatch);
 
