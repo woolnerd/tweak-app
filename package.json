@@ -57,7 +57,7 @@
     "setupFilesAfterEnv": [
       "/home/davewoolner/projects/tweak-app/src/__mocks__/prisma.ts"
     ],
-    "collectCoverage": false,
+    "collectCoverage": true,
     "collectCoverageFrom": [
       "**/*.{js,jsx,ts,tsx}",
       "**/models/**",

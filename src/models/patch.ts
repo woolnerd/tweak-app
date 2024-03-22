@@ -13,6 +13,10 @@ export default class Patch extends Base<Prisma.PatchCreateInput, PatchType> {
       throw Error('Starting address cannot be greater then ending address.');
     }
 
+    if (data.endAddress < data.startAddress) {
+      throw Error('Ending address cannot be less than then starting address.');
+    }
+
     const isOverlap = await this.checkOverlap(
       data.startAddress,
       data.endAddress,
