@@ -1,4 +1,4 @@
-import { View, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 export type FixtureProps = {
   id?: number,
@@ -11,7 +11,9 @@ export type FixtureProps = {
 export const Fixture = (fixture: FixtureProps) => {
 
   return (
-    <View key={fixture.id} style={styles.fixtures}>{fixture.name}</View>
+    <View key={fixture.id} style={styles.fixtures}>
+      <Text>{fixture.name}</Text>
+    </View>
   )
 }
 

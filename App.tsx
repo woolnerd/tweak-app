@@ -41,7 +41,7 @@ const App = () => {
             <Text style={{ ...styles.btnText, fontSize: 18 }}>Go to Out</Text>
           </Pressable>
 
-          {scenes.map((scene) => <Scene name={scene.name} />)}
+          {scenes.map((scene, i) => <Scene key={scene.name + i } name={scene.name} />)}
 
           <Pressable style={styles.bigButtons} onPress={() => console.log('Simple Pressable pressed')}>
             <Text style={{ ...styles.btnText, fontSize: 18 }}>Label</Text>
