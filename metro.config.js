@@ -9,4 +9,6 @@ config.resolver.assetExts.push(
   'db'
 );
 
+config.resolver.sourceExts.push('sql');
+
 module.exports = config;

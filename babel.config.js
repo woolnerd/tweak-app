@@ -3,6 +3,6 @@ module.exports = function (api) {
   return {
     presets: ['babel-preset-expo'],
     plugins: [
-      '@babel/transform-react-jsx-source']
+      '@babel/transform-react-jsx-source', ["inline-import", { "extensions": [".sql"] }]]
   };
 };
