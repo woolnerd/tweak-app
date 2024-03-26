@@ -2,114 +2,93 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
-  TextInput,
   View,
   Button,
   Text,
-  FlatList,
-  Alert,
   Pressable
 } from 'react-native';
 import { LayoutArea } from '@/components/layout-area';
 import { Scene, SceneProps } from '@/components/scene';
-import FixtureAssignment from '@/models/fixture-assignment';
-import { openDatabase } from '@/services/db/sqlite';
-import * as SQLite from 'expo-sqlite';
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { openDatabaseSync } from "expo-sqlite/next";
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
+import migrations from './drizzle/migrations';
+import * as FileSystem from 'expo-file-system';
+
+const expoDb = openDatabaseSync("dev.db");
+const db = drizzle(expoDb);
 
 const App = () => {
   const [color, setColor] = useState('');
+  // console.log(FileSystem.documentDirectory);
+  const { success, error } = useMigrations(db, migrations);
 
-  const handleUpdateColor = () => {
-    // Logic to handle updating the color
-    console.log('Color:', color);
-  };
-
-  const createFA = async () => {
-    return await new FixtureAssignment().create({
-      title: 'first assignment',
-      channel: 1,
-      value: 255,
-      fixture: { connect: { id: 1 } },
-      profile: { connect: { id: 1 } },
-    });
-  }
-
-  const createSL = async (version: string) => {
-    const db = SQLite.openDatabase('dev', version);
-        // Function to execute SQL queries
-    const executeSql = (sql: string, params = []): Promise<any> =>
-    new Promise((resolve, reject) => {
-      db.transaction(tx => {
-        tx.executeSql(
-          sql,
-          params,
-          (_, result) => resolve(result),
-          (_, error) => reject(error)
-        );
-      });
-    });
-
-
-    const readOnly = true;
-    try {
-      createTableIfNotExists()
-    } catch (e) {
-      console.log(e);
-
-    }
-
-
-// Function to create the table if it doesn't exist
-  async function createTableIfNotExists () {
-    try {
-    // Check if the table exists
-    const result = await executeSql(
-      "SELECT name FROM sqlite_master WHERE type='table' AND name='fixture'"
+  if (error) {
+    return (
+      <View>
+        <Text>Migration error: {error.message}</Text>
+      </View>
     );
-
-    // If the table doesn't exist, create it
-    if (result.rows.length === 0) {
-      await executeSql(
-        `CREATE TABLE IF NOT EXISTS fixture (
-          id INTEGER PRIMARY KEY,
-          name TEXT,
-          manufacturer_id INTEGER,
-          fixture_profile_id INTEGER,
-          notes TEXT
-        );`
-      );
-      console.log('Table created successfully.');
-    } else {
-      console.log('Table already exists.');
-    }
-    } catch (error) {
-      console.error('Error creating table:', error);
-    }
-  };
-
-// Call the function to create the table
-  createTableIfNotExists();
-}
-
-
-
-  const getThing = async () => {
-    await createSL('banana');
   }
-  getThing();
-  console.log('useEffect ran');
-  console.log(color);
+  if (!success) {
+    return (
+      <View>
+        <Text>Migration is in progress...</Text>
+      </View>
+    );
+  }
 
-  useEffect(() => {
-    const getThing = async () => {
-      await createSL('banana');
-    }
-    getThing();
-    console.log('useEffect ran');
-    console.log(color);
+// // Function to create the table if it doesn't exist
+//   async function createTableIfNotExists () {
+//     try {
+//     // Check if the table exists
+//     const result = await executeSql(
+//       "SELECT name FROM sqlite_master WHERE type='table' AND name='fixture'"
+//     );
+
+//     // If the table doesn't exist, create it
+//     if (result.rows.length === 0) {
+//       await executeSql(
+//         `CREATE TABLE IF NOT EXISTS fixture (
+//           id INTEGER PRIMARY KEY,
+//           name TEXT,
+//           manufacturer_id INTEGER,
+//           fixture_profile_id INTEGER,
+//           notes TEXT
+//         );`
+//       );
+//       console.log('Table created successfully.');
+//     } else {
+//       console.log('Table already exists.');
+//     }
+//     } catch (error) {
+//       console.error('Error creating table:', error);
+//     }
+//   };
+
+// // Call the function to create the table
+//   createTableIfNotExists();
+// }
 
 
-  }, [color])
+
+  // const getThing = async () => {
+  //   await createSL('banana');
+  // }
+  // getThing();
+  // console.log('useEffect ran');
+  // console.log(color);
+
+  // useEffect(() => {
+  //   const getThing = async () => {
+  //     await createSL('banana');
+  //   }
+  //   getThing();
+  //   console.log('useEffect ran');
+  //   console.log(color);
+
+
+  // }, [color])
 
   const scenes: SceneProps[] = [{ name: 'Bedroom night' }, { name: 'Exterior look1' }, { name: 'Interior look1' }];
 

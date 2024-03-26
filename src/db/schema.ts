@@ -41,7 +41,7 @@ export const patchesRelations = relations(patches, ({many }) => ({
 export const profiles = sqliteTable("profiles", {
   id: integer("id").primaryKey({autoIncrement: true}),
   name: text("name"),
-  channels: text("channels", { mode: "json" }),
+  channels: text("channels"),
   channelCount: integer("channel_count").notNull()
 })
 
