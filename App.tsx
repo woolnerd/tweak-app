@@ -14,14 +14,29 @@ import { openDatabaseSync } from "expo-sqlite/next";
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import migrations from './drizzle/migrations';
 import * as FileSystem from 'expo-file-system';
+import * as schema from '@/db/schema';
 
 const expoDb = openDatabaseSync("dev.db");
-const db = drizzle(expoDb);
+const db = drizzle(expoDb, {schema});
+
+type Fixture = typeof schema.fixtures.$inferSelect
+
 
 const App = () => {
   const [color, setColor] = useState('');
   // console.log(FileSystem.documentDirectory);
   const { success, error } = useMigrations(db, migrations);
+
+  async function fixtures() {
+    return await db.query.fixtures.findMany();
+  }
+
+//   const result = await db.query.users.findMany({
+//   with: {
+//     posts: true
+//   },
+// });
+  fixtures().then((res) => console.log(res));
 
   if (error) {
     return (

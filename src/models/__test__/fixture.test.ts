@@ -1,31 +1,34 @@
 import Fixture from '../fixture';
-import { Prisma, Fixture as FixtureType } from '@prisma/client';
-import { prismaMock } from '@/__mocks__/prisma';
+// import { Prisma, Fixture as FixtureType } from '@prisma/client';
+import { drizzleMock } from '@/__mocks__/drizzle';
+import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
+import { fixtures } from '@/db/schema';
+import { type InferSelectModel, type InferInsertModel } from 'drizzle-orm'
 
-const mockFixture: FixtureType = {
+type SelectFixture = typeof fixtures.$inferSelect;
+type InsertFixture = typeof fixtures.$inferInsert;
+
+
+const mockFixture: SelectFixture = {
   id: 1,
   name: 'Test Fixture',
   notes: 'Test notes',
-  assigned: true,
-  manufacturerId: 1,
+  assigned: true
 };
 
 describe('Fixture model', () => {
   test('should create a new fixture', async () => {
-    const fixture: Prisma.FixtureCreateInput = {
+    const fixture: InsertFixture = {
       name: 'Test Fixture',
       notes: 'Test notes',
-      manufacturer: {
-        connect: { id: 1 },
-      },
     };
 
-    prismaMock.fixture.create.mockResolvedValue(mockFixture);
+    drizzleMock.insert.mockResolvedValue(mockFixture)
     const result = await new Fixture().create(fixture, { manufacturerId: 1 });
     expect(result.name).toEqual(fixture.name);
     expect(result.notes).toEqual(fixture.notes);
     expect(result.manufacturerId).toEqual(fixture.manufacturer?.connect?.id);
-    expect(prismaMock.fixture.create).toHaveBeenCalledTimes(1);
+    expect(drizzleMock.fixture.create).toHaveBeenCalledTimes(1);
   });
 
   test("should get fixture by it's id", async () => {
@@ -37,7 +40,7 @@ describe('Fixture model', () => {
       manufacturerId: 1,
     };
 
-    prismaMock.fixture.findUnique.mockResolvedValue(fixture);
+    drizzleMock.fixture.findUnique.mockResolvedValue(fixture);
 
     await expect(new Fixture().getById(fixture.id)).resolves.toEqual(fixture);
   });
@@ -59,7 +62,7 @@ describe('Fixture model', () => {
         manufacturerId: 1,
       },
     ];
-    prismaMock.fixture.findMany.mockResolvedValue(fixtures);
+    drizzleMock.fixture.findMany.mockResolvedValue(fixtures);
 
     await expect(new Fixture().getAll()).resolves.toHaveLength(2);
     await expect(new Fixture().getAll()).resolves.toBe(fixtures);
@@ -74,7 +77,7 @@ describe('Fixture model', () => {
       manufacturerId: 1,
     };
 
-    prismaMock.fixture.update.mockResolvedValue(fixture);
+    drizzleMock.fixture.update.mockResolvedValue(fixture);
 
     await expect(new Fixture().update(fixture)).resolves.toEqual({
       id: 1,
@@ -84,11 +87,11 @@ describe('Fixture model', () => {
       manufacturerId: 1,
     });
 
-    expect(prismaMock.fixture.update).toHaveBeenCalledTimes(1);
+    expect(drizzleMock.fixture.update).toHaveBeenCalledTimes(1);
   });
 
   test('should delete a fixture', async () => {
-    prismaMock.fixture.delete.mockResolvedValue(mockFixture);
+    drizzleMock.fixture.delete.mockResolvedValue(mockFixture);
 
     await expect(new Fixture().delete(1)).resolves.toEqual(mockFixture);
   });
