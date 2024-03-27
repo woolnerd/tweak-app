@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "52ebdc70-b134-46f6-88e1-edab9386e55c",
+  "id": "77e37177-f261-4f52-9ab5-646fbe93f0e1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "fixtureAssignments": {
@@ -87,10 +87,31 @@
           "notNull": false,
           "autoincrement": false,
           "default": false
+        },
+        "manufacturer_id": {
+          "name": "manufacturer_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "fixtures_manufacturer_id_manufacturers_id_fk": {
+          "name": "fixtures_manufacturer_id_manufacturers_id_fk",
+          "tableFrom": "fixtures",
+          "tableTo": "manufacturers",
+          "columnsFrom": [
+            "manufacturer_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -126,7 +147,15 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "manufacturers_name_unique": {
+          "name": "manufacturers_name_unique",
+          "columns": [
+            "name"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
@@ -150,6 +179,27 @@
         },
         "end_address": {
           "name": "end_address",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "fixture_id": {
+          "name": "fixture_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "profile_id": {
+          "name": "profile_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "show_id": {
+          "name": "show_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -190,6 +240,13 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "fixture_id": {
+          "name": "fixture_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         }
       },
@@ -233,6 +290,64 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "scenes_to_fixture_assignments": {
+      "name": "scenes_to_fixture_assignments",
+      "columns": {
+        "fixture_assignment_id": {
+          "name": "fixture_assignment_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "scene_id": {
+          "name": "scene_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "scenes_to_fixture_assignments_fixture_assignment_id_fixtureAssignments_id_fk": {
+          "name": "scenes_to_fixture_assignments_fixture_assignment_id_fixtureAssignments_id_fk",
+          "tableFrom": "scenes_to_fixture_assignments",
+          "tableTo": "fixtureAssignments",
+          "columnsFrom": [
+            "fixture_assignment_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "scenes_to_fixture_assignments_scene_id_scenes_id_fk": {
+          "name": "scenes_to_fixture_assignments_scene_id_scenes_id_fk",
+          "tableFrom": "scenes_to_fixture_assignments",
+          "tableTo": "scenes",
+          "columnsFrom": [
+            "scene_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "scenes_to_fixture_assignments_fixture_assignment_id_scene_id_pk": {
+          "columns": [
+            "fixture_assignment_id",
+            "scene_id"
+          ],
+          "name": "scenes_to_fixture_assignments_fixture_assignment_id_scene_id_pk"
+        }
+      },
       "uniqueConstraints": {}
     },
     "shows": {

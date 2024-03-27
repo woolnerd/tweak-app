@@ -10,6 +10,7 @@ import {
 import { LayoutArea } from '@/components/layout-area';
 import { Scene, SceneProps } from '@/components/scene';
 import { drizzle } from "drizzle-orm/expo-sqlite";
+import { eq, gt, sql } from "drizzle-orm";
 import { openDatabaseSync } from "expo-sqlite/next";
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import migrations from './drizzle/migrations';
@@ -21,22 +22,101 @@ const db = drizzle(expoDb, {schema});
 
 type Fixture = typeof schema.fixtures.$inferSelect
 
+type Profile = typeof schema.profiles.$inferInsert;
+
+type UpdateFixture = Pick<Fixture, 'id'> & Partial<Omit<Fixture, 'id'>>;
+
+type Scene = typeof schema.scenes.$inferInsert
 
 const App = () => {
   const [color, setColor] = useState('');
   // console.log(FileSystem.documentDirectory);
   const { success, error } = useMigrations(db, migrations);
 
-  async function fixtures() {
-    return await db.query.fixtures.findMany();
+  async function getFixtures(){
+    // return await db.query.fixtures.findMany()
+    // return await db.select({name: schema.fixtures.name, id: schema.fixtures.id}).from(schema.fixtures)
+    return await db.query.fixtures.findMany()
   }
 
+  async function getManufacturers(){
+    // return await db.query.fixtures.findMany();
+    // return await db.select().from(schema.manufacturers)
+    return await db.query.manufacturers.findMany()
+
+  }
+
+  async function getProfiles(){
+    // return await db.query.fixtures.findMany();
+    // return await db.select().from(schema.manufacturers)
+    return await db.query.profiles.findMany()
+
+  }
+
+
+
+  const fixture = { name: 'Vortex', notes: 'test' }
+  const manufacturer = { name: 'Creamsource', website: "www.creamsource.com" }
+
+  const profile: Profile = {channelCount: 4, channels: JSON.stringify({1: 'Red', 2:'Green', 3: 'Blue', 4: 'Intensity'}), name: 'mode 6'}
+  async function createManufacturer() {
+    return await db.insert(schema.manufacturers).values(manufacturer);
+  }
+
+  async function deleteManufacturer() {
+    return await db.delete(schema.manufacturers).where(gt(schema.manufacturers.id, 1));
+  }
+
+  async function deleteProfile() {
+    return await db.delete(schema.profiles).where(gt(schema.profiles.id, 1));
+  }
+
+  async function createScenes(sceneArr) {
+    return await db.insert(schema.scenes).values(sceneArr);
+  }
+
+  async function getScenes() {
+    return await db.query.scenes.findMany()
+  }
+
+  async function createProfile(fixtureId: number) {
+    const newProfileId = await db.insert(schema.profiles).values(profile).returning({profileId: schema.profiles.id});
+    await db.insert(schema.profilesToFixtures).values({profileId: newProfileId[0].profileId, fixtureId})
+  }
+
+  async function createFixture() {
+    return await db.insert(schema.fixtures).values(fixture);
+  }
+  async function updateFixture(data: UpdateFixture) {
+    const { id } = data;
+    return await db.update(schema.fixtures).set(data).where(eq(schema.fixtures.id, id))
+  }
+// schema.fixturesRelations.config
 //   const result = await db.query.users.findMany({
 //   with: {
 //     posts: true
 //   },
-// });
-  fixtures().then((res) => console.log(res));
+  // });
+  // updateFixture()
+  const [doThing, setDoThing] = useState(false);
+  // createProfile()
+  useEffect(() => {
+
+    if (doThing) {
+      console.log('in here');
+      // createManufacturer()
+      // createFixture();
+    }
+    // createScenes(scenes)
+    setDoThing(false)
+    // updateFixture({manufacturerId: 2, id: 2})
+  }, [doThing])
+  // deleteanufacturer()
+  getFixtures().then((res) => console.log('fixtures:', res));
+  getManufacturers().then(res => console.log('manufacturers:', res))
+  getScenes().then(res=> console.log('scenes',res))
+  // getProfiles().then(res => console.log('profiles', res))
+  // deleteProfile()
 
   if (error) {
     return (
@@ -105,7 +185,7 @@ const App = () => {
 
   // }, [color])
 
-  const scenes: SceneProps[] = [{ name: 'Bedroom night' }, { name: 'Exterior look1' }, { name: 'Interior look1' }];
+  const scenes: Scene[] = [{ name: 'Bedroom night', showId: 1, order: 1 }, { name: 'Exterior look1', showId:1, order: 2 }, { name: 'Interior look1', showId: 1, order: 3 }];
 
   return (
     <View
