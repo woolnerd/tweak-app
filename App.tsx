@@ -16,15 +16,16 @@ import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import migrations from './drizzle/migrations';
 import * as FileSystem from 'expo-file-system';
 import * as schema from '@/db/schema';
+import Fixture from '@/models/fixture'
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, {schema});
 
-type Fixture = typeof schema.fixtures.$inferSelect
+type FixtureType = typeof schema.fixtures.$inferSelect
 
 type Profile = typeof schema.profiles.$inferInsert;
 
-type UpdateFixture = Pick<Fixture, 'id'> & Partial<Omit<Fixture, 'id'>>;
+type UpdateFixture = Pick<FixtureType, 'id'> & Partial<Omit<Fixture, 'id'>>;
 
 type Scene = typeof schema.scenes.$inferInsert
 
@@ -33,20 +34,20 @@ const App = () => {
   // console.log(FileSystem.documentDirectory);
   const { success, error } = useMigrations(db, migrations);
 
-  async function getFixtures(){
+  async function getFixtures() {
     // return await db.query.fixtures.findMany()
     // return await db.select({name: schema.fixtures.name, id: schema.fixtures.id}).from(schema.fixtures)
     return await db.query.fixtures.findMany()
   }
 
-  async function getManufacturers(){
+  async function getManufacturers() {
     // return await db.query.fixtures.findMany();
     // return await db.select().from(schema.manufacturers)
     return await db.query.manufacturers.findMany()
 
   }
 
-  async function getProfiles(){
+  async function getProfiles() {
     // return await db.query.fixtures.findMany();
     // return await db.select().from(schema.manufacturers)
     return await db.query.profiles.findMany()
@@ -58,7 +59,7 @@ const App = () => {
   const fixture = { name: 'Vortex', notes: 'test' }
   const manufacturer = { name: 'Creamsource', website: "www.creamsource.com" }
 
-  const profile: Profile = {channelCount: 4, channels: JSON.stringify({1: 'Red', 2:'Green', 3: 'Blue', 4: 'Intensity'}), name: 'mode 6'}
+  const profile: Profile = { channelCount: 4, channels: JSON.stringify({ 1: 'Red', 2: 'Green', 3: 'Blue', 4: 'Intensity' }), name: 'mode 6' }
   async function createManufacturer() {
     return await db.insert(schema.manufacturers).values(manufacturer);
   }
@@ -80,8 +81,8 @@ const App = () => {
   }
 
   async function createProfile(fixtureId: number) {
-    const newProfileId = await db.insert(schema.profiles).values(profile).returning({profileId: schema.profiles.id});
-    await db.insert(schema.profilesToFixtures).values({profileId: newProfileId[0].profileId, fixtureId})
+    const newProfileId = await db.insert(schema.profiles).values(profile).returning({ profileId: schema.profiles.id });
+    await db.insert(schema.profilesToFixtures).values({ profileId: newProfileId[0].profileId, fixtureId })
   }
 
   async function createFixture() {
@@ -91,32 +92,42 @@ const App = () => {
     const { id } = data;
     return await db.update(schema.fixtures).set(data).where(eq(schema.fixtures.id, id))
   }
-// schema.fixturesRelations.config
-//   const result = await db.query.users.findMany({
-//   with: {
-//     posts: true
-//   },
+  // schema.fixturesRelations.config
+  //   const result = await db.query.users.findMany({
+  //   with: {
+  //     posts: true
+  //   },
   // });
   // updateFixture()
-  const [doThing, setDoThing] = useState(false);
-  // createProfile()
-  useEffect(() => {
+  // const [doThing, setDoThing] = useState(false);
+  // // createProfile()
+  // useEffect(() => {
 
-    if (doThing) {
-      console.log('in here');
-      // createManufacturer()
-      // createFixture();
-    }
-    // createScenes(scenes)
-    setDoThing(false)
-    // updateFixture({manufacturerId: 2, id: 2})
-  }, [doThing])
-  // deleteanufacturer()
-  getFixtures().then((res) => console.log('fixtures:', res));
-  getManufacturers().then(res => console.log('manufacturers:', res))
-  getScenes().then(res=> console.log('scenes',res))
-  // getProfiles().then(res => console.log('profiles', res))
-  // deleteProfile()
+  //   if (doThing) {
+  //     console.log('in here');
+  //     // createManufacturer()
+  //     // createFixture();
+  //   }
+  //   // createScenes(scenes)
+  //   setDoThing(false)
+  //   // updateFixture({manufacturerId: 2, id: 2})
+  // }, [doThing])
+    // deleteanufacturer()
+    // getFixtures().then((res) => console.log('fixtures:', res));
+    // getManufacturers().then(res => console.log('manufacturers:', res))
+    // getScenes().then(res=> console.log('scenes',res))
+    // getProfiles().then(res => console.log('profiles', res))
+    // deleteProfile()
+    (async () => {
+
+    try {
+    const newFixture = await new Fixture().getAll()
+      console.log('newFixture', newFixture);
+  } catch (e) {
+    console.log(e);
+
+  }
+   })()
 
   if (error) {
     return (
