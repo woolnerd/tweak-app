@@ -1,4 +1,5 @@
 import { Database } from "@/db/types/database"
+import { TableNames } from "@/db/types/tables"
 
 export const mockInsertDb: Database = {
   insert: jest.fn().mockReturnThis(),
@@ -13,9 +14,11 @@ export const mockGetByIdDb: Database = {
 }
 
 export const mockGetAllDb: Database = {
-  select: jest.fn().mockReturnThis(),
-  from: jest.fn(()=> Promise.resolve(mockManufacturerArray)),
-  where: jest.fn(() => Promise.resolve(mockManufacturer))
+  query: {
+    [TableNames.Manufacturers]: {
+      findMany: jest.fn(() => Promise.resolve(mockManufacturerArray))
+    },
+  }
 }
 
 export const mockUpdateDb: Database = {

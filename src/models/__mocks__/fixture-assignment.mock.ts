@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { SelectFixtureAssignment, InsertFixtureAssignment } from "@/db/types/tables";
+import { SelectFixtureAssignment, InsertFixtureAssignment, TableNames } from "@/db/types/tables";
 import { Database } from "@/db/types/database";
 
 export const mockInsertDb: Database = {
@@ -15,9 +15,11 @@ export const mockGetByIdDb: Database = {
 }
 
 export const mockGetAllDb: Database = {
-  select: jest.fn().mockReturnThis(),
-  from: jest.fn(()=> Promise.resolve(mockFixtureAssignmentArray)),
-  where: jest.fn(() => Promise.resolve(mockFixtureAssignment))
+  query: {
+    [TableNames.FixtureAssignments]: {
+      findMany: jest.fn(() => Promise.resolve(mockFixtureAssignmentArray))
+    },
+  }
 }
 
 export const mockUpdateDb: Database = {

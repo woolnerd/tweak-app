@@ -20,8 +20,5 @@ describe('Manufacturer model', () => {
       mockManufacturerArray
     );
 
-    await expect(new Manufacturer(mockGetAllDb).getAll()).resolves.toEqual(
-      mockManufacturerArray
-    );
   });
 });

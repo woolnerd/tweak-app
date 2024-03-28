@@ -17,6 +17,8 @@ import migrations from './drizzle/migrations';
 import * as FileSystem from 'expo-file-system';
 import * as schema from '@/db/schema';
 import Fixture from '@/models/fixture'
+import Patch from '@/models/patch';
+import { InsertPatch } from '@/db/types/tables';
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, {schema});
@@ -58,6 +60,7 @@ const App = () => {
 
   const fixture = { name: 'Vortex', notes: 'test' }
   const manufacturer = { name: 'Creamsource', website: "www.creamsource.com" }
+  const patch: InsertPatch = { fixtureId: 1, profileId: 1, startAddress: 81, endAddress: 90, showId: 1, }
 
   const profile: Profile = { channelCount: 4, channels: JSON.stringify({ 1: 'Red', 2: 'Green', 3: 'Blue', 4: 'Intensity' }), name: 'mode 6' }
   async function createManufacturer() {
@@ -117,17 +120,30 @@ const App = () => {
     // getManufacturers().then(res => console.log('manufacturers:', res))
     // getScenes().then(res=> console.log('scenes',res))
     // getProfiles().then(res => console.log('profiles', res))
-    // deleteProfile()
+  // deleteProfile()
+  const handleEnterBtn = () => {
+    setColor(String(Math.random())), console.log('Simple Button pressed');
+
     (async () => {
 
-    try {
-      const newFixture = await new Fixture(db).getAll({ with: { manufacturer: true } })
-      console.log('newFixture', newFixture);
+      try {
+        // const newPatch = await new Patch(db).create(patch)
+      // const newFixture = await new Fixture(db).getAll({ with: { manufacturer: true } })
+        // console.log('patch', newPatch);
+        await new Patch(db).create( { fixtureId: 1, profileId: 1, startAddress: -1, endAddress: 10, showId: 10, }).then(res => console.log('new patch: ', res))
+        // await new Patch(db).getAll().then(res => console.log('patches', res.map(patch=> [patch.startAddress, patch.endAddress, patch.showId])))
+        // console.log('patches', patches);
+        // [{ "endAddress": 60, "fixtureId": 1, "id": 1, "profileId": 1, "showId": 1, "startAddress": 50 },
+        //   { "endAddress": 60, "fixtureId": 1, "id": 2, "profileId": 1, "showId": 1, "startAddress": 50 },
+        //   { "endAddress": 80, "fixtureId": 1, "id": 3, "profileId": 1, "showId": 1, "startAddress": 70 },
+        //   { "endAddress": 80, "fixtureId": 1, "id": 4, "profileId": 1, "showId": 1, "startAddress": 70 },
+        //   { "endAddress": 80, "fixtureId": 1, "id": 5, "profileId": 1, "showId": 2, "startAddress": 70 }]
   } catch (e) {
     console.log(e);
+  }
+    })()
 
   }
-   })()
 
   if (error) {
     return (
@@ -235,7 +251,7 @@ const App = () => {
         }}
       >
         <Button title="Enter"
-          onPress={() => { setColor(String(Math.random())), console.log('Simple Button pressed') }} />
+          onPress={handleEnterBtn} />
 
         <LayoutArea />
       </View>

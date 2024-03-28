@@ -1,5 +1,6 @@
 import FixtureAssignment from '../fixture-assignment';
 import * as mock from '../__mocks__/fixture-assignment.mock'
+import { TableNames } from '@/db/types/tables';
 
 describe('Fixture Assignment Model', () => {
   afterEach(() => {
@@ -20,7 +21,7 @@ describe('Fixture Assignment Model', () => {
     const result = await new FixtureAssignment(mockGetAllDb).getAll();
 
     expect(result).toEqual(mockFixtureAssignmentArray);
-    expect(mockGetAllDb.from).toHaveBeenCalledTimes(1);
+    expect(mockGetAllDb.query[TableNames.FixtureAssignments].findMany).toHaveBeenCalledTimes(1);
   });
 
   test("should get fixture assignment by it's id", async () => {
