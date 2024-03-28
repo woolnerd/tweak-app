@@ -1,7 +1,5 @@
-import { db } from '@/db/client';
 import { eq } from 'drizzle-orm';
-
-type Database = typeof db
+import { Database } from '@/db/types/database';
 export default abstract class Base<T, K extends { id: number }> {
   abstract readonly table: any;
   protected db: Database;
@@ -14,7 +12,7 @@ export default abstract class Base<T, K extends { id: number }> {
     return await this.db.insert(this.table).values(data).returning();
   }
 
-  async getAll(options?: {}) {
+  async getAll() {
     return await this.db.select().from(this.table);
   }
 

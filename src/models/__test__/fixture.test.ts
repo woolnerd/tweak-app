@@ -1,5 +1,10 @@
+// @ts-nocheck
 import Fixture from '../fixture';
-import { mockInsertDb, mockGetByIdDb, mockFixture, mockFixtureArray, mockGetAllDb, mockDeleteDb, mockUpdateDb } from '../__mocks__/fixture';
+import { mockInsertDb, mockGetByIdDb, mockFixture, mockFixtureArray, mockGetAllDb, mockDeleteDb, mockUpdateDb } from '../__mocks__/fixture.mock';
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
 describe('Fixture model', () => {
 

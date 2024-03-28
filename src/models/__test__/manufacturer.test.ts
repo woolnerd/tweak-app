@@ -1,56 +1,27 @@
 import Manufacturer from '../manufacturer';
-import { Manufacturer as ManufacturerType } from '@prisma/client';
-import { prismaMock } from '@/__mocks__/prisma';
+import * as mock from '../__mocks__/manufacturer.mock';
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
 describe('Manufacturer model', () => {
   test('creates a manufacturer', async () => {
-    const manufacturer: ManufacturerType = {
-      id: 1,
-      name: 'Arri',
-      website: 'www.arri.com',
-      notes: 'Test notes',
-    };
-
-    prismaMock.manufacturer.create.mockResolvedValue(manufacturer);
-
-    await expect(new Manufacturer().create(manufacturer)).resolves.toEqual({
-      id: 1,
-      name: 'Arri',
-      website: 'www.arri.com',
-      notes: 'Test notes',
-    });
-  });
-
-  test('getAllManufacturers should accept options', async () => {
-    const manufacturers: ManufacturerType[] = [
-      {
-        id: 1,
-        name: 'Arri',
-        website: 'www.arri.com',
-        notes: 'Test notes',
-      },
-      {
-        id: 2,
-        name: 'Astera',
-        website: 'www.astera.com',
-        notes: 'Test notes2',
-      },
-    ];
-
-    prismaMock.manufacturer.findMany.mockResolvedValue(manufacturers);
-
-    await expect(new Manufacturer().getAll()).resolves.toEqual(manufacturers);
-
-    expect(prismaMock.manufacturer.findMany).toHaveBeenCalledWith({
-      include: { fixtures: true },
-    });
+    const { mockManufacturer, mockInsertDb } = mock;
 
     await expect(
-      new Manufacturer().getAll({ select: { name: true } })
-    ).resolves.toEqual(manufacturers);
+      new Manufacturer(mockInsertDb).create(mockManufacturer)
+    ).resolves.toEqual(mockManufacturer);
+  });
 
-    expect(prismaMock.manufacturer.findMany).toHaveBeenCalledWith({
-      select: { name: true },
-    });
+  test('getAll returns all of the manufacturers', async () => {
+    const { mockGetAllDb, mockManufacturerArray } = mock;
+    await expect(new Manufacturer(mockGetAllDb).getAll()).resolves.toEqual(
+      mockManufacturerArray
+    );
+
+    await expect(new Manufacturer(mockGetAllDb).getAll()).resolves.toEqual(
+      mockManufacturerArray
+    );
   });
 });

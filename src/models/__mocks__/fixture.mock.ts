@@ -1,9 +1,6 @@
-import { db } from "@/db/client"
-import { fixtures } from '@/db/schema'
-
-type SelectFixture = typeof fixtures.$inferSelect;
-type InsertFixture = typeof fixtures.$inferInsert;
-type Database = typeof db;
+//@ts-nocheck
+import { SelectFixture, InsertFixture } from "@/db/types/tables";
+import { Database } from "@/db/types/database";
 
 export const mockInsertDb: Database = {
   insert: jest.fn().mockReturnThis(),
@@ -36,10 +33,9 @@ export const mockDeleteDb: Database = {
   where: jest.fn().mockReturnThis(),
   set: jest.fn().mockReturnThis(),
   delete: jest.fn().mockReturnThis(),
-  eq: jest.fn().mockReturnThis()
 }
 
-export const mockFixtureArray = [
+export const mockFixtureArray: SelectFixture[] = [
   {
     id: 1,
     name: 'Test Fixture1',
