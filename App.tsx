@@ -121,7 +121,7 @@ const App = () => {
     (async () => {
 
     try {
-    const newFixture = await new Fixture(db).getAll()
+      const newFixture = await new Fixture(db).getAll({ with: { manufacturer: true } })
       console.log('newFixture', newFixture);
   } catch (e) {
     console.log(e);

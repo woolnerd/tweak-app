@@ -10,4 +10,5 @@ export default class FixtureAssignment extends Base<
   SelectFixtureAssignment
 > {
   readonly table = fixtureAssignments;
+  readonly name = 'fixtures';
 }

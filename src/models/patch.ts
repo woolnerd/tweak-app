@@ -1,14 +1,19 @@
-import { Prisma, Patch as PatchType, Scene } from '@prisma/client';
-import prisma from '@/lib/prisma';
 import Base from './base';
+import { patches } from '@/db/schema';
+import {
+  InsertPatch,
+  SelectPatch,
+} from '@/db/types/tables';
+import { db } from '@/db/client';
 
-export default class Patch extends Base<Prisma.PatchCreateInput, PatchType> {
-  prisma = prisma.patch;
+export default class Patch extends Base<InsertPatch, SelectPatch> {
+  table = patches;
 
   async create(
-    data: Prisma.PatchCreateInput,
+    data: InsertPatch,
     options: { sceneId: number }
-  ): Promise<PatchType> {
+  ): Promise<SelectPatch> {
+
     if (data.startAddress > data.endAddress) {
       throw Error('Starting address cannot be greater then ending address.');
     }
@@ -23,9 +28,7 @@ export default class Patch extends Base<Prisma.PatchCreateInput, PatchType> {
       throw new Error('Address overlaps with current patch address in scene');
     }
 
-    return await prisma.patch.create({
-      data,
-    });
+    return await db.insert(patches).values(data);
   }
 
   async checkOverlap(
