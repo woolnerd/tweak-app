@@ -1,11 +1,7 @@
-import { db } from '@/db/drizzle';
+import { db } from '@/db/client';
 import { eq } from 'drizzle-orm';
-import  * as schema  from '@/db/schema'
-import { SQLiteInsertBase, SQLiteTable, SQLiteTableWithColumns, TableConfig } from 'drizzle-orm/sqlite-core';
 
 type Database = typeof db
-// type IntersectionOfSelects<T extends typeof schema> =
-//   T[keyof T] extends { InferSelect(): infer U } ? U : never;
 export default abstract class Base<T, K extends { id: number }> {
   abstract readonly table: any;
   protected db: Database;
