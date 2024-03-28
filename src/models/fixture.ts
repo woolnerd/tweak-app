@@ -1,13 +1,19 @@
-import { db, FixtureInsert, FixtureSelect } from '@/db/drizzle';
-import { eq } from 'drizzle-orm';
+// import { db, FixtureInsert, FixtureSelect } from '@/db/drizzle';
+// import { eq } from 'drizzle-orm';
 import Base from './base';
 import { fixtures } from '@/db/schema';
+import { db } from '@/db/drizzle';
 
 type NewFixture = typeof fixtures.$inferInsert;
 type SelectFixture = typeof fixtures.$inferSelect;
+type Database = typeof db;
 export default class Fixture extends Base<NewFixture, SelectFixture> {
   table = fixtures;
-  // constructor() {}
+  // database = db;
+
+  constructor(db: Database ) {
+    super(db);
+  }
 
   // async create(fixture: NewFixture) {
   //   return await db.insert(fixtures).values(fixture).returning()

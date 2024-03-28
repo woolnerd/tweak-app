@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for tweak-app/src/models/base.ts</title>
+    <title>Code coverage report for tweak-app/src/db/drizzle.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">tweak-app/src/models</a> base.ts</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">tweak-app/src/db</a> drizzle.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>0/2</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>0/0</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>0/2</span>
             </div>
         
             
@@ -90,26 +90,7 @@
 <a name='L25'></a><a href='#L25'>25</a>
 <a name='L26'></a><a href='#L26'>26</a>
 <a name='L27'></a><a href='#L27'>27</a>
-<a name='L28'></a><a href='#L28'>28</a>
-<a name='L29'></a><a href='#L29'>29</a>
-<a name='L30'></a><a href='#L30'>30</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L28'></a><a href='#L28'>28</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -118,38 +99,51 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { db } from '@/db/drizzle';
-import { eq } from 'drizzle-orm';
-import  * as schema  from '@/db/schema'
-import { SQLiteInsertBase, SQLiteTable, SQLiteTableWithColumns, TableConfig } from 'drizzle-orm/sqlite-core';
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import * as schema from '@/db/schema';
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { openDatabaseSync } from "expo-sqlite/next";
 &nbsp;
-export default abstract class Base&lt;T, K extends { id: number }&gt; {
-  abstract readonly table: any;
+const expoDb = <span class="cstat-no" title="statement not covered" >openDatabaseSync("dev.db");</span>
+export const db = <span class="cstat-no" title="statement not covered" >drizzle(expoDb, { schema });</span>
 &nbsp;
-<span class="fstat-no" title="function not covered" >  as</span>ync create(data:any) {
-<span class="cstat-no" title="statement not covered" >    return await db.insert(this.table).values(data).returning();</span>
-  }
+export type FixtureSelect = typeof schema.fixtures.$inferSelect
+export type FixtureInsert= typeof schema.fixtures.$inferInsert
 &nbsp;
-<span class="fstat-no" title="function not covered" >  as</span>ync getAll(options?: {}) {
-<span class="cstat-no" title="statement not covered" >    return await db.select().from(this.table);</span>
-  }
+export type ManufacturerSelect = typeof schema.manufacturers.$inferSelect
+export type ManufacturerInsert= typeof schema.manufacturers.$inferInsert
 &nbsp;
-<span class="fstat-no" title="function not covered" >  as</span>ync getById(id: number) {
-<span class="cstat-no" title="statement not covered" >   return await db.select().from(this.table).where(eq(this.table.id, id));</span>
-  }
+export type ProfileSelect = typeof schema.profiles.$inferSelect
+export type ProfileInsert = typeof schema.profiles.$inferInsert
 &nbsp;
-<span class="fstat-no" title="function not covered" >  as</span>ync update(data: K) {
-    const { id, ...restData } = <span class="cstat-no" title="statement not covered" >data;</span>
-<span class="cstat-no" title="statement not covered" >    return await db.update(this.table).set(restData).where(eq(this.table.id,id )).returning()</span>
-  }
+export type FixtureAssignmentsSelect = typeof schema.fixtureAssignments.$inferSelect
+export type FixtureAssignmentsInsert = typeof schema.fixtureAssignments.$inferInsert
 &nbsp;
-<span class="fstat-no" title="function not covered" >  as</span>ync delete(id: number) {
-<span class="cstat-no" title="statement not covered" >    return await db.delete(this.table).where(eq(this.table.id, id)).returning();</span>
-  }
-}
+export type ScenesSelect = typeof schema.scenes.$inferSelect
+export type ScenesInsert= typeof schema.scenes.$inferInsert
+&nbsp;
+export type ShowsSelect = typeof schema.shows.$inferSelect
+export type ShowsInsert= typeof schema.shows.$inferInsert
+&nbsp;
+export type PatchesSelect = typeof schema.patches.$inferSelect
+export type PatchesInsert= typeof schema.patches.$inferInsert
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->

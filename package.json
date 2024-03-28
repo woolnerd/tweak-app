@@ -58,10 +58,7 @@
     ],
     "clearMocks": true,
     "testEnvironment": "node",
-    "setupFilesAfterEnv": [
-      "/home/davewoolner/projects/tweak-app/src/__mocks__/prisma.ts"
-    ],
-    "collectCoverage": true,
+    "collectCoverage": false,
     "collectCoverageFrom": [
       "**/*.{js,jsx,ts,tsx}",
       "**/models/**",
