@@ -1,18 +1,24 @@
-import { Prisma, Scene as SceneType } from '@prisma/client';
-import prisma from '@/lib/prisma';
 import Base from './base';
+import { scenes } from '@/db/schema';
+import { Database, QueryKeys } from '@/db/types/database';
+import { InsertScene, SelectScene, TableNames } from '@/db/types/tables';
+import { desc, asc, DBQueryConfig } from 'drizzle-orm';
 
-export default class Scene extends Base<Prisma.SceneCreateInput, SceneType> {
-  readonly prisma = prisma.scene;
+export default class Scene extends Base<InsertScene, SelectScene> {
+  readonly table = scenes
+  readonly name: QueryKeys = TableNames.Scenes;
 
-  constructor() {
-    super();
+  constructor(db: Database) {
+    super(db);
   }
 
-  async getAll(options: Prisma.SceneFindManyArgs = {}): Promise<SceneType[]> {
-    Object.keys(options).length > 0
-      ? options
-      : { orderBy: { orderNumber: 'asc' } };
-    return await prisma.scene.findMany(options);
+  async getAll(options: {desc: boolean}) {
+    const func = options.desc ? desc : asc;
+
+    try {
+      return await this.db.select().from(this.table).orderBy(func(this.table.order));
+    } catch (err) {
+      console.log(err);
+    }
   }
 }

@@ -1,10 +1,16 @@
-import { Prisma, Profile as ProfileType } from '@prisma/client';
-import prisma from '@/lib/prisma';
 import Base from './base';
+import { profiles } from '@/db/schema';
+import { Database, QueryKeys } from '@/db/types/database';
+import { InsertProfile, SelectProfile, TableNames } from '@/db/types/tables';
 
 export default class Profile extends Base<
-  Prisma.ProfileCreateInput,
-  ProfileType
+  InsertProfile,
+  SelectProfile
 > {
-  prisma = prisma.profile;
+  readonly table = profiles;
+  readonly name: QueryKeys = TableNames.Profiles;
+
+  constructor(db: Database) {
+    super(db);
+  }
 }

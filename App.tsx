@@ -130,9 +130,10 @@ const App = () => {
         // const newPatch = await new Patch(db).create(patch)
       // const newFixture = await new Fixture(db).getAll({ with: { manufacturer: true } })
         // console.log('patch', newPatch);
-        await new Patch(db).create( { fixtureId: 1, profileId: 1, startAddress: -1, endAddress: 10, showId: 10, }).then(res => console.log('new patch: ', res))
+        // await new Patch(db).create( { fixtureId: 1, profileId: 1, startAddress: 1, endAddress: 10, showId: 10, }).then(res => console.log('new patch: ', res))
         // await new Patch(db).getAll().then(res => console.log('patches', res.map(patch=> [patch.startAddress, patch.endAddress, patch.showId])))
         // console.log('patches', patches);
+        await new Patch(db).delete(17).then(console.log)
         // [{ "endAddress": 60, "fixtureId": 1, "id": 1, "profileId": 1, "showId": 1, "startAddress": 50 },
         //   { "endAddress": 60, "fixtureId": 1, "id": 2, "profileId": 1, "showId": 1, "startAddress": 50 },
         //   { "endAddress": 80, "fixtureId": 1, "id": 3, "profileId": 1, "showId": 1, "startAddress": 70 },

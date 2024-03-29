@@ -1,7 +1,16 @@
-import { Prisma, Show as ShowType } from '@prisma/client';
-import prisma from '@/lib/prisma';
 import Base from './base';
+import { shows } from '@/db/schema';
+import { Database, QueryKeys } from '@/db/types/database';
+import { InsertShow, SelectShow, TableNames } from '@/db/types/tables';
 
-export default class Show extends Base<Prisma.ShowCreateInput, ShowType> {
-  prisma = prisma.show;
+export default class Show extends Base<
+  InsertShow,
+  SelectShow
+> {
+  readonly table = shows;
+  readonly name: QueryKeys = TableNames.Shows;
+
+  constructor(db: Database) {
+    super(db);
+  }
 }
