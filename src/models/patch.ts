@@ -1,19 +1,26 @@
 import Base from './base';
 import { patches } from '@/db/schema';
 import { InsertPatch, SelectPatch, TableNames } from '@/db/types/tables';
+import { Database } from '@/db/types/database';
 import { db } from '@/db/client';
 import { gte, lte, and, or, eq } from 'drizzle-orm';
 
 export default class Patch extends Base<InsertPatch, SelectPatch> {
   readonly table = patches;
   readonly name = TableNames.Patches;
+  readonly MIN_START_ADDRESS = 1;
+
+  constructor(db: Database) {
+    super(db);
+    this.db = db;
+  }
 
   async create(data: InsertPatch) {
     if (data.startAddress > data.endAddress) {
-      throw Error('Starting address cannot be greater then ending address.');
+      throw Error(`Starting address (${data.startAddress}) cannot be greater than ending address (${data.endAddress}).`);
     }
 
-    if (data.startAddress < 1) {
+    if (data.startAddress < this.MIN_START_ADDRESS) {
       throw Error('Starting address must be 1 or greater');
     }
 
@@ -27,7 +34,7 @@ export default class Patch extends Base<InsertPatch, SelectPatch> {
       throw new Error('Address overlaps with current patch address in scene');
     }
 
-    return await db.insert(patches).values(data);
+    return await this.db.insert(patches).values(data);
   }
 
   async checkOverlap(
@@ -35,7 +42,7 @@ export default class Patch extends Base<InsertPatch, SelectPatch> {
     endAddressForCheck: number,
     showIdForCheck: number
   ): Promise<boolean> {
-    const overlaps = await db
+    const overlaps = await this.db
       .select()
       .from(this.table)
       .where(

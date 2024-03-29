@@ -1,6 +1,5 @@
-import { AnyTable, BuildQueryResult, DBQueryConfig, eq } from 'drizzle-orm';
+import { DBQueryConfig, eq } from 'drizzle-orm';
 import { Database, QueryKeys, MyQueryHelper } from '@/db/types/database';
-import { QueryBuilder } from 'drizzle-orm/sqlite-core';
 export default abstract class Base<T, K extends { id: number }> {
   abstract readonly table: any;
   abstract readonly name: QueryKeys

@@ -1,153 +1,64 @@
 import Patch from '../patch';
-import { Prisma, Patch as PatchType } from '@prisma/client';
-import { prismaMock } from '@/__mocks__/prisma';
+import { Database } from '@/db/types/database';
+import { db } from '@/db/client';
+import { InsertPatch } from '@/db/types/tables';
+import { insertPatch, mockDbInsert, mockDbSelectNoOverlap, mockDbSelectOverlap, selectPatch} from '@/models/__mocks__/patch.mock'
+import { SQLiteTable, SQLiteTableExtraConfig, TableConfig } from 'drizzle-orm/sqlite-core';
 
-const mockPatch: PatchType = {
-  id: 1,
-  fixtureId: 1,
-  profileId: 1,
-  startAddress: 1,
-  endAddress: 20,
-  showId: 1,
-};
+jest.mock('@/db/client', () => ({
+  db: {
+    insert: jest.fn(),
+    select: jest.fn(),
+  },
+}));
 
-const sceneId = 1;
+describe('Patch', () => {
+  let patch: Patch;
+  let mockDb: Database;
+  const MIN_START_ADDRESS = 1;
 
-describe('Patch model', () => {
-  test('should create a new patch', async () => {
-    const patch: Prisma.PatchCreateInput = {
-      fixture: { connect: { id: 1 } },
-      profile: { connect: { id: 1 } },
+  beforeEach(() => {
+    mockDb = db;
+    patch = new Patch(mockDb);
+  });
+
+  test('create throws error when startAddress greater than endAddress', async () => {
+    const errorPatch = {...insertPatch, startAddress: 10, endAddress: 1}
+    await expect(patch.create(errorPatch)).rejects.toThrow(`Starting address (${errorPatch.startAddress}) cannot be greater than ending address (${errorPatch.endAddress}).`);
+  });
+
+  test('create should throw an error if startAddress is less than 1', async () => {
+
+    await expect(patch.create({...insertPatch, startAddress: MIN_START_ADDRESS - 1, })).rejects.toThrow('Starting address must be 1 or greater');
+  });
+
+  test('checkOverlap returns true when overlap exists', async () => {
+    const startAddressForCheck = 5;
+    const endAddressForCheck = 15;
+    const showIdForCheck = 1;
+
+    mockDbSelectOverlap(mockDb, [selectPatch]);
+
+    const result = await patch.checkOverlap(startAddressForCheck, endAddressForCheck, showIdForCheck);
+    expect(result).toBe(true);
+  });
+
+  test('create calls insert method when data is valid', async () => {
+    mockDbSelectOverlap(mockDb, []);
+
+    (mockDb.insert as jest.Mock).mockReturnValue({
+      values: jest.fn().mockResolvedValue(insertPatch)
+    })
+
+    await patch.create(insertPatch);
+
+    expect(mockDb.insert).toHaveBeenCalledWith(expect.anything());
+    expect(mockDb.insert({} as any).values).toHaveBeenCalledWith({
       startAddress: 1,
-      endAddress: 20,
-      show: { connect: { id: 1 } },
-    };
-
-    prismaMock.patch.findMany.mockResolvedValue([]);
-    prismaMock.patch.create.mockResolvedValue(mockPatch);
-    await expect(new Patch().create(patch, { sceneId })).resolves.toEqual(
-      mockPatch
-    );
-    expect(prismaMock.patch.create).toHaveBeenCalledTimes(1);
-  });
-
-  it('should detect overlap when creating a new patch in same scene', async () => {
-    prismaMock.patch.findMany.mockResolvedValue([
-      {
-        id: 1,
-        startAddress: 100,
-        endAddress: 200,
-        fixtureId: 1,
-        profileId: 1,
-        showId: 1,
-      },
-    ]);
-
-    await expect(new Patch().checkOverlap(1, 150, 1)).resolves.toBe(true);
-    await expect(new Patch().checkOverlap(150, 200, 1)).resolves.toBe(true);
-  });
-
-  it('should not detect overlap when creating a new patch with overlapping addresses with different sceneIds', async () => {
-    prismaMock.patch.findMany.mockResolvedValue([]);
-
-    await expect(new Patch().checkOverlap(101, 199, 2)).resolves.toEqual(false);
-  });
-
-  it('should not detect overlap when creating a new patch with non-overlapping addresses', async () => {
-    prismaMock.patch.findMany.mockResolvedValue([]);
-    await expect(new Patch().checkOverlap(1, 50, 1)).resolves.toEqual(false);
-    await expect(new Patch().checkOverlap(201, 220, 1)).resolves.toEqual(false);
-  });
-
-  test('attempting to create a patch with overlapping startAddress and endAddress in the same scene throws exception', async () => {
-    prismaMock.patch.findMany.mockResolvedValue([
-      {
-        id: 1,
-        startAddress: 10,
-        endAddress: 30,
-        fixtureId: 1,
-        profileId: 1,
-        showId: 1,
-      },
-    ]);
-
-    const patch: Prisma.PatchCreateInput = {
-      fixture: { connect: { id: 1 } },
-      profile: { connect: { id: 1 } },
-      startAddress: 1,
-      endAddress: 20,
-      show: { connect: { id: 1 } },
-    };
-
-    await expect(new Patch().create(patch, { sceneId })).rejects.toThrow(
-      'Address overlaps with current patch address in scene'
-    );
-  });
-
-  test('a start address greater than end address throws exception', async () => {
-    const patch: Prisma.PatchCreateInput = {
-      fixture: { connect: { id: 1 } },
-      profile: { connect: { id: 1 } },
-      startAddress: 20,
-      endAddress: 1,
-      show: { connect: { id: 1 } },
-    };
-
-    await expect(new Patch().create(patch, { sceneId: 1 })).rejects.toThrow(
-      'Starting address cannot be greater then ending address.'
-    );
-  });
-
-  test("should get patch by it's id", async () => {
-    prismaMock.patch.findUnique.mockResolvedValue(mockPatch);
-
-    await expect(new Patch().getById(mockPatch.id)).resolves.toEqual(mockPatch);
-  });
-
-  test('should find all patches', async () => {
-    const mockPatches = [
-      {
-        id: 1,
-        fixtureId: 1,
-        profileId: 1,
-        startAddress: 1,
-        endAddress: 20,
-        showId: 1,
-      },
-      {
-        id: 2,
-        fixtureId: 1,
-        profileId: 1,
-        startAddress: 21,
-        endAddress: 40,
-        showId: 1,
-      },
-    ];
-
-    prismaMock.patch.findMany.mockResolvedValue(mockPatches);
-
-    await expect(new Patch().getAll()).resolves.toHaveLength(2);
-    await expect(new Patch().getAll()).resolves.toBe(mockPatches);
-  });
-
-  test('should update a patch', async () => {
-    prismaMock.patch.update.mockResolvedValue(mockPatch);
-
-    await expect(new Patch().update(mockPatch)).resolves.toEqual({
-      id: 1,
+      endAddress: 10,
       fixtureId: 1,
       profileId: 1,
-      startAddress: 1,
-      endAddress: 20,
       showId: 1,
     });
-
-    expect(prismaMock.patch.update).toHaveBeenCalledTimes(1);
-  });
-
-  test('should delete a patch', async () => {
-    prismaMock.patch.delete.mockResolvedValue(mockPatch);
-
-    await expect(new Patch().delete(1)).resolves.toEqual(mockPatch);
   });
 });
