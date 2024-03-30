@@ -1,19 +1,15 @@
-import { DBQueryConfig, eq } from 'drizzle-orm';
+import { eq,  } from 'drizzle-orm';
 import { Database, QueryKeys, MyQueryHelper } from '@/db/types/database';
+import { handleDatabaseError } from '@/util/errors';
 export default abstract class Base<T, K extends { id: number }> {
   abstract readonly table: any;
   abstract readonly name: QueryKeys
   protected db: Database;
-  private handleError(error: unknown): void {
-    if (error instanceof Error) {
-      throw new Error(`Database operation failed: ${error.message}`);
-    } else {
-      throw new Error('Database operation failed with unknown error');
-    }
-  }
+  protected handleError(error: unknown) {};
 
   constructor(db: Database) {
     this.db = db;
+    this.handleError = handleDatabaseError;
   }
 
   async create(data: any) {
@@ -51,11 +47,15 @@ export default abstract class Base<T, K extends { id: number }> {
   async delete(id: number) {
     try {
       const result = await this.db.delete(this.table).where(eq(this.table.id, id)).returning();
-      if (result.length === 0) {
+
+      if (result instanceof Array && result.length === 0) {
         throw new Error(`No record found with id ${id}`);
       }
+
       return result;
+
     } catch (err) {
+
       this.handleError(err);
     }
   }

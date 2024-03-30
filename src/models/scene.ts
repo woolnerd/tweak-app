@@ -12,13 +12,12 @@ export default class Scene extends Base<InsertScene, SelectScene> {
     super(db);
   }
 
-  async getAll(options: {desc: boolean}) {
-    const func = options.desc ? desc : asc;
-
+  async getAllOrdered(options?: { desc: boolean }) {
     try {
+      const func = options && options.desc ? desc : asc;
       return await this.db.select().from(this.table).orderBy(func(this.table.order));
     } catch (err) {
-      console.log(err);
+      this.handleError(err)
     }
   }
 }

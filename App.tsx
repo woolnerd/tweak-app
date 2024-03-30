@@ -8,7 +8,7 @@ import {
   Pressable
 } from 'react-native';
 import { LayoutArea } from '@/components/layout-area';
-import { Scene, SceneProps } from '@/components/scene';
+// import { Scene, SceneProps } from '@/components/scene';
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { eq, gt, sql } from "drizzle-orm";
 import { openDatabaseSync } from "expo-sqlite/next";
@@ -18,7 +18,8 @@ import * as FileSystem from 'expo-file-system';
 import * as schema from '@/db/schema';
 import Fixture from '@/models/fixture'
 import Patch from '@/models/patch';
-import { InsertPatch } from '@/db/types/tables';
+import Scene from '@/models/scene';
+import { InsertPatch, SelectPatch } from '@/db/types/tables';
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, {schema});
@@ -133,7 +134,9 @@ const App = () => {
         // await new Patch(db).create( { fixtureId: 1, profileId: 1, startAddress: 1, endAddress: 10, showId: 10, }).then(res => console.log('new patch: ', res))
         // await new Patch(db).getAll().then(res => console.log('patches', res.map(patch=> [patch.startAddress, patch.endAddress, patch.showId])))
         // console.log('patches', patches);
-        await new Patch(db).delete(17).then(console.log)
+        // await new Patch(db).delete(10).then((res) => console.log(res))
+        await new Scene(db).getAllOrdered({desc: false}).then(res => console.log(res))
+
         // [{ "endAddress": 60, "fixtureId": 1, "id": 1, "profileId": 1, "showId": 1, "startAddress": 50 },
         //   { "endAddress": 60, "fixtureId": 1, "id": 2, "profileId": 1, "showId": 1, "startAddress": 50 },
         //   { "endAddress": 80, "fixtureId": 1, "id": 3, "profileId": 1, "showId": 1, "startAddress": 70 },
@@ -234,7 +237,7 @@ const App = () => {
             <Text style={{ ...styles.btnText, fontSize: 18 }}>Go to Out</Text>
           </Pressable>
 
-          {scenes.map((scene, i) => <Scene key={ scene.name+i} name={scene.name} />)}
+          {/* {scenes.map((scene, i) => <Scene key={ scene.name+i} name={scene.name} />)} */}
 
           <Pressable style={styles.bigButtons} onPress={() => { setColor(String(Math.random())), console.log('Simple Pressable pressed') }}>
             <Text style={{ ...styles.btnText, fontSize: 18 }}>Banana</Text>
