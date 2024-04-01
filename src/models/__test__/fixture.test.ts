@@ -1,5 +1,5 @@
-// @ts-nocheck
 import Fixture from '../fixture';
+import { SelectFixture } from '@/db/types/tables';
 import * as mock from '../__mocks__/fixture.mock';
 
 afterEach(() => {
@@ -11,7 +11,7 @@ describe('Fixture model', () => {
   test('should create a new fixture', async () => {
     const { mockInsertDb, mockFixture } = mock
 
-    const result = await new Fixture(mockInsertDb).create(mockFixture);
+    const result: SelectFixture = await new Fixture(mockInsertDb).create(mockFixture);
     expect(result.name).toEqual(mockFixture.name);
     expect(result.notes).toEqual(mockFixture.notes);
     expect(result.manufacturerId).toEqual(mockFixture.manufacturerId);
@@ -20,7 +20,6 @@ describe('Fixture model', () => {
 
   test("should get fixture by it's id", async () => {
     const { mockGetByIdDb, mockFixture } = mock
-
 
     await expect(new Fixture(mockGetByIdDb).getById(mockFixture.id)).resolves.toEqual(mockFixture);
   });

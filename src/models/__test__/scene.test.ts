@@ -1,73 +1,25 @@
 import Scene from '../scene';
-import { Prisma, Scene as SceneType } from '@prisma/client';
-import { prismaMock } from '@/__mocks__/prisma';
+import { mockSelect, mockFrom, mockOrderBy, mockOrderByDsc, dbMock, dbMockDsc, mockScenes, mockScenesDesc, mockSelectDsc, mockFromDsc } from '../__mocks__/scene.mock';
 
-const mockScene: SceneType = {
-  id: 1,
-  name: 'Test Scene',
-  orderNumber: 1,
-};
-
-describe('Scene model', () => {
-  test('should create a new scene', async () => {
-    const scene: Prisma.SceneCreateInput = {
-      name: 'Test Scene',
-      orderNumber: 1,
-      sceneLists: {
-        connect: [{ id: 1 }, { id: 2 }],
-      },
-      fixtureAssignments: {
-        connect: [{ id: 1 }, { id: 2 }],
-      },
-    };
-
-    prismaMock.scene.create.mockResolvedValue(mockScene);
-    const result = await new Scene().create(scene);
-    expect(result.name).toEqual(scene.name);
-    expect(prismaMock.scene.create).toHaveBeenCalledTimes(1);
+describe('Scene model - getAllOrdered', () => {
+  beforeEach(() => {
+    mockSelect.mockClear();
+    mockFrom.mockClear();
+    mockOrderBy.mockClear();
   });
 
-  test("should get scene by it's id", async () => {
-    prismaMock.scene.findUnique.mockResolvedValue(mockScene);
+  test('should retrieve all scenes in ascending order by default', async () => {
+    const scene = new Scene(dbMock as any);
+    const result = await scene.getAllOrdered();
 
-    await expect(new Scene().getById(mockScene.id)).resolves.toEqual(mockScene);
+    expect(result).toEqual(mockScenes);
   });
 
-  test('should find all scenes', async () => {
-    const mockScenes = [
-      {
-        id: 1,
-        name: 'Test Scene1',
-        orderNumber: 1,
-      },
-      {
-        id: 2,
-        name: 'Test Scene2',
-        orderNumber: 2,
-      },
-    ];
+  test('should retrieve all scenes in descending order when specified', async () => {
+    const scene = new Scene(dbMockDsc as any); // Casting to any due to mock
+    const result = await scene.getAllOrdered({ desc: true });
 
-    prismaMock.scene.findMany.mockResolvedValue(mockScenes);
-
-    await expect(new Scene().getAll()).resolves.toHaveLength(2);
-    await expect(new Scene().getAll()).resolves.toBe(mockScenes);
-  });
-
-  test('should update a scene', async () => {
-    prismaMock.scene.update.mockResolvedValue(mockScene);
-
-    await expect(new Scene().update(mockScene)).resolves.toEqual({
-      id: 1,
-      name: 'Test Scene',
-      orderNumber: 1,
-    });
-
-    expect(prismaMock.scene.update).toHaveBeenCalledTimes(1);
-  });
-
-  test('should delete a scene', async () => {
-    prismaMock.scene.delete.mockResolvedValue(mockScene);
-
-    await expect(new Scene().delete(1)).resolves.toEqual(mockScene);
+    expect(mockSelectDsc).toHaveBeenCalledTimes(1);
+    expect(result).toEqual(mockScenesDesc);
   });
 });

@@ -20,7 +20,7 @@ export default abstract class Base<T, K extends { id: number }> {
     }
   }
 
-  async getAll(options: any) {
+  async getAll(options?: any) {
     try {
       return await (this.db.query[this.name] as MyQueryHelper).findMany(options);
     } catch (err) {

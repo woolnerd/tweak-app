@@ -2,7 +2,7 @@ import Base from './base';
 import { scenes } from '@/db/schema';
 import { Database, QueryKeys } from '@/db/types/database';
 import { InsertScene, SelectScene, TableNames } from '@/db/types/tables';
-import { desc, asc, DBQueryConfig } from 'drizzle-orm';
+import { desc, asc } from 'drizzle-orm';
 
 export default class Scene extends Base<InsertScene, SelectScene> {
   readonly table = scenes

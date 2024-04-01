@@ -1,9 +1,7 @@
 import Patch from '../patch';
 import { Database } from '@/db/types/database';
 import { db } from '@/db/client';
-import { InsertPatch } from '@/db/types/tables';
 import { insertPatch, mockDbInsert, mockDbSelectNoOverlap, mockDbSelectOverlap, selectPatch} from '@/models/__mocks__/patch.mock'
-import { SQLiteTable, SQLiteTableExtraConfig, TableConfig } from 'drizzle-orm/sqlite-core';
 
 jest.mock('@/db/client', () => ({
   db: {
