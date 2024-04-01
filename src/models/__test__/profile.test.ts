@@ -17,10 +17,10 @@ describe('Profile model', () => {
   });
 
   test('create method should handle errors', async () => {
-    const error = new Error('Database operation failed');
+    const error = new Error('There was a problem');
 
-    (mockDb.insert as jest.Mock).mockRejectedValue(error);
+    (mockDb.returning as jest.Mock).mockRejectedValueOnce(error);
 
-    // await expect(profile.create({})).rejects.toThrow(new Error('Data operation failed'));
+    await expect(profile.create({})).rejects.toThrow(new Error('Database operation failed: There was a problem'));
   });
 })
