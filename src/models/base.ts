@@ -1,7 +1,8 @@
-import { eq,  } from 'drizzle-orm';
+import { eq, } from 'drizzle-orm';
 import { Database, QueryKeys, MyQueryHelper } from '@/db/types/database';
 import { handleDatabaseError } from '@/util/errors';
-export default abstract class Base<T, K extends { id: number }> {
+import { SQLiteInsertValue, TableConfig, SQLiteTable } from 'drizzle-orm/sqlite-core';
+export default abstract class Base<T extends SQLiteTable<TableConfig>, K extends { id: number }> {
   abstract readonly table: any;
   abstract readonly name: QueryKeys
   protected db: Database;
@@ -9,18 +10,17 @@ export default abstract class Base<T, K extends { id: number }> {
 
   constructor(db: Database) {
     this.db = db;
-    this.handleError = handleDatabaseError;
+    this.handleError = handleDatabaseError
   }
 
-  async create(data: any) {
+  async create(data: SQLiteInsertValue<T>): Promise<typeof this.table.$inferInsert> {
     try {
       return await this.db.insert(this.table).values(data).returning();
     } catch (err) {
       this.handleError(err);
     }
   }
-
-  async getAll(options?: any) {
+  async getAll(options?: any): Promise<typeof this.table.$inferSelect> {
     try {
       return await (this.db.query[this.name] as MyQueryHelper).findMany(options);
     } catch (err) {
@@ -28,7 +28,7 @@ export default abstract class Base<T, K extends { id: number }> {
     }
   }
 
-  async getById(id: number) {
+  async getById(id: number): Promise<typeof this.table.$inferSelect>  {
     try {
       return await this.db.select().from(this.table).where(eq(this.table.id, id));
     } catch (err) {
@@ -36,7 +36,7 @@ export default abstract class Base<T, K extends { id: number }> {
     }
   }
 
-  async update({ id, ...restData } : K) {
+  async update({ id, ...restData } : K): Promise<typeof this.table.$inferSelect> {
     try {
       return await this.db.update(this.table).set(restData).where(eq(this.table.id, id)).returning()
     } catch (err) {
@@ -44,7 +44,7 @@ export default abstract class Base<T, K extends { id: number }> {
     }
   }
 
-  async delete(id: number) {
+  async delete(id: number): Promise<typeof this.table.$inferSelect> {
     try {
       const result = await this.db.delete(this.table).where(eq(this.table.id, id)).returning();
 

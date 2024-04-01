@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
@@ -81,11 +81,19 @@
 <a name='L16'></a><a href='#L16'>16</a>
 <a name='L17'></a><a href='#L17'>17</a>
 <a name='L18'></a><a href='#L18'>18</a>
-<a name='L19'></a><a href='#L19'>19</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -94,27 +102,34 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Prisma, Scene as SceneType } from '@prisma/client';
-import prisma from '@/lib/prisma';
-import Base from './base';
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import Base from './base';
+import { scenes } from '@/db/schema';
+import { Database, QueryKeys } from '@/db/types/database';
+import { InsertScene, SelectScene, TableNames } from '@/db/types/tables';
+import { desc, asc } from 'drizzle-orm';
 &nbsp;
-export default class Scene extends Base&lt;Prisma.SceneCreateInput, SceneType&gt; {
-  readonly prisma = <span class="cstat-no" title="statement not covered" >prisma.scene;</span>
+export default class Scene extends Base&lt;InsertScene, SelectScene&gt; {
+  readonly table = <span class="cstat-no" title="statement not covered" >scenes</span>
+  readonly name: QueryKeys = <span class="cstat-no" title="statement not covered" >TableNames.Scenes;</span>
 &nbsp;
-<span class="fstat-no" title="function not covered" >  co</span>nstructor() {
-<span class="cstat-no" title="statement not covered" >    super();</span>
+<span class="fstat-no" title="function not covered" >  co</span>nstructor(db: Database) {
+<span class="cstat-no" title="statement not covered" >    super(db);</span>
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" >  as</span>ync getAll(options: Prisma.SceneFindManyArgs = <span class="branch-0 cbranch-no" title="branch not covered" >{})</span>: Promise&lt;SceneType[]&gt; {
-<span class="cstat-no" title="statement not covered" >    Object.keys(options).length &gt; 0</span>
-      ? options
-      : { orderBy: { orderNumber: 'asc' } };
-<span class="cstat-no" title="statement not covered" >    return await prisma.scene.findMany(options);</span>
+<span class="fstat-no" title="function not covered" >  as</span>ync getAllOrdered(options?: { desc: boolean }) {
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      const func = <span class="cstat-no" title="statement not covered" >options &amp;&amp; options.desc ? desc : asc;</span>
+<span class="cstat-no" title="statement not covered" >      return await this.db.select().from(this.table).orderBy(func(this.table.order));</span>
+    } catch (err) {
+<span class="cstat-no" title="statement not covered" >      this.handleError(err)</span>
+    }
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -124,7 +139,7 @@ export default class Scene extends Base&lt;Prisma.SceneCreateInput, SceneType&gt
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-03-27T22:39:57.334Z
+                at 2024-04-01T16:43:59.894Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -62,7 +62,7 @@
     ],
     "clearMocks": true,
     "testEnvironment": "node",
-    "collectCoverage": false,
+    "collectCoverage": true,
     "collectCoverageFrom": [
       "**/*.{js,jsx,ts,tsx}",
       "**/models/**",
