@@ -25,9 +25,12 @@ export const LayoutArea = () => {
       const fAsInScene = await new ScenesToFixtureAssignments(db).getFixtureAssignemntsBySceneNumber(temporarySceneId)
 
       const fixtureAssignments = fAsInScene?.map((fixtureAssignment) => fixtureAssignment.fixtureAssignment)
-      const faIds: number[] = fixtureAssignments?.map(fa => fa.id);
+      const fixtureIdsFromThisScene: number[] = fixtureAssignments?.map(fa => fa.fixtureId);
 
-      const fixtures = await new Fixture(db).getFixturesByIdArray(faIds);
+      console.log(fixtureIdsFromThisScene);
+
+
+      const fixtures = await new Fixture(db).getFixturesByIdArray(fixtureIdsFromThisScene);
       console.log(fixtures);
 
       return fixtures
