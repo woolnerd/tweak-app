@@ -3,23 +3,32 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-
-import { Fixture, FixtureProps } from './fixture';
+import Fixture from '@/models/fixture';
+import { SelectFixture } from '@/db/types/tables';
+import { Fixture as FixtureComponent, FixtureProps } from './fixture';
+import { db } from '@/db/client';
 
 export const LayoutArea = () => {
-  const fixtures: FixtureProps[] = [
-    { id: 1, name: 'S60', notes: 'works', assigned: true, manufacturerId: 1 },
-    { id: 2, name: 'S360', notes: 'works', assigned: true, manufacturerId: 1 },
-    { id: 3, name: '10K', notes: 'works', assigned: true, manufacturerId: 1 },
-    { id: 4, name: '10K', notes: 'works', assigned: true, manufacturerId: 1 },
-  ]
+  const [fixtures, setFixtures] = useState<SelectFixture[]>([])
+
+  const fetchFixtures = async () => {
+    try {
+      return await new Fixture(db).getAll();
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  useEffect(() => {
+    fetchFixtures().then(fixtures => setFixtures(fixtures));
+  }, [])
 
   return (
 
     <View style={{
       ...styles.container, alignItems: "center",
     }}>
-      {fixtures.map(fixture => <Fixture key={fixture.id} name={fixture.name} />)}
+      {fixtures?.map(fixture => <FixtureComponent key={fixture.id} name={fixture.name} />)}
     </View>
   )
 }

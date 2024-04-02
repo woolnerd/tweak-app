@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   StyleSheet,
   View,
@@ -8,7 +8,7 @@ import {
   Pressable
 } from 'react-native';
 import { LayoutArea } from '@/components/layout-area';
-// import { Scene, SceneProps } from '@/components/scene';
+import { Scene as SceneComponent, SceneProps } from '@/components/scene';
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { eq, gt, sql } from "drizzle-orm";
 import { openDatabaseSync } from "expo-sqlite/next";
@@ -19,7 +19,7 @@ import * as schema from '@/db/schema';
 import Fixture from '@/models/fixture'
 import Patch from '@/models/patch';
 import Scene from '@/models/scene';
-import { InsertPatch, SelectPatch } from '@/db/types/tables';
+import { InsertPatch, SelectScene } from '@/db/types/tables';
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, {schema});
@@ -34,94 +34,17 @@ type Scene = typeof schema.scenes.$inferInsert
 
 const App = () => {
   const [color, setColor] = useState('');
+  const [scenes, setScenes] = useState<SelectScene[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   // console.log(FileSystem.documentDirectory);
-  const { success, error } = useMigrations(db, migrations);
-
-  async function getFixtures() {
-    // return await db.query.fixtures.findMany()
-    // return await db.select({name: schema.fixtures.name, id: schema.fixtures.id}).from(schema.fixtures)
-    return await db.query.fixtures.findMany()
-  }
-
-  async function getManufacturers() {
-    // return await db.query.fixtures.findMany();
-    // return await db.select().from(schema.manufacturers)
-    return await db.query.manufacturers.findMany()
-
-  }
-
-  async function getProfiles() {
-    // return await db.query.fixtures.findMany();
-    // return await db.select().from(schema.manufacturers)
-    return await db.query.profiles.findMany()
-
-  }
-
-
+  // const { success, error } = useMigrations(db, migrations);
 
   const fixture = { name: 'Vortex', notes: 'test' }
   const manufacturer = { name: 'Creamsource', website: "www.creamsource.com" }
   const patch: InsertPatch = { fixtureId: 1, profileId: 1, startAddress: 81, endAddress: 90, showId: 1, }
-
   const profile: Profile = { channelCount: 4, channels: JSON.stringify({ 1: 'Red', 2: 'Green', 3: 'Blue', 4: 'Intensity' }), name: 'mode 6' }
-  async function createManufacturer() {
-    return await db.insert(schema.manufacturers).values(manufacturer);
-  }
 
-  async function deleteManufacturer() {
-    return await db.delete(schema.manufacturers).where(gt(schema.manufacturers.id, 1));
-  }
 
-  async function deleteProfile() {
-    return await db.delete(schema.profiles).where(gt(schema.profiles.id, 1));
-  }
-
-  async function createScenes(sceneArr) {
-    return await db.insert(schema.scenes).values(sceneArr);
-  }
-
-  async function getScenes() {
-    return await db.query.scenes.findMany()
-  }
-
-  async function createProfile(fixtureId: number) {
-    const newProfileId = await db.insert(schema.profiles).values(profile).returning({ profileId: schema.profiles.id });
-    await db.insert(schema.profilesToFixtures).values({ profileId: newProfileId[0].profileId, fixtureId })
-  }
-
-  async function createFixture() {
-    return await db.insert(schema.fixtures).values(fixture);
-  }
-  async function updateFixture(data: UpdateFixture) {
-    const { id } = data;
-    return await db.update(schema.fixtures).set(data).where(eq(schema.fixtures.id, id))
-  }
-  // schema.fixturesRelations.config
-  //   const result = await db.query.users.findMany({
-  //   with: {
-  //     posts: true
-  //   },
-  // });
-  // updateFixture()
-  // const [doThing, setDoThing] = useState(false);
-  // // createProfile()
-  // useEffect(() => {
-
-  //   if (doThing) {
-  //     console.log('in here');
-  //     // createManufacturer()
-  //     // createFixture();
-  //   }
-  //   // createScenes(scenes)
-  //   setDoThing(false)
-  //   // updateFixture({manufacturerId: 2, id: 2})
-  // }, [doThing])
-    // deleteanufacturer()
-    // getFixtures().then((res) => console.log('fixtures:', res));
-    // getManufacturers().then(res => console.log('manufacturers:', res))
-    // getScenes().then(res=> console.log('scenes',res))
-    // getProfiles().then(res => console.log('profiles', res))
-  // deleteProfile()
   const handleEnterBtn = () => {
     setColor(String(Math.random())), console.log('Simple Button pressed');
 
@@ -135,13 +58,10 @@ const App = () => {
         // await new Patch(db).getAll().then(res => console.log('patches', res.map(patch=> [patch.startAddress, patch.endAddress, patch.showId])))
         // console.log('patches', patches);
         // await new Patch(db).delete(10).then((res) => console.log(res))
-        await new Scene(db).getAllOrdered({desc: false}).then(res => console.log(res))
+        const res = await new Scene(db).getAllOrdered({ desc: false });
+        console.log(res);
 
-        // [{ "endAddress": 60, "fixtureId": 1, "id": 1, "profileId": 1, "showId": 1, "startAddress": 50 },
-        //   { "endAddress": 60, "fixtureId": 1, "id": 2, "profileId": 1, "showId": 1, "startAddress": 50 },
-        //   { "endAddress": 80, "fixtureId": 1, "id": 3, "profileId": 1, "showId": 1, "startAddress": 70 },
-        //   { "endAddress": 80, "fixtureId": 1, "id": 4, "profileId": 1, "showId": 1, "startAddress": 70 },
-        //   { "endAddress": 80, "fixtureId": 1, "id": 5, "profileId": 1, "showId": 2, "startAddress": 70 }]
+        setScenes(res);
   } catch (e) {
     console.log(e);
   }
@@ -149,74 +69,29 @@ const App = () => {
 
   }
 
-  if (error) {
-    return (
-      <View>
-        <Text>Migration error: {error.message}</Text>
-      </View>
-    );
-  }
-  if (!success) {
-    return (
-      <View>
-        <Text>Migration is in progress...</Text>
-      </View>
-    );
-  }
-
-// // Function to create the table if it doesn't exist
-//   async function createTableIfNotExists () {
-//     try {
-//     // Check if the table exists
-//     const result = await executeSql(
-//       "SELECT name FROM sqlite_master WHERE type='table' AND name='fixture'"
-//     );
-
-//     // If the table doesn't exist, create it
-//     if (result.rows.length === 0) {
-//       await executeSql(
-//         `CREATE TABLE IF NOT EXISTS fixture (
-//           id INTEGER PRIMARY KEY,
-//           name TEXT,
-//           manufacturer_id INTEGER,
-//           fixture_profile_id INTEGER,
-//           notes TEXT
-//         );`
-//       );
-//       console.log('Table created successfully.');
-//     } else {
-//       console.log('Table already exists.');
-//     }
-//     } catch (error) {
-//       console.error('Error creating table:', error);
-//     }
-//   };
-
-// // Call the function to create the table
-//   createTableIfNotExists();
-// }
-
-
-
-  // const getThing = async () => {
-  //   await createSL('banana');
+  // if (error) {
+  //   return (
+  //     <View>
+  //       <Text>Migration error: {error.message}</Text>
+  //     </View>
+  //   );
   // }
-  // getThing();
-  // console.log('useEffect ran');
-  // console.log(color);
+  // if (!success) {
+  //   return (
+  //     <View>
+  //       <Text>Migration is in progress...</Text>
+  //     </View>
+  //   );
+  // }
+  const fetchScenes = async () => {
+    return await new Scene(db).getAllOrdered();
+  }
 
-  // useEffect(() => {
-  //   const getThing = async () => {
-  //     await createSL('banana');
-  //   }
-  //   getThing();
-  //   console.log('useEffect ran');
-  //   console.log(color);
+  useEffect(() => {
+    fetchScenes().then(scenes => setScenes(scenes));
+  }, [])
 
-
-  // }, [color])
-
-  const scenes: Scene[] = [{ name: 'Bedroom night', showId: 1, order: 1 }, { name: 'Exterior look1', showId:1, order: 2 }, { name: 'Interior look1', showId: 1, order: 3 }];
+  // const scenes: Scene[] = [{ name: 'Bedroom night', showId: 1, order: 1 }, { name: 'Exterior look1', showId:1, order: 2 }, { name: 'Interior look1', showId: 1, order: 3 }];
 
   return (
     <View
@@ -226,7 +101,9 @@ const App = () => {
         height: '80%',
         margin: 'auto',
         backgroundColor: 'black',
-        width: 400
+        padding: 20,
+        borderWidth: 4,
+        borderColor: "yellow"
       }}
     >
       <View style={{ flex: 1, ...styles.container }}>
@@ -237,7 +114,7 @@ const App = () => {
             <Text style={{ ...styles.btnText, fontSize: 18 }}>Go to Out</Text>
           </Pressable>
 
-          {/* {scenes.map((scene, i) => <Scene key={ scene.name+i} name={scene.name} />)} */}
+          { scenes?.map((scene, i) => <SceneComponent key={ scene.name+i} name={scene.name} />) }
 
           <Pressable style={styles.bigButtons} onPress={() => { setColor(String(Math.random())), console.log('Simple Pressable pressed') }}>
             <Text style={{ ...styles.btnText, fontSize: 18 }}>Banana</Text>
