@@ -1,10 +1,10 @@
 import Base from './base';
 import { scenes } from '@/db/schema';
 import { Database, QueryKeys } from '@/db/types/database';
-import { InsertScene, SelectScene, TableNames } from '@/db/types/tables';
+import { SelectScene, TableNames } from '@/db/types/tables';
 import { desc, asc } from 'drizzle-orm';
 
-export default class Scene extends Base<InsertScene, SelectScene> {
+export default class Scene extends Base<typeof scenes, SelectScene> {
   readonly table = scenes
   readonly name: QueryKeys = TableNames.Scenes;
 

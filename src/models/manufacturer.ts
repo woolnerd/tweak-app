@@ -1,10 +1,10 @@
 import Base from './base';
 import { manufacturers } from '@/db/schema';
 import { Database, QueryKeys } from '@/db/types/database';
-import { InsertManufacturer, SelectManufacturer, TableNames } from '@/db/types/tables';
+import { SelectManufacturer, TableNames } from '@/db/types/tables';
 
 export default class Manufacturer extends Base<
-  InsertManufacturer,
+  typeof manufacturers,
   SelectManufacturer
 > {
   readonly table = manufacturers;

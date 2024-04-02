@@ -7,6 +7,7 @@ import {
   scenes,
   shows,
   patches,
+  scenesToFixtureAssignments
 } from '../schema';
 
 export type SelectFixture = typeof fixtures.$inferSelect;
@@ -29,6 +30,10 @@ export type InsertShow = typeof shows.$inferInsert;
 
 export type SelectPatch = typeof patches.$inferSelect;
 export type InsertPatch = typeof patches.$inferInsert;
+
+export type InsertScenetoFixtureAssignment = typeof scenesToFixtureAssignments.$inferInsert
+export type SelectScenetoFixtureAssignment= typeof scenesToFixtureAssignments.$inferSelect
+
 
 export enum TableNames {
   Fixtures = 'fixtures',

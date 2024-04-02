@@ -20,6 +20,7 @@ import Fixture from '@/models/fixture'
 import Patch from '@/models/patch';
 import Scene from '@/models/scene';
 import { InsertPatch, SelectScene } from '@/db/types/tables';
+import Manufacturer from '@/models/manufacturer';
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, {schema});
@@ -37,7 +38,7 @@ const App = () => {
   const [scenes, setScenes] = useState<SelectScene[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   // console.log(FileSystem.documentDirectory);
-  // const { success, error } = useMigrations(db, migrations);
+  const { success, error } = useMigrations(db, migrations);
 
   const fixture = { name: 'Vortex', notes: 'test' }
   const manufacturer = { name: 'Creamsource', website: "www.creamsource.com" }
@@ -90,8 +91,6 @@ const App = () => {
   useEffect(() => {
     fetchScenes().then(scenes => setScenes(scenes));
   }, [])
-
-  // const scenes: Scene[] = [{ name: 'Bedroom night', showId: 1, order: 1 }, { name: 'Exterior look1', showId:1, order: 2 }, { name: 'Interior look1', showId: 1, order: 3 }];
 
   return (
     <View

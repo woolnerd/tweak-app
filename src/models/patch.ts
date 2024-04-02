@@ -2,10 +2,9 @@ import Base from './base';
 import { patches } from '@/db/schema';
 import { InsertPatch, SelectPatch, TableNames } from '@/db/types/tables';
 import { Database } from '@/db/types/database';
-import { db } from '@/db/client';
 import { gte, lte, and, or, eq } from 'drizzle-orm';
 
-export default class Patch extends Base<InsertPatch, SelectPatch> {
+export default class Patch extends Base<typeof patches, SelectPatch> {
   readonly table = patches;
   readonly name = TableNames.Patches;
   readonly MIN_START_ADDRESS = 1;
