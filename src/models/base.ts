@@ -13,7 +13,7 @@ export default abstract class Base<T extends SQLiteTable<TableConfig>, K extends
     this.handleError = handleDatabaseError
   }
 
-  async create(data: SQLiteInsertValue<T>): Promise<typeof this.table.$inferInsert> {
+  async create(data: SQLiteInsertValue<T> | SQLiteInsertValue<T>[]): Promise<typeof this.table.$inferInsert> {
     try {
       return await this.db.insert(this.table).values(data).returning();
     } catch (err) {

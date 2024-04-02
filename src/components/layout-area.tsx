@@ -4,16 +4,33 @@ import {
   View,
 } from 'react-native';
 import Fixture from '@/models/fixture';
-import { SelectFixture } from '@/db/types/tables';
+import ScenesToFixtureAssignments from '@/models/scene-to-fixture-assignments';
+import { SelectFixture, SelectFixtureAssignment } from '@/db/types/tables';
 import { Fixture as FixtureComponent, FixtureProps } from './fixture';
 import { db } from '@/db/client';
+import { fixtureAssignments, scenesToFixtureAssignments } from '@/db/schema';
+import { inArray } from 'drizzle-orm';
 
 export const LayoutArea = () => {
   const [fixtures, setFixtures] = useState<SelectFixture[]>([])
 
+  const temporarySceneId = 1;
+
+  type FixtureAssignmentResponse = {
+    fixtureAssignment: SelectFixtureAssignment;
+  }[]
+
   const fetchFixtures = async () => {
     try {
-      return await new Fixture(db).getAll();
+      const fAsInScene = await new ScenesToFixtureAssignments(db).getFixtureAssignemntsBySceneNumber(temporarySceneId)
+
+      const fixtureAssignments = fAsInScene?.map((fixtureAssignment) => fixtureAssignment.fixtureAssignment)
+      const faIds: number[] = fixtureAssignments?.map(fa => fa.id);
+
+      const fixtures = await new Fixture(db).getFixturesByIdArray(faIds);
+      console.log(fixtures);
+
+      return fixtures
     } catch (e) {
       console.log(e);
     }

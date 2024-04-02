@@ -10,10 +10,10 @@ import {
   InsertScene,
   InsertShow,
   InsertPatch,
-  InsertScenetoFixtureAssignment
+  InsertSceneToFixtureAssignment
 } from "@/db/types/tables";
 
-type Seeds = {
+export type Seeds = {
   fixtures: InsertFixture[],
   manufacturers: InsertManufacturer[],
   patches: InsertPatch[],
@@ -21,7 +21,7 @@ type Seeds = {
   profiles: InsertProfile[],
   fixtureAssignments: InsertFixtureAssignment[],
   shows: InsertShow[],
-  scenesToFixtureAssignments: InsertScenetoFixtureAssignment[]
+  scenesToFixtureAssignments: InsertSceneToFixtureAssignment[]
 }
 
 export const seeds: Seeds = {

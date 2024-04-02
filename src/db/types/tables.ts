@@ -31,8 +31,8 @@ export type InsertShow = typeof shows.$inferInsert;
 export type SelectPatch = typeof patches.$inferSelect;
 export type InsertPatch = typeof patches.$inferInsert;
 
-export type InsertScenetoFixtureAssignment = typeof scenesToFixtureAssignments.$inferInsert
-export type SelectScenetoFixtureAssignment= typeof scenesToFixtureAssignments.$inferSelect
+export type InsertSceneToFixtureAssignment = typeof scenesToFixtureAssignments.$inferInsert
+export type SelectSceneToFixtureAssignment= typeof scenesToFixtureAssignments.$inferSelect
 
 
 export enum TableNames {
@@ -42,5 +42,6 @@ export enum TableNames {
   Manufacturers = 'manufacturers',
   Scenes = 'scenes',
   Shows = 'shows',
-  Patches = 'patches'
+  Patches = 'patches',
+  ScenesToFixtureAssignments = 'scenesToFixtureAssignments'
 };

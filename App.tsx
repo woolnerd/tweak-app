@@ -19,8 +19,12 @@ import * as schema from '@/db/schema';
 import Fixture from '@/models/fixture'
 import Patch from '@/models/patch';
 import Scene from '@/models/scene';
+import Profile from '@/models/profile';
+import Show from '@/models/show';
 import { InsertPatch, SelectScene } from '@/db/types/tables';
 import Manufacturer from '@/models/manufacturer';
+import { seeds, Seeds } from '@/db/seeds';
+import FixtureAssignment from '@/models/fixture-assignment';
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, {schema});
@@ -40,29 +44,31 @@ const App = () => {
   // console.log(FileSystem.documentDirectory);
   const { success, error } = useMigrations(db, migrations);
 
-  const fixture = { name: 'Vortex', notes: 'test' }
-  const manufacturer = { name: 'Creamsource', website: "www.creamsource.com" }
-  const patch: InsertPatch = { fixtureId: 1, profileId: 1, startAddress: 81, endAddress: 90, showId: 1, }
-  const profile: Profile = { channelCount: 4, channels: JSON.stringify({ 1: 'Red', 2: 'Green', 3: 'Blue', 4: 'Intensity' }), name: 'mode 6' }
-
-
   const handleEnterBtn = () => {
     setColor(String(Math.random())), console.log('Simple Button pressed');
 
     (async () => {
 
-      try {
-        // const newPatch = await new Patch(db).create(patch)
-      // const newFixture = await new Fixture(db).getAll({ with: { manufacturer: true } })
-        // console.log('patch', newPatch);
-        // await new Patch(db).create( { fixtureId: 1, profileId: 1, startAddress: 1, endAddress: 10, showId: 10, }).then(res => console.log('new patch: ', res))
-        // await new Patch(db).getAll().then(res => console.log('patches', res.map(patch=> [patch.startAddress, patch.endAddress, patch.showId])))
-        // console.log('patches', patches);
-        // await new Patch(db).delete(10).then((res) => console.log(res))
-        const res = await new Scene(db).getAllOrdered({ desc: false });
-        console.log(res);
+  try {
+    // const res = await new Fixture(db).create(seeds.fixtures)
+    // console.log(res);
+    // const res = await new Manufacturer(db).create(seeds.manufacturers)
+    // console.log(res);
+    // const res = await new Patch(db).create(seeds.patches)
+    // console.log(res);
+    // const res = await new Scene(db).create(seeds.scenes)
+    // console.log(res);
+    // const res = await new Profile(db).create(seeds.profiles)
+    // console.log(res);
+    // const res = await new FixtureAssignment(db).create(seeds.fixtureAssignments)
+    // console.log(res);
+    // const res = await new Show(db).create(seeds.shows)
+    // console.log(res);
+    // const res = await db.insert(schema.scenesToFixtureAssignments).values(seeds.scenesToFixtureAssignments)
+    // console.log(res);
+    // const res = await db.query.scenesToFixtureAssignments.findMany();
+    // console.log(res);
 
-        setScenes(res);
   } catch (e) {
     console.log(e);
   }
