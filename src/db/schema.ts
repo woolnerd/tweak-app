@@ -5,7 +5,6 @@ export const fixtures = sqliteTable("fixtures", {
   id: integer("id").primaryKey({autoIncrement: true}),
   name: text("name").notNull(),
   notes: text("notes"),
-  assigned: integer("assigned", { mode: 'boolean' }).default(false),
   manufacturerId: integer("manufacturer_id").references(()=> manufacturers.id)
 });
 
@@ -75,7 +74,7 @@ export const fixtureAssignments = sqliteTable("fixtureAssignments", {
   id: integer("id").primaryKey({autoIncrement: true}),
   title: text("title"),
   channel: integer("channel").notNull(),
-  value: integer("value").notNull().default(0),
+  values: text("values"),
   fixtureId: integer("fixture_id"),
   profileId: integer("profile_id")
 })
@@ -95,7 +94,7 @@ export const fixtureAssignmentRelations = relations(fixtureAssignments, ({ one, 
 export const scenes = sqliteTable("scenes", {
   id: integer("id").primaryKey({autoIncrement: true}),
   name: text("name").notNull(),
-  order: integer("order").notNull(),
+  order: integer("order").notNull().unique(),
   showId: integer("show_id").notNull()
 })
 

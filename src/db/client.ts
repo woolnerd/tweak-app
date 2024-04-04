@@ -5,3 +5,5 @@ import * as schema from "./schema";
 const expoDb = openDatabaseSync("dev.db")
 
 export const db = drizzle(expoDb, { schema })
+
+module.exports = {db};

@@ -26,11 +26,11 @@ export type Seeds = {
 
 export const seeds: Seeds = {
   fixtures: [
-    { name: 'Vortex', notes: 'test', manufacturerId: 1, assigned: true },
-    { name: 'S60', notes: 'test', manufacturerId: 2, assigned: true  },
-    { name: 'S30', notes: 'test', manufacturerId: 2, assigned: true  },
-    { name: 'Q8', notes: 'test', manufacturerId: 3, assigned: true },
-    { name: 'Q5', notes: 'test', manufacturerId: 3, assigned: false  }, // remove assigned field, doesn't make sense across shows
+    { name: 'Vortex', notes: 'test', manufacturerId: 1},
+    { name: 'S60', notes: 'test', manufacturerId: 2 },
+    { name: 'S30', notes: 'test', manufacturerId: 2 },
+    { name: 'Q8', notes: 'test', manufacturerId: 3 },
+    { name: 'Q5', notes: 'test', manufacturerId: 3 },
   ],
   manufacturers: [
     { name: 'Creamsource', website: "www.creamsource.com", notes: 'test notes creamsource' },
@@ -68,11 +68,11 @@ export const seeds: Seeds = {
     { fixtureId: 5, channelCount: 6, channels: JSON.stringify({ 1: 'Red', 2: 'Green', 3: 'Blue', 4: 'Intensity', 5: 'Dummy', 6:' Dummy'  }), name: 'mode 2' },
   ],
   fixtureAssignments: [
-    { channel: 1,  fixtureId: 1, profileId: 1, title: 'Vortex 1 at full', value: 255 },
-    { channel: 2,  fixtureId: 1, profileId: 1, title: 'Vortex 2 at 50%', value: 127 },
-    { channel: 10, fixtureId: 2, profileId: 1, title: 'S60 1 at 50%', value: 127 },
-    { channel: 11, fixtureId: 2, profileId: 1, title: 'S60 2 at 50%', value: 127 },
-    { channel: 11, fixtureId: 2, profileId: 1, title: 'Different scene (2)', value: 0 },
+    { channel: 1,  fixtureId: 1, profileId: 1, title: 'Vortex 1 at full', values: JSON.stringify([[1,255]]) },
+    { channel: 2,  fixtureId: 1, profileId: 1, title: 'Vortex 2 at 50%', values: JSON.stringify([[1,128]]) },
+    { channel: 10, fixtureId: 2, profileId: 1, title: 'S60 1 at 50%', values: JSON.stringify([[1,128]])},
+    { channel: 11, fixtureId: 2, profileId: 1, title: 'S60 2 at 50%', values: JSON.stringify([[1,128]])},
+    { channel: 11, fixtureId: 2, profileId: 1, title: 'Different scene (2)', values: JSON.stringify([[1,0]])  },
   ],
   scenesToFixtureAssignments: [
     { fixtureAssignmentId: 1, sceneId: 1 },

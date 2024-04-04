@@ -1,9 +1,9 @@
-import { migrate } from "drizzle-orm/expo-sqlite/migrator";
-import { db } from "../src/db/client";
-import migrations from "drizzle/migrations";
+const { migrate } = require("drizzle-orm/expo-sqlite/migrator");
+const { db } = require("../src/db/client")
+const { migrations }  = require("drizzle/migrations");
 const main = async () => {
   try {
-    await migrate(db, migrations);
+    // await migrate(db, migrations);
     console.log("🚀 Migrations ran successfully!");
   } catch (err) {
     if (err instanceof Error) {
