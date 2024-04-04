@@ -1,7 +1,8 @@
 import Base from './base';
-import { fixtureAssignments, scenes, scenesToFixtureAssignments } from '@/db/schema';
+import { fixtures, fixtureAssignments, scenes, scenesToFixtureAssignments, fixtureAssignmentRelations, profiles } from '@/db/schema';
 import { Database, QueryKeys, MyQueryHelper } from '@/db/types/database';
 import { SelectSceneToFixtureAssignment, TableNames } from '@/db/types/tables';
+import { eq } from 'drizzle-orm';
 
 export default class ScenesToFixtureAssignments extends Base<
   typeof scenesToFixtureAssignments,
@@ -14,23 +15,25 @@ export default class ScenesToFixtureAssignments extends Base<
     super(db);
   }
 
-  async getFixtureAssignemntsBySceneNumber(sceneId: number) {
+  async getFixturesAndAssignments(sceneId: number) {
     try {
-      return await this.db.query.scenesToFixtureAssignments.findMany({
-        with: {
-          fixtureAssignment: true
-        },
-        where: (scenesToFixtureAssignments, { eq }) => eq(scenesToFixtureAssignments.sceneId, sceneId),
-      })
-      // return await this.db.query.scenesToFixtureAssignments.findMany({
-      //   where(fields, operators) {
-      //       operators.eq(fields.sceneId, sceneId)
-      //   },
-      //   with: {
-      //     fixtureAssignment: true,
-      //     // fixture: true
-      //   }
-      // });
+      return await this.db
+        .select({
+          fixtureAssignmentId: fixtureAssignments.id,
+          channel: fixtureAssignments.channel,
+          values: fixtureAssignments.values,
+          title: fixtureAssignments.title,
+          profileChannels: profiles.channels,
+          profileName: profiles.name,
+          fixtureName: fixtures.name,
+          fixtureNotes: fixtures.notes
+        })
+        .from(fixtureAssignments)
+        .leftJoin(fixtures, eq(fixtures.id, fixtureAssignments.fixtureId))
+        .leftJoin(scenesToFixtureAssignments, eq(fixtureAssignments.id, scenesToFixtureAssignments.fixtureAssignmentId))
+        .leftJoin(profiles, eq(fixtureAssignments.profileId, profiles.id))
+        .where(eq(scenesToFixtureAssignments.sceneId, sceneId))
+
     } catch (err) {
       this.handleError(err);
     }

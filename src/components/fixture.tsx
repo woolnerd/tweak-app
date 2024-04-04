@@ -1,18 +1,55 @@
+import { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
+// export type FixtureProps = {
+//   id?: number,
+//   name: string,
+//   notes?: string;
+//   manufacturerId?: number;
+//   assigned?: boolean;
+// }
+
 export type FixtureProps = {
-  id?: number,
-  name: string,
-  notes?: string;
-  manufacturerId?: number;
-  assigned?: boolean;
+  channel: number;
+  values: string;
+  title: string;
+  profileChannels: string;
+  profileName: string;
+  fixtureName: string;
+  fixtureNotes: string;
+  fixtureId: number;
 }
 
-export const Fixture = (fixture: FixtureProps) => {
+type OptionalProps<T> = { [P in keyof T]?: T[P] }
+type ChannelKey = number;
+type Value = number;
+type Channels = [ChannelKey, Value][]
+export const Fixture = (fixture: OptionalProps<FixtureProps>) => {
+
+  const handleChannelValues = () => {
+    const profileChannels: Channels = JSON.parse(fixture.profileChannels);
+    const values = JSON.parse(fixture.values);
+
+    const output = [];
+
+    values.forEach(value => {
+      const [key, outputVal] = value;
+      // output.push([profileChannels[key], outputVal]);
+      output.push(`${Math.trunc(outputVal / 255 * 100) }%` )
+    });
+
+    return output;
+  }
+
+  const handleOutput = () => {
+    console.log(fixture);
+  }
 
   return (
-    <View key={fixture.id} style={styles.fixtures}>
-      <Text>{fixture.name}</Text>
+    <View key={fixture.fixtureAssignmentId} style={{ ...styles.fixtures}} onTouchStart={handleOutput}>
+      <Text>{fixture.channel}</Text>
+      <Text>{fixture.fixtureName}</Text>
+      <Text>{handleChannelValues()}</Text>
     </View>
   )
 }

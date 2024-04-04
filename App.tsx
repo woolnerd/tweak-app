@@ -25,6 +25,7 @@ import { InsertPatch, SelectScene } from '@/db/types/tables';
 import Manufacturer from '@/models/manufacturer';
 import { seeds, Seeds } from '@/db/seeds';
 import FixtureAssignment from '@/models/fixture-assignment';
+import { migrate } from 'drizzle-orm/expo-sqlite/migrator';
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, {schema});
@@ -42,7 +43,7 @@ const App = () => {
   const [scenes, setScenes] = useState<SelectScene[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   // console.log(FileSystem.documentDirectory);
-  const { success, error } = useMigrations(db, migrations);
+  // const { success, error } = useMigrations(db, migrations);
 
   const handleEnterBtn = () => {
     setColor(String(Math.random())), console.log('Simple Button pressed');
@@ -90,6 +91,7 @@ const App = () => {
   //     </View>
   //   );
   // }
+
   const fetchScenes = async () => {
     return await new Scene(db).getAllOrdered();
   }

@@ -5,7 +5,6 @@ import {
   SelectFixtureAssignment,
   TableNames
 } from '@/db/types/tables';
-import FixtureUniverse from '@/util/fixture-universe';
 export default class FixtureAssignment extends Base<
   typeof fixtureAssignments,
   SelectFixtureAssignment

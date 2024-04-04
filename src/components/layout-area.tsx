@@ -1,59 +1,52 @@
 import React, { useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  View,
-} from 'react-native';
-import Fixture from '@/models/fixture';
+import { StyleSheet, View } from 'react-native';
 import ScenesToFixtureAssignments from '@/models/scene-to-fixture-assignments';
 import { SelectFixture, SelectFixtureAssignment } from '@/db/types/tables';
 import { Fixture as FixtureComponent, FixtureProps } from './fixture';
 import { db } from '@/db/client';
 import { fixtureAssignments, scenesToFixtureAssignments } from '@/db/schema';
-import { inArray } from 'drizzle-orm';
 
 export const LayoutArea = () => {
-  const [fixtures, setFixtures] = useState<SelectFixture[]>([])
+  const [fixtures, setFixtures] = useState([]);
 
   const temporarySceneId = 1;
 
-  type FixtureAssignmentResponse = {
-    fixtureAssignment: SelectFixtureAssignment;
-  }[]
+  // type FixtureAssignmentResponse = {
+  //   fixtureAssignment: SelectFixtureAssignment;
+  // }[];
 
   const fetchFixtures = async () => {
     try {
-      const fAsInScene = await new ScenesToFixtureAssignments(db).getFixtureAssignemntsBySceneNumber(temporarySceneId)
-
-      const fixtureAssignments = fAsInScene?.map((fixtureAssignment) => fixtureAssignment.fixtureAssignment)
-      const fixtureIdsFromThisScene: number[] = fixtureAssignments?.map(fa => fa.fixtureId);
-
-      console.log(fixtureIdsFromThisScene);
+      const fixturesWithAssignments = await new ScenesToFixtureAssignments(
+        db
+      ).getFixturesAndAssignments(temporarySceneId);
 
 
-      const fixtures = await new Fixture(db).getFixturesByIdArray(fixtureIdsFromThisScene);
-      console.log(fixtures);
+      // console.log(fixturesWithAssignments);
 
-      return fixtures
+      return fixturesWithAssignments;
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchFixtures().then(fixtures => setFixtures(fixtures));
-  }, [])
+    fetchFixtures().then((res) => setFixtures(res));
+  }, []);
 
   return (
-
-    <View style={{
-      ...styles.container, alignItems: "center",
-    }}>
-      {fixtures?.map(fixture => <FixtureComponent key={fixture.id} name={fixture.name} />)}
+    <View
+      style={{
+        ...styles.container,
+        alignItems: 'center',
+      }}
+    >
+      {fixtures?.map((fixture) => (
+        <FixtureComponent key={fixture.fixtureAssignmentId} {...fixture} />
+      ))}
     </View>
-  )
-}
-
-
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -67,7 +60,7 @@ const styles = StyleSheet.create({
     borderColor: 'purple',
     borderWidth: 2,
     margin: 4,
-    height: "100%",
+    height: '100%',
     minWidth: 130,
   },
 
@@ -83,36 +76,36 @@ const styles = StyleSheet.create({
   },
 
   bigButtons: {
-    borderColor: "blue",
+    borderColor: 'blue',
     minHeight: 60,
     padding: 18,
     borderWidth: 2,
     margin: 4,
     height: 30,
-    minWidth: 60
+    minWidth: 60,
   },
 
   sceneCtrl: {
     minHeight: 40,
     marginTop: 8,
     marginBottom: 8,
-    justifyContent: "space-between"
+    justifyContent: 'space-between',
   },
 
   btnText: {
     color: 'black',
     textAlign: 'center',
     fontSize: 12,
-    margin: "auto"
+    margin: 'auto',
   },
 
   fixtures: {
-    backgroundColor: "yellow",
+    backgroundColor: 'yellow',
     width: 100,
     height: 100,
-    borderColor: "black",
+    borderColor: 'black',
     borderWidth: 4,
     margin: 10,
-    textAlign: "center"
-  }
+    textAlign: 'center',
+  },
 });
