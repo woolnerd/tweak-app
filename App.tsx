@@ -144,12 +144,107 @@ const App = () => {
         <LayoutArea />
       </View>
 
-      <View style={{ flex: 1.5, ...styles.container }}>
-        <View style={styles.rec}></View>
-        <View style={styles.rec}></View>
-        <View style={styles.rec}></View>
-        <View style={styles.rec}></View>
+      <View style={{ flex: 1.5, flexDirection: 'row', ...styles.container }}>
+        <View style={{flex: 1 }}>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>1</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>2</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>3</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>4</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>5</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>6</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>7</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>8</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>9</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>10</Text>
+          </View>
+        </View>
+
+        <View style={{flex: 1 }}>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>1</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>2</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>3</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>4</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>5</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>6</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>7</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>8</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>9</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>10</Text>
+          </View>
+        </View>
+
+        <View style={{ flex: 1 }}>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>1</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>2</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>3</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>4</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>5</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>6</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>7</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>8</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>9</Text>
+          </View>
+          <View style={styles.touchpadBtn}>
+            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>10</Text>
+          </View>
+        </View>
       </View>
+
     </View >
   );
 };
@@ -215,5 +310,11 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     margin: 10,
     textAlign: "center"
+  },
+  touchpadBtn: {
+    height: 50,
+    width: 50,
+    backgroundColor: 'gray',
+    margin: 5,
   }
 });
