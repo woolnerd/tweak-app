@@ -20,17 +20,21 @@ export type FixtureProps = {
   fixtureId: number;
 }
 
-type OptionalProps<T> = { [P in keyof T]?: T[P] }
+type OptionalProps<T> = { [P in keyof T]?: T[P] | null}
 type ChannelKey = number;
 type Value = number;
 type Channels = [ChannelKey, Value][]
 export const Fixture = (fixture: OptionalProps<FixtureProps>) => {
 
   const handleChannelValues = () => {
-    const profileChannels: Channels = JSON.parse(fixture.profileChannels);
-    const values = JSON.parse(fixture.values);
+    if (!fixture.profileChannels || !fixture.values) {
+      return
+    }
 
-    const output = [];
+    const profileChannels: Channels = JSON.parse(fixture.profileChannels);
+    const values: Array<number> = JSON.parse(fixture.values);
+
+    const output: Record<string, number>[] | Array<string>= [];
 
     values.forEach(value => {
       const [key, outputVal] = value;

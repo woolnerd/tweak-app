@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, SetStateAction, Dispatch } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ScenesToFixtureAssignments from '@/models/scene-to-fixture-assignments';
 import { SelectFixture, SelectFixtureAssignment } from '@/db/types/tables';
@@ -7,13 +7,22 @@ import { db } from '@/db/client';
 import { fixtureAssignments, scenesToFixtureAssignments } from '@/db/schema';
 
 export const LayoutArea = () => {
-  const [fixtures, setFixtures] = useState([]);
+
+  type FixtureAssignmentResponse = {
+    fixtureAssignmentId: number;
+    channel: number;
+    values: string | null;
+    title: string | null;
+    profileChannels: string | null;
+    profileName: string | null;
+    fixtureName: string | null;
+    fixtureNotes: string | null;
+  }[]
+
+
+  const [fixtures, setFixtures] = useState<FixtureAssignmentResponse>([]);
 
   const temporarySceneId = 1;
-
-  // type FixtureAssignmentResponse = {
-  //   fixtureAssignment: SelectFixtureAssignment;
-  // }[];
 
   const fetchFixtures = async () => {
     try {
@@ -31,7 +40,9 @@ export const LayoutArea = () => {
   };
 
   useEffect(() => {
-    fetchFixtures().then((res) => setFixtures(res));
+    fetchFixtures().then((res) => {
+      if (res) setFixtures(res)
+    });
   }, []);
 
   return (

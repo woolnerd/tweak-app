@@ -124,7 +124,7 @@ const App = () => {
           { scenes?.map((scene, i) => <SceneComponent key={ scene.name+i} name={scene.name} />) }
 
           <Pressable style={styles.bigButtons} onPress={() => { setColor(String(Math.random())), console.log('Simple Pressable pressed') }}>
-            <Text style={{ ...styles.btnText, fontSize: 18 }}>Banana</Text>
+            <Text style={{ ...styles.btnText, fontSize: 18 }}>Label</Text>
           </Pressable>
 
 
@@ -145,106 +145,17 @@ const App = () => {
       </View>
 
       <View style={{ flex: 1.5, flexDirection: 'row', ...styles.container }}>
-        <View style={{flex: 1 }}>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>1</Text>
+        {[1, 2, 3].map(col =>
+          <View key={ `column-${col}`} style={{ flex: 1, flexGrow: 1, justifyContent: 'center',alignItems: 'center', height: 'auto' }}>
+            {['Full', '90%', '80%', '75%', '70%', '60%', '50%', '40%', '30%', '25%','20%', '10%', '0%', '@', 'Clear'].map(num => (
+              <View key={num} style={styles.touchpadBtn} onTouchStart={()=>console.log(num)}>
+                <Text style={{ textAlign: 'center', padding: 15, fontWeight: '800' }}>{num}</Text>
+              </View>
+            ))}
           </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>2</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>3</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>4</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>5</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>6</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>7</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>8</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>9</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>10</Text>
-          </View>
-        </View>
+        )}
 
-        <View style={{flex: 1 }}>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>1</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>2</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>3</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>4</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>5</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>6</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>7</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>8</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>9</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>10</Text>
-          </View>
-        </View>
-
-        <View style={{ flex: 1 }}>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>1</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>2</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>3</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>4</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>5</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>6</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>7</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>8</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>9</Text>
-          </View>
-          <View style={styles.touchpadBtn}>
-            <Text style={{textAlign: 'center', padding: 15, fontWeight: '800'}}>10</Text>
-          </View>
-        </View>
       </View>
-
     </View >
   );
 };
@@ -311,10 +222,13 @@ const styles = StyleSheet.create({
     margin: 10,
     textAlign: "center"
   },
+
   touchpadBtn: {
-    height: 50,
-    width: 50,
+    height: 60,
+    width: 60,
     backgroundColor: 'gray',
-    margin: 5,
+    margin: 2,
+    borderColor: 'blue',
+    borderWidth: 2,
   }
 });

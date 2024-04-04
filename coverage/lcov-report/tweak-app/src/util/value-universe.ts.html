@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -101,26 +101,26 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import Universe from './universe';
@@ -130,27 +130,27 @@ import { ChannelNumber } from './channel-number';
 type DmxTuple = [ChannelNumber, DmxValue];
 &nbsp;
 export default class ValueUniverse extends Universe&lt;DmxTuple&gt; {
-<span class="fstat-no" title="function not covered" >  co</span>nstructor(_number: number) {
-<span class="cstat-no" title="statement not covered" >    super(_number);</span>
+  constructor(_number: number) {
+    super(_number);
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" >  pu</span>blic get getDmxValues() {
-<span class="cstat-no" title="statement not covered" >    return this._addresses;</span>
+  public get getDmxValues() {
+    return this._addresses;
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" >  pu</span>blic set setDmxValues(dmxTuple: DmxTuple) {
-<span class="cstat-no" title="statement not covered" >    this._addresses.push(dmxTuple);</span>
+  public set setDmxValues(dmxTuple: DmxTuple) {
+    this._addresses.push(dmxTuple);
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" >  pu</span>blic buildUniverse(): Array&lt;number | null&gt; {
-    const display: Array&lt;number | null&gt; = <span class="cstat-no" title="statement not covered" >Array(512).fill(null);</span>
+  public buildUniverse(): Array&lt;number | null&gt; {
+    const display: Array&lt;number | null&gt; = Array(512).fill(null);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    this.getDmxValues.forEach(<span class="fstat-no" title="function not covered" >(t</span>uple) =&gt; {</span>
-      const [channel, dmxValue] = <span class="cstat-no" title="statement not covered" >tuple;</span>
-<span class="cstat-no" title="statement not covered" >      display[channel.value] = dmxValue.value;</span>
+    this.getDmxValues.forEach((tuple) =&gt; {
+      const [channel, dmxValue] = tuple;
+      display[channel.value] = dmxValue.value;
     });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return display;</span>
+    return display;
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -160,7 +160,7 @@ export default class ValueUniverse extends Universe&lt;DmxTuple&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-04-01T16:43:59.894Z
+                at 2024-04-04T16:48:09.167Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

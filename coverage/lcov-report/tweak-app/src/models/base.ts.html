@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75% </span>
+                <span class="strong">80% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>15/20</span>
+                <span class='fraction'>16/20</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75% </span>
+                <span class="strong">80% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>15/20</span>
+                <span class='fraction'>16/20</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -135,8 +135,32 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -144,30 +168,6 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -190,7 +190,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { eq, } from 'drizzle-orm';
 import { Database, QueryKeys, MyQueryHelper } from '@/db/types/database';
 import { handleDatabaseError } from '@/util/errors';
-export default abstract class Base&lt;T, K extends { id: number }&gt; {
+import { SQLiteInsertValue, TableConfig, SQLiteTable } from 'drizzle-orm/sqlite-core';
+export default abstract class Base&lt;T extends SQLiteTable&lt;TableConfig&gt;, K extends { id: number }&gt; {
   abstract readonly table: any;
   abstract readonly name: QueryKeys
   protected db: Database;
@@ -201,15 +202,14 @@ export default abstract class Base&lt;T, K extends { id: number }&gt; {
     this.handleError = handleDatabaseError
   }
 &nbsp;
-  async create(data: any) {
+  async create(data: SQLiteInsertValue&lt;T&gt; | SQLiteInsertValue&lt;T&gt;[]): Promise&lt;typeof this.table.$inferInsert&gt; {
     try {
       return await this.db.insert(this.table).values(data).returning();
     } catch (err) {
       this.handleError(err);
     }
   }
-&nbsp;
-  async getAll(options?: any) {
+  async getAll(options?: any): Promise&lt;typeof this.table.$inferSelect&gt; {
     try {
       return await (this.db.query[this.name] as MyQueryHelper).findMany(options);
     } catch (err) {
@@ -217,7 +217,7 @@ export default abstract class Base&lt;T, K extends { id: number }&gt; {
     }
   }
 &nbsp;
-  async getById(id: number) {
+  async getById(id: number): Promise&lt;typeof this.table.$inferSelect&gt;  {
     try {
       return await this.db.select().from(this.table).where(eq(this.table.id, id));
     } catch (err) {
@@ -225,15 +225,15 @@ export default abstract class Base&lt;T, K extends { id: number }&gt; {
     }
   }
 &nbsp;
-  async update({ id, ...restData } : K) {
+  async update({ id, ...restData } : K): Promise&lt;typeof this.table.$inferSelect&gt; {
     try {
       return await this.db.update(this.table).set(restData).where(eq(this.table.id, id)).returning()
     } catch (err) {
-<span class="cstat-no" title="statement not covered" >      this.handleError(err);</span>
+      this.handleError(err);
     }
   }
 &nbsp;
-  async delete(id: number) {
+  async delete(id: number): Promise&lt;typeof this.table.$inferSelect&gt; {
     try {
       const result = await this.db.delete(this.table).where(eq(this.table.id, id)).returning();
 &nbsp;
@@ -256,7 +256,7 @@ export default abstract class Base&lt;T, K extends { id: number }&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-04-01T16:43:59.894Z
+                at 2024-04-04T16:48:09.167Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
