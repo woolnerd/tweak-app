@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     minWidth: 60,
     padding: 4,
-    // height: "100%"
   },
 
   bigButtons: {
@@ -64,7 +63,7 @@ const styles = StyleSheet.create({
   },
 
   btnText: {
-    color: 'black',
+    color: '#fff',
     textAlign: 'center',
     fontSize: 12,
     margin: "auto"

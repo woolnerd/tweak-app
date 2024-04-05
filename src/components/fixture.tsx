@@ -51,21 +51,25 @@ export const Fixture = (fixture: OptionalProps<FixtureProps>) => {
 
   return (
     <View key={fixture.fixtureAssignmentId} style={{ ...styles.fixtures}} onTouchStart={handleOutput}>
-      <Text>{fixture.channel}</Text>
-      <Text>{fixture.fixtureName}</Text>
-      <Text>{handleChannelValues()}</Text>
+      <Text style={styles.text} >{fixture.channel}</Text>
+      <Text style={styles.text} >{fixture.fixtureName}</Text>
+      <Text style={styles.text} >{handleChannelValues()}</Text>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   fixtures: {
-    backgroundColor: "yellow",
-    width: 100,
-    height: 100,
-    borderColor: "black",
+    backgroundColor: "gold",
+    width: 200,
+    height: 130,
     borderWidth: 4,
     margin: 10,
-    textAlign: "center"
+    borderColor: 'purple',
+      },
+  text: {
+    fontWeight: '800',
+    textAlign: "center",
+    fontSize: 20
   }
 })

@@ -61,10 +61,11 @@ export const LayoutArea = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
-    borderColor: '#cba601',
-    borderWidth: 2,
+    backgroundColor: '#000',
+    // borderColor: '#cba601',
+    // borderWidth: 2,
     margin: 4,
+    height: 'auto'
   },
 
   scene: {
@@ -94,6 +95,8 @@ const styles = StyleSheet.create({
     margin: 4,
     height: 30,
     minWidth: 60,
+    borderColor: '#cba601',
+    borderWidth: 2,
   },
 
   sceneCtrl: {
