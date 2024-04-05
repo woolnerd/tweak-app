@@ -28,6 +28,7 @@ import FixtureAssignment from '@/models/fixture-assignment';
 import { migrate } from 'drizzle-orm/expo-sqlite/migrator';
 import { ControlPanel } from '@/components/control-panel';
 import { ControlPanelContext } from '../contexts/control-panel';
+import { FixtureCacheContext } from '../contexts/fixture-cache';
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, {schema});
@@ -44,7 +45,7 @@ const App = () => {
   const [color, setColor] = useState('');
   const [scenes, setScenes] = useState<SelectScene[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [ ctrlPanelValue, setControlPanelValue] = useState<string| null>(null)
+  const [ctrlPanelValue, setControlPanelValue] = useState<string | null>(null)
   // console.log(FileSystem.documentDirectory);
   // const { success, error } = useMigrations(db, migrations);
 
@@ -143,9 +144,9 @@ const App = () => {
       >
         <Button title="Enter"
           onPress={handleEnterBtn} />
-        <ControlPanelContext.Provider value={ctrlPanelValue}>
-          <LayoutArea />
-        </ControlPanelContext.Provider>
+          <ControlPanelContext.Provider value={ctrlPanelValue}>
+            <LayoutArea />
+          </ControlPanelContext.Provider>
       </View>
 
       <View style={{ flex: 1.5, flexDirection: 'row', ...styles.container}}>

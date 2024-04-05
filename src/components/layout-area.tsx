@@ -6,6 +6,9 @@ import { Fixture as FixtureComponent, FixtureProps } from './fixture';
 import { db } from '@/db/client';
 import { fixtureAssignments, scenesToFixtureAssignments } from '@/db/schema';
 
+type LayoutAreaProps = {
+}
+
 export const LayoutArea = () => {
   type FixtureAssignmentResponse = {
     fixtureAssignmentId: number;
