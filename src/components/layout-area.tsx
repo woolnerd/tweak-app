@@ -7,7 +7,6 @@ import { db } from '@/db/client';
 import { fixtureAssignments, scenesToFixtureAssignments } from '@/db/schema';
 
 export const LayoutArea = () => {
-
   type FixtureAssignmentResponse = {
     fixtureAssignmentId: number;
     channel: number;
@@ -17,10 +16,10 @@ export const LayoutArea = () => {
     profileName: string | null;
     fixtureName: string | null;
     fixtureNotes: string | null;
-  }[]
-
+  }[];
 
   const [fixtures, setFixtures] = useState<FixtureAssignmentResponse>([]);
+  const [selectedFixtures, setSelectedFixtures] = useState([]);
 
   const temporarySceneId = 1;
 
@@ -30,9 +29,6 @@ export const LayoutArea = () => {
         db
       ).getFixturesAndAssignments(temporarySceneId);
 
-
-      // console.log(fixturesWithAssignments);
-
       return fixturesWithAssignments;
     } catch (e) {
       console.log(e);
@@ -41,7 +37,7 @@ export const LayoutArea = () => {
 
   useEffect(() => {
     fetchFixtures().then((res) => {
-      if (res) setFixtures(res)
+      if (res) setFixtures(res);
     });
   }, []);
 
@@ -52,8 +48,13 @@ export const LayoutArea = () => {
         alignItems: 'center',
       }}
     >
-      {fixtures?.map((fixture) => (
-        <FixtureComponent key={fixture.fixtureAssignmentId} {...fixture} />
+      {fixtures?.map((props) => (
+        <FixtureComponent
+          key={props.fixtureAssignmentId}
+          selectedFixtures={selectedFixtures}
+          setSelectedFixtures={setSelectedFixtures}
+          {...props}
+        />
       ))}
     </View>
   );
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
     // borderColor: '#cba601',
     // borderWidth: 2,
     margin: 4,
-    height: 'auto'
+    height: 'auto',
   },
 
   scene: {
@@ -95,8 +96,6 @@ const styles = StyleSheet.create({
     margin: 4,
     height: 30,
     minWidth: 60,
-    borderColor: '#cba601',
-    borderWidth: 2,
   },
 
   sceneCtrl: {

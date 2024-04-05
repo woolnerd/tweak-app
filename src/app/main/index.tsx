@@ -26,6 +26,8 @@ import Manufacturer from '@/models/manufacturer';
 import { seeds, Seeds } from '@/db/seeds';
 import FixtureAssignment from '@/models/fixture-assignment';
 import { migrate } from 'drizzle-orm/expo-sqlite/migrator';
+import { ControlPanel } from '@/components/control-panel';
+import { ControlPanelContext } from '../contexts/control-panel';
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, {schema});
@@ -42,6 +44,7 @@ const App = () => {
   const [color, setColor] = useState('');
   const [scenes, setScenes] = useState<SelectScene[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [ ctrlPanelValue, setControlPanelValue] = useState<string| null>(null)
   // console.log(FileSystem.documentDirectory);
   // const { success, error } = useMigrations(db, migrations);
 
@@ -140,20 +143,13 @@ const App = () => {
       >
         <Button title="Enter"
           onPress={handleEnterBtn} />
-
-        <LayoutArea />
+        <ControlPanelContext.Provider value={ctrlPanelValue}>
+          <LayoutArea />
+        </ControlPanelContext.Provider>
       </View>
 
       <View style={{ flex: 1.5, flexDirection: 'row', ...styles.container}}>
-          {[1, 2, 3].map(col =>
-            <View key={ `column-${col}`} style={{ flex: 1, flexGrow: 1, justifyContent: 'center', alignItems: 'center'}}>
-              {[['Full', 'green'], ['90%', 'gray'], ['80%', 'gray'], ['75%', 'gray'], ['70%', 'gray'], ['60%', 'gray'], ['50%', 'gray'], ['40%', 'gray'], ['30%', 'gray'], ['25%', 'gray'],['20%', 'gray'], ['10%', 'gray'], ['0%', 'red'], ['@', 'gray'], ['Clear', 'brown']].map(num => (
-                <View key={num[0]} style={styles.touchpadBtn} onTouchStart={()=>console.log(num)}>
-                  <Text style={{ textAlign: 'center', padding: 15, fontWeight: '800', backgroundColor:`${num[1]}` }}>{num[0]}</Text>
-                </View>
-              ))}
-            </View>
-          )}
+        <ControlPanel setControlPanelValue={setControlPanelValue} />
       </View>
     </View >
   );

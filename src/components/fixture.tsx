@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { ControlPanelContext } from '@/app/contexts/control-panel';
+import { useState, useContext} from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 // export type FixtureProps = {
@@ -18,42 +19,57 @@ export type FixtureProps = {
   fixtureName: string;
   fixtureNotes: string;
   fixtureId: number;
+  fixtureAssignmentId: number;
+  selectedFixtures: Array<number>;
+  setSelectedFixtures: ([]) => void;
 }
 
 type OptionalProps<T> = { [P in keyof T]?: T[P] | null}
 type ChannelKey = number;
 type Value = number;
 type Channels = [ChannelKey, Value][]
-export const Fixture = (fixture: OptionalProps<FixtureProps>) => {
+export const Fixture = ({ channel, fixtureName, profileChannels, values, fixtureAssignmentId, selectedFixtures,setSelectedFixtures}:FixtureProps) => {
+  const ctrlPanelCtx = useContext(ControlPanelContext);
 
-  const handleChannelValues = () => {
-    if (!fixture.profileChannels || !fixture.values) {
+  const handleChannelValues = (profileChannels: string, values: string): string | undefined => {
+    if (!profileChannels || !values) {
       return
     }
 
-    const profileChannels: Channels = JSON.parse(fixture.profileChannels);
-    const values: Array<number> = JSON.parse(fixture.values);
+    const parsedProfileChannels: Channels = JSON.parse(profileChannels);
+    const parsedValues: Array<number> = JSON.parse(values);
 
     const output: Record<string, number>[] | Array<string>= [];
 
-    values.forEach(value => {
+    parsedValues.forEach(value => {
       const [key, outputVal] = value;
-      // output.push([profileChannels[key], outputVal]);
+      // output.push([parsedProfileChannels[key], outputVal]);
       output.push(`${Math.trunc(outputVal / 255 * 100) }%` )
     });
 
     return output;
   }
 
-  const handleOutput = () => {
-    console.log(fixture);
+  const handleOutput = (id: number) => {
+    const idx = selectedFixtures.findIndex(fixtureId => fixtureId === id);
+    if (idx !== -1) {
+      selectedFixtures[idx] = -1;
+      setSelectedFixtures(selectedFixtures.filter(id => id !== -1))
+    } else {
+      setSelectedFixtures([...selectedFixtures, id]);
+    }
+    console.log(ctrlPanelCtx);
   }
 
+  const selectedStyle = selectedFixtures.includes(fixtureAssignmentId) ? { borderColor: 'rgb(100,256,100)' } : { borderColor: 'purple' };
+
+  const selectedValue = selectedFixtures.includes(fixtureAssignmentId) ? ctrlPanelCtx : handleChannelValues(profileChannels, values);
+
   return (
-    <View key={fixture.fixtureAssignmentId} style={{ ...styles.fixtures}} onTouchStart={handleOutput}>
-      <Text style={styles.text} >{fixture.channel}</Text>
-      <Text style={styles.text} >{fixture.fixtureName}</Text>
-      <Text style={styles.text} >{handleChannelValues()}</Text>
+    <View key={fixtureAssignmentId} style={{ ...styles.fixtures, ...selectedStyle}} onTouchStart={() => handleOutput(fixtureAssignmentId)}>
+      <Text style={styles.text} >{channel}</Text>
+      <Text style={styles.text} >{fixtureName}</Text>
+      <Text style={styles.text} >{selectedValue}</Text>
     </View>
   )
 }
