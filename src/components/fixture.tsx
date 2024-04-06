@@ -1,7 +1,7 @@
 import { ControlPanelContext } from '@/app/contexts/control-panel';
 import { useState, useContext, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { removeManualFixture, addManualFixture, getAllKeys } from '@/util/cache';
 
 export type FixtureType = {
   channel: number;
@@ -34,7 +34,7 @@ export const Fixture = ({
   setSelectedFixtures,
 }: FixtureProps) => {
   const ctrlPanelCtx = useContext(ControlPanelContext);
-  const [selectedValue, setSelectedValue] = useState(handleChannelValues(profileChannels, values));
+  const [selectedValue, setSelectedValue] = useState<string | null>(handleChannelValues(profileChannels, values));
   const [manualHighlight, setManualHighlight] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
 
@@ -42,7 +42,7 @@ export const Fixture = ({
   function handleChannelValues(
     profileChannels: string,
     values: string
-  ): string | undefined {
+  ): string | null {
     if (!profileChannels || !values) {
       return;
     }
@@ -50,7 +50,7 @@ export const Fixture = ({
     const parsedProfileChannels: Channels = JSON.parse(profileChannels);
     const parsedValues: Array<number> = JSON.parse(values);
 
-    const output: Record<string, number>[] | Array<string> = [];
+    const output: Array<string> = [];
 
     parsedValues.forEach((value) => {
       const [key, outputVal] = value;
@@ -71,37 +71,19 @@ export const Fixture = ({
   }, [ctrlPanelCtx])
 
   useEffect(() => {
-    console.log(selectedFixtures);
-
+    // console.log(selectedFixtures);
+    if (selectedFixtures.has(fixtureAssignmentId)) {
+      addManualFixture({
+        channel,
+        fixtureName,
+        profileChannels,
+        values,
+        fixtureAssignmentId
+      })
+    } else {
+      removeManualFixture(fixtureAssignmentId);
+    }
   }, [selectedFixtures])
-
-  const getManualFixture = async () => {
-    try {
-      const jsonValue = await AsyncStorage.getItem(`@manual_fixtures_${fixtureAssignmentId}`);
-      return jsonValue !== null ? JSON.parse(jsonValue) : null;
-    } catch (e) {
-      // read error
-      console.log(e);
-    }
-
-    // if (fixtureIds && fixture.fixtureAssignmentId in fixtureIds) {
-    //   // cache is like a shadow list of fixtures with new info merged in.
-    //   // it can extend a Fixture as a ManualFixture, could be stored as {id: manualFixtureInstance1, ...}
-    // }
-
-    console.log('Done.');
-  }
-
-  const setManualFixture = async (fixture: FixtureType) => {
-    try {
-      const jsonValue = JSON.stringify(fixture)
-      await AsyncStorage.setItem(`@manual_fixtures_${fixture.fixtureAssignmentId}`, jsonValue)
-    } catch(e) {
-      // save error
-      console.log(e);
-    }
-    console.log('Done.')
-  };
 
   const handleOutput = (fixture: FixtureType) => {
     // toggles multiple fixtures in and out of set
@@ -127,13 +109,13 @@ export const Fixture = ({
     const styles: {color?: string, borderColor?: string} = {};
 
     if (unsavedChanges) {
-      styles['color'] = 'rgb(256, 50, 50)';
+      styles['color'] = 'rgb(256, 50, 30)';
     }
 
     if (selectedFixtures.has(fixtureAssignmentId)) {
-      styles['borderColor'] = 'rgb(100, 256, 100)'
+      styles['borderColor'] = 'gold';
     } else {
-      styles['borderColor'] = 'purple';
+      styles['borderColor'] = 'rgb(100, 256, 100)'
     }
     return styles;
   }
@@ -161,12 +143,12 @@ export const Fixture = ({
 
 const styles = StyleSheet.create({
   fixtures: {
-    backgroundColor: 'gold',
+    backgroundColor: 'purple',
     width: 200,
     height: 130,
     borderWidth: 4,
     margin: 10,
-    borderColor: 'purple',
+    borderColor: 'gold',
   },
   text: {
     fontWeight: '800',

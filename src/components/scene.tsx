@@ -3,16 +3,28 @@ import { View, Pressable, Text, StyleSheet } from "react-native";
 
 export type SceneProps = {
   name: string;
+  id: number;
+  setSelectedSceneId: (id: number) => void;
 }
 
-export const Scene = ({ name }: SceneProps) => {
+export const Scene = (props: SceneProps) => {
+  const handleScenePress = () => {
+    props.setSelectedSceneId(props.id);
+    console.log(props);
+  }
+
+  const handleRecPress = () => {
+
+  }
+
+
   return (
     <View style={{ flex: 2, flexDirection: 'row', ...styles.sceneCtrl }}>
-      <Pressable style={styles.rec} onPress={() => console.log('Simple Pressable pressed')}>
+      <Pressable style={styles.rec} onPress={handleRecPress}>
         <Text style={styles.btnText}>REC</Text>
       </Pressable>
-      <Pressable style={styles.scene} onPress={() => console.log('Simple Pressable pressed')}>
-        <Text style={styles.btnText}>{name}</Text>
+      <Pressable style={styles.scene} onPress={handleScenePress}>
+        <Text style={styles.btnText}>{props.name}</Text>
       </Pressable>
     </View>
   )
@@ -20,13 +32,6 @@ export const Scene = ({ name }: SceneProps) => {
 
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'white',
-    borderColor: '#cba601',
-    borderWidth: 2,
-    margin: 4,
-  },
-
   scene: {
     borderColor: 'purple',
     borderWidth: 2,
@@ -43,16 +48,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     minWidth: 60,
     padding: 4,
-  },
-
-  bigButtons: {
-    borderColor: "blue",
-    minHeight: 60,
-    padding: 18,
-    borderWidth: 2,
-    margin: 4,
-    height: 30,
-    minWidth: 60
   },
 
   sceneCtrl: {

@@ -6,11 +6,13 @@ import { Fixture as FixtureComponent, FixtureProps } from './fixture';
 import { db } from '@/db/client';
 import { fixtureAssignments, scenesToFixtureAssignments } from '@/db/schema';
 import { FixtureType } from './fixture';
+import { getAllKeys } from '@/util/cache';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type LayoutAreaProps = {
 }
 
-export const LayoutArea = () => {
+export const LayoutArea = (props) => {
   type FixtureAssignmentResponse = {
     fixtureAssignmentId: number;
     channel: number;
@@ -33,7 +35,7 @@ export const LayoutArea = () => {
     try {
       const fixturesWithAssignments = await new ScenesToFixtureAssignments(
         db
-      ).getFixturesAndAssignments(temporarySceneId);
+      ).getFixturesAndAssignments(props.selectedSceneId);
 
       return fixturesWithAssignments;
     } catch (e) {
@@ -42,10 +44,32 @@ export const LayoutArea = () => {
   };
 
   useEffect(() => {
+    //check cache first
+    // if fixtures there they get merged with DB fixtures
+    const cachedAndDbFixtures: any[] = [];
+
+    getAllKeys().then((res: string[]) => {
+      if (res && res.length > 0) {
+        AsyncStorage.multiGet(res).then(cachedFixtures => {
+          cachedFixtures.forEach((fix) => {
+            cachedAndDbFixtures.push(JSON.parse(fix[1] as string));
+          })
+        })
+        console.log('cachedFixtures', cachedAndDbFixtures)
+      }
+    })
+
     fetchFixtures().then((res) => {
-      if (res) setFixtures(res);
+      if (res) {
+        setFixtures([...cachedAndDbFixtures, ...res]);
+        return
+      }
     });
-  }, []);
+
+    setFixtures(cachedAndDbFixtures);
+    console.log(props.selectedSceneId);
+
+  }, [props.selectedSceneId]);
 
   return (
     <View
