@@ -34,6 +34,9 @@ const App = () => {
     fetchScenes().then((scenes) => setScenes(scenes));
   }, []);
 
+  const handleGoToOut = () => {
+  }
+
   return (
     <View
       style={{
@@ -53,7 +56,7 @@ const App = () => {
 
           <Pressable
             style={styles.bigButtons}
-            onPress={() => console.log('Simple Pressable pressed')}
+            onPress={handleGoToOut}
           >
             <Text style={{ ...styles.btnText, fontSize: 18 }}>Go to Out</Text>
           </Pressable>
@@ -86,7 +89,7 @@ const App = () => {
         }}
       >
         <ControlPanelContext.Provider value={ctrlPanelValue}>
-          <LayoutArea selectedSceneId={selectedSceneId} />
+          <LayoutArea selectedSceneId={selectedSceneId} goToOut={false} />
         </ControlPanelContext.Provider>
       </View>
 

@@ -44,6 +44,12 @@ export const LayoutArea = (props) => {
   };
 
   useEffect(() => {
+    if (props.goToOut) {
+
+    }
+  }, [props.goToOut])
+
+  useEffect(() => {
     //check cache first
     // if fixtures there they get merged with DB fixtures
     const cachedAndDbFixtures: any[] = [];
