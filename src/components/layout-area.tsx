@@ -5,6 +5,7 @@ import { SelectFixture, SelectFixtureAssignment } from '@/db/types/tables';
 import { Fixture as FixtureComponent, FixtureProps } from './fixture';
 import { db } from '@/db/client';
 import { fixtureAssignments, scenesToFixtureAssignments } from '@/db/schema';
+import { FixtureType } from './fixture';
 
 type LayoutAreaProps = {
 }
@@ -21,8 +22,10 @@ export const LayoutArea = () => {
     fixtureNotes: string | null;
   }[];
 
+
+
   const [fixtures, setFixtures] = useState<FixtureAssignmentResponse>([]);
-  const [selectedFixtures, setSelectedFixtures] = useState([]);
+  const [selectedFixtures, setSelectedFixtures] = useState<Set<number>>(new Set());
 
   const temporarySceneId = 1;
 
