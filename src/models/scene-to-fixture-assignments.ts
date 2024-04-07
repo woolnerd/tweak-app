@@ -26,7 +26,8 @@ export default class ScenesToFixtureAssignments extends Base<
           profileChannels: profiles.channels,
           profileName: profiles.name,
           fixtureName: fixtures.name,
-          fixtureNotes: fixtures.notes
+          fixtureNotes: fixtures.notes,
+          sceneId: scenesToFixtureAssignments.sceneId
         })
         .from(fixtureAssignments)
         .leftJoin(fixtures, eq(fixtures.id, fixtureAssignments.fixtureId))

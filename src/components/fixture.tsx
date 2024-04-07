@@ -1,7 +1,7 @@
 import { ControlPanelContext } from '@/app/contexts/control-panel';
 import { useState, useContext, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { removeManualFixture, addManualFixture, getAllKeys } from '@/util/cache';
+import { removeManualFixture, addManualFixture } from '@/util/cache';
 
 export type FixtureType = {
   channel: number;
@@ -13,6 +13,7 @@ export type FixtureType = {
   fixtureNotes?: string;
   fixtureId?: number;
   fixtureAssignmentId: number;
+  sceneId: number;
 }
 
 export type FixtureProps = {
@@ -32,6 +33,7 @@ export const Fixture = ({
   fixtureAssignmentId,
   selectedFixtures,
   setSelectedFixtures,
+  sceneId
 }: FixtureProps) => {
   const ctrlPanelCtx = useContext(ControlPanelContext);
   const [selectedValue, setSelectedValue] = useState<string | null>(handleChannelValues(profileChannels, values));
@@ -77,11 +79,12 @@ export const Fixture = ({
         channel,
         fixtureName,
         profileChannels,
-        values,
-        fixtureAssignmentId
+        values: JSON.stringify([[1, 200]]), //here we need the correctly parsed value
+        fixtureAssignmentId,
+        sceneId
       })
     } else {
-      removeManualFixture(fixtureAssignmentId);
+      removeManualFixture(sceneId, fixtureAssignmentId);
     }
   }, [selectedFixtures])
 
@@ -102,7 +105,7 @@ export const Fixture = ({
         return dupe;
       });
     }
-    console.log(ctrlPanelCtx);
+    console.log('ctrlpanelctx', ctrlPanelCtx);
   };
 
   const selectedStyle = (fixtureAssignmentId: number) => {
@@ -131,6 +134,7 @@ export const Fixture = ({
           profileChannels,
           values,
           fixtureAssignmentId,
+          sceneId
         })
       }
     >

@@ -6,7 +6,7 @@ import { Fixture as FixtureComponent, FixtureProps } from './fixture';
 import { db } from '@/db/client';
 import { fixtureAssignments, scenesToFixtureAssignments } from '@/db/schema';
 import { FixtureType } from './fixture';
-import { getAllKeys } from '@/util/cache';
+import { getManualFixtureKeys } from '@/util/cache';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type LayoutAreaProps = {
@@ -54,7 +54,7 @@ export const LayoutArea = (props) => {
     // if fixtures there they get merged with DB fixtures
     const cachedAndDbFixtures: any[] = [];
 
-    getAllKeys().then((res: string[]) => {
+    getManualFixtureKeys().then((res: string[]) => {
       if (res && res.length > 0) {
         AsyncStorage.multiGet(res).then(cachedFixtures => {
           cachedFixtures.forEach((fix) => {
