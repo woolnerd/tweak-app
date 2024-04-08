@@ -2,7 +2,8 @@ import Base from './base';
 import { fixtures, fixtureAssignments, scenes, scenesToFixtureAssignments, fixtureAssignmentRelations, profiles } from '@/db/schema';
 import { Database, QueryKeys, MyQueryHelper } from '@/db/types/database';
 import { SelectSceneToFixtureAssignment, TableNames } from '@/db/types/tables';
-import { eq } from 'drizzle-orm';
+import { and, eq, notInArray } from 'drizzle-orm';
+
 
 export default class ScenesToFixtureAssignments extends Base<
   typeof scenesToFixtureAssignments,
@@ -15,7 +16,9 @@ export default class ScenesToFixtureAssignments extends Base<
     super(db);
   }
 
-  async getFixturesAndAssignments(sceneId: number) {
+  async getFixturesAndAssignments(sceneId: number, selectedFixtureIds: Set<number>) {
+    console.log(selectedFixtureIds);
+
     try {
       return await this.db
         .select({
@@ -33,7 +36,12 @@ export default class ScenesToFixtureAssignments extends Base<
         .leftJoin(fixtures, eq(fixtures.id, fixtureAssignments.fixtureId))
         .leftJoin(scenesToFixtureAssignments, eq(fixtureAssignments.id, scenesToFixtureAssignments.fixtureAssignmentId))
         .leftJoin(profiles, eq(fixtureAssignments.profileId, profiles.id))
-        .where(eq(scenesToFixtureAssignments.sceneId, sceneId))
+        .where(
+          and(
+            eq(scenesToFixtureAssignments.sceneId, sceneId),
+            notInArray(fixtureAssignments.id, Array.from(selectedFixtureIds))
+         )
+        )
 
     } catch (err) {
       this.handleError(err);

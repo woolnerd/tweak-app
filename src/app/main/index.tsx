@@ -13,6 +13,7 @@ import { SelectScene } from '@/db/types/tables';
 // import { migrate } from 'drizzle-orm/expo-sqlite/migrator';
 import { ControlPanel } from '@/components/control-panel';
 import { ControlPanelContext } from '../contexts/control-panel';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const expoDb = openDatabaseSync('dev.db');
 const db = drizzle(expoDb, { schema });
@@ -75,6 +76,13 @@ const App = () => {
             onPress={() => console.log('Simple Pressable pressed')}
           >
             <Text style={{ ...styles.btnText, fontSize: 18 }}>Label</Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.bigButtons}
+            onPress={() => AsyncStorage.clear()}
+          >
+            <Text style={{ ...styles.btnText, fontSize: 18 }}>Clear Cache</Text>
           </Pressable>
         </View>
       </View>

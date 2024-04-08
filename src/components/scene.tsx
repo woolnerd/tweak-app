@@ -1,5 +1,5 @@
 import { View, Pressable, Text, StyleSheet } from "react-native";
-import { clearCacheOnScene, getAllFixturesFromSceneKeys, getManualFixtureKeys } from "@/util/cache";
+import { clearCacheOnScene, getAllFixturesFromSceneKeys, getManualFixtureKeys } from "@/util/fixture-cache";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { db } from "@/db/client";
 import { fixtureAssignments } from "@/db/schema";

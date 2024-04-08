@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { KeyValuePair } from '@react-native-async-storage/async-storage/lib/typescript/types';
 import { FixtureType } from '@/components/fixture';
-
 function buildKey(sceneId: number, fixtureAssignmentId: number) {
   return `sceneId:${sceneId}#fixtureAssignementId:${fixtureAssignmentId}`;
 }
