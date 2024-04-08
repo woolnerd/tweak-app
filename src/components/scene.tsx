@@ -32,12 +32,10 @@ export const Scene = (props: SceneProps) => {
 
       if (cachedFixtures) {
         updateDb(cachedFixtures).then(res => {
-          console.log('updated fixture assignments:', res);
-
+          console.log('Updated fixture assignments:');
         }).then(res => {
           clearCacheOnScene(keys, props.id)
         })
-
 
       } else {
         throw new Error('Could not find results in cache');
@@ -46,25 +44,25 @@ export const Scene = (props: SceneProps) => {
       } catch (e) {
       console.log(e);
     }
-
-    //upsert to fixture assignents
-    // update views to show colors of having increased (blue) or decreased (green)
   }
 
   const updateDb = async (cache: FixtureType[]) => {
+
     try {
-      cache.forEach(async (fixture: FixtureType) => {
-        await db
-          .update(fixtureAssignments)
-          .set({ values: fixture.values })
-          .where(eq(fixtureAssignments.id, fixture.fixtureAssignmentId))
-          .returning()
-      })
+
+      await db.transaction(async (tx) => {
+        cache.forEach(async (fixture: FixtureType) => {
+          await tx
+            .update(fixtureAssignments)
+            .set({ values: fixture.values })
+            .where(eq(fixtureAssignments.id, fixture.fixtureAssignmentId))
+            .returning();
+        })
+      }).then(res => console.log('completed', res)).catch(err => console.log(err));
     } catch (e) {
       console.log(e);
     }
   }
-
 
   return (
     <View style={{ flex: 2, flexDirection: 'row', ...styles.sceneCtrl }}>
@@ -77,7 +75,6 @@ export const Scene = (props: SceneProps) => {
     </View>
   )
 }
-
 
 const styles = StyleSheet.create({
   scene: {
@@ -111,5 +108,4 @@ const styles = StyleSheet.create({
     fontSize: 12,
     margin: "auto"
   },
-
 });
