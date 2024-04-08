@@ -5,12 +5,12 @@ import { Scene as SceneComponent, SceneProps } from '@/components/scene';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { openDatabaseSync } from 'expo-sqlite/next';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
-import migrations from './drizzle/migrations';
-import * as FileSystem from 'expo-file-system';
+// import migrations from './drizzle/migrations';
+// import * as FileSystem from 'expo-file-system';
 import * as schema from '@/db/schema';
 import Scene from '@/models/scene';
 import { SelectScene } from '@/db/types/tables';
-import { migrate } from 'drizzle-orm/expo-sqlite/migrator';
+// import { migrate } from 'drizzle-orm/expo-sqlite/migrator';
 import { ControlPanel } from '@/components/control-panel';
 import { ControlPanelContext } from '../contexts/control-panel';
 
@@ -18,16 +18,16 @@ const expoDb = openDatabaseSync('dev.db');
 const db = drizzle(expoDb, { schema });
 
 const App = () => {
-  const [color, setColor] = useState('');
   const [scenes, setScenes] = useState<SelectScene[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [ctrlPanelValue, setControlPanelValue] = useState<string | null>(null);
   const [selectedSceneId, setSelectedSceneId] = useState<number>(1);
   // console.log(FileSystem.documentDirectory);
   // const { success, error } = useMigrations(db, migrations);
 
   const fetchScenes = async () => {
-    return await new Scene(db).getAllOrdered();
+    const scenes = await new Scene(db).getAllOrdered();
+    return !scenes ? [] : scenes;
   };
 
   useEffect(() => {
@@ -72,10 +72,7 @@ const App = () => {
 
           <Pressable
             style={styles.bigButtons}
-            onPress={() => {
-              setColor(String(Math.random())),
-                console.log('Simple Pressable pressed');
-            }}
+            onPress={() => console.log('Simple Pressable pressed')}
           >
             <Text style={{ ...styles.btnText, fontSize: 18 }}>Label</Text>
           </Pressable>
