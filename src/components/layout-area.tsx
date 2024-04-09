@@ -1,47 +1,59 @@
-import React, { useEffect, useState, SetStateAction, Dispatch } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ScenesToFixtureAssignments from '@/models/scene-to-fixture-assignments';
-import { SelectFixture, SelectFixtureAssignment } from '@/db/types/tables';
-import { Fixture as FixtureComponent, FixtureProps } from './fixture';
+import { Fixture as FixtureComponent } from './fixture';
 import { db } from '@/db/client';
-import { fixtureAssignments, scenesToFixtureAssignments } from '@/db/schema';
-import { FixtureType } from './fixture';
-import { getManualFixtureKeys } from '@/util/cache';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { mergeCacheWithDBFixtures } from '@/util/helpers';
 
 type LayoutAreaProps = {
+  selectedSceneId: number;
+  goToOut: boolean;
 }
 
-export const LayoutArea = (props) => {
-  type FixtureAssignmentResponse = {
-    fixtureAssignmentId: number;
-    channel: number;
-    values: string | null;
-    title: string | null;
-    profileChannels: string | null;
-    profileName: string | null;
-    fixtureName: string | null;
-    fixtureNotes: string | null;
-  }[];
+export type FixtureAssignmentResponse = {
+  fixtureAssignmentId: number;
+  channel: number;
+  values: string | null;
+  title: string | null;
+  profileChannels: string | null;
+  profileName: string | null;
+  fixtureName: string | null;
+  fixtureNotes: string | null;
+  sceneId: number;
+}[];
+// inArray method must have at least one value in the array.
+//using -1, because we should never have that id.
+const DRIZZLE_ARRAY_CHECK_VALUE = -1;
 
-
+export const LayoutArea = (props: LayoutAreaProps): React.JSX.Element => {
 
   const [fixtures, setFixtures] = useState<FixtureAssignmentResponse>([]);
-  const [selectedFixtures, setSelectedFixtures] = useState<Set<number>>(new Set());
+  const [selectedFixtureIds, setSelectedFixtureIds] = useState<Set<number>>(new Set([DRIZZLE_ARRAY_CHECK_VALUE]));
 
-  const temporarySceneId = 1;
+  // const fetchFixtures = async () => {
+  //   try {
+  //     const fixturesWithAssignments = await new ScenesToFixtureAssignments(
+  //       db
+  //     ).getFixturesAndAssignments(props.selectedSceneId, selectedFixtureIds);
 
-  const fetchFixtures = async () => {
+  //     return fixturesWithAssignments;
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // };
+
+  const fetchFixtures = useCallback(async () => {
     try {
       const fixturesWithAssignments = await new ScenesToFixtureAssignments(
         db
-      ).getFixturesAndAssignments(props.selectedSceneId);
+      ).getFixturesAndAssignments(props.selectedSceneId, selectedFixtureIds);
 
       return fixturesWithAssignments;
     } catch (e) {
       console.log(e);
     }
-  };
+  }, [props.selectedSceneId, selectedFixtureIds]);
+
 
   useEffect(() => {
     if (props.goToOut) {
@@ -50,32 +62,9 @@ export const LayoutArea = (props) => {
   }, [props.goToOut])
 
   useEffect(() => {
-    //check cache first
-    // if fixtures there they get merged with DB fixtures
-    const cachedAndDbFixtures: any[] = [];
+   mergeCacheWithDBFixtures(props.selectedSceneId, fetchFixtures, setFixtures)
 
-    getManualFixtureKeys().then((res: string[]) => {
-      if (res && res.length > 0) {
-        AsyncStorage.multiGet(res).then(cachedFixtures => {
-          cachedFixtures.forEach((fix) => {
-            cachedAndDbFixtures.push(JSON.parse(fix[1] as string));
-          })
-        })
-        console.log('cachedFixtures', cachedAndDbFixtures)
-      }
-    })
-
-    fetchFixtures().then((res) => {
-      if (res) {
-        setFixtures([...cachedAndDbFixtures, ...res]);
-        return
-      }
-    });
-
-    setFixtures(cachedAndDbFixtures);
-    console.log(props.selectedSceneId);
-
-  }, [props.selectedSceneId]);
+  }, [props.selectedSceneId, fetchFixtures]);
 
   return (
     <View
@@ -84,12 +73,12 @@ export const LayoutArea = (props) => {
         alignItems: 'center',
       }}
     >
-      {fixtures?.map((props) => (
+      {fixtures?.map((fixtureProps) => (
         <FixtureComponent
-          key={props.fixtureAssignmentId}
-          selectedFixtures={selectedFixtures}
-          setSelectedFixtures={setSelectedFixtures}
-          {...props}
+          key={fixtureProps.fixtureAssignmentId}
+          selectedFixtureIds={selectedFixtureIds}
+          setSelectedFixtureIds={setSelectedFixtureIds}
+          {...fixtureProps}
         />
       ))}
     </View>

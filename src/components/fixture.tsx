@@ -1,7 +1,7 @@
 import { ControlPanelContext } from '@/app/contexts/control-panel';
 import { useState, useContext, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { removeManualFixture, addManualFixture } from '@/util/cache';
+import { removeManualFixture, addManualFixture } from '@/util/fixture-cache';
 
 export type FixtureType = {
   channel: number;
@@ -17,8 +17,8 @@ export type FixtureType = {
 }
 
 export type FixtureProps = {
-  selectedFixtures: Set<number>;
-  setSelectedFixtures: (fixtureIds: ( currentState: Set<number> )=> Set<number>) => void;
+  selectedFixtureIds: Set<number>;
+  setSelectedFixtureIds: (fixtureIds: ( currentState: Set<number> )=> Set<number>) => void;
 } & FixtureType
 
 type OptionalProps<T> = { [P in keyof T]?: T[P] | null };
@@ -31,8 +31,8 @@ export const Fixture = ({
   profileChannels,
   values,
   fixtureAssignmentId,
-  selectedFixtures,
-  setSelectedFixtures,
+  selectedFixtureIds,
+  setSelectedFixtureIds,
   sceneId
 }: FixtureProps) => {
   const ctrlPanelCtx = useContext(ControlPanelContext);
@@ -64,7 +64,7 @@ export const Fixture = ({
   };
 
   useEffect(() => {
-    if (selectedFixtures.has(fixtureAssignmentId)) {
+    if (selectedFixtureIds.has(fixtureAssignmentId)) {
       setSelectedValue(ctrlPanelCtx);
       setManualHighlight(true);
       setUnsavedChanges(true);
@@ -73,8 +73,8 @@ export const Fixture = ({
   }, [ctrlPanelCtx])
 
   useEffect(() => {
-    // console.log(selectedFixtures);
-    if (selectedFixtures.has(fixtureAssignmentId)) {
+    // console.log(selectedFixtureIds);
+    if (selectedFixtureIds.has(fixtureAssignmentId)) {
       addManualFixture({
         channel,
         fixtureName,
@@ -86,20 +86,20 @@ export const Fixture = ({
     } else {
       removeManualFixture(sceneId, fixtureAssignmentId);
     }
-  }, [selectedFixtures])
+  }, [selectedFixtureIds])
 
   const handleOutput = (fixture: FixtureType) => {
     // toggles multiple fixtures in and out of set
 
-    if (selectedFixtures.has(fixture.fixtureAssignmentId)) {
-      setSelectedFixtures((curSet: Set<number>) => {
+    if (selectedFixtureIds.has(fixture.fixtureAssignmentId)) {
+      setSelectedFixtureIds((curSet: Set<number>) => {
         const dupe = new Set([...curSet]);
         dupe.delete(fixture.fixtureAssignmentId);
 
         return dupe;
       });
     } else {
-      setSelectedFixtures((curSet: Set<number>) => {
+      setSelectedFixtureIds((curSet: Set<number>) => {
         const dupe = new Set([...curSet]);
         dupe.add(fixture.fixtureAssignmentId);
         return dupe;
@@ -115,7 +115,7 @@ export const Fixture = ({
       styles['color'] = 'rgb(256, 50, 30)';
     }
 
-    if (selectedFixtures.has(fixtureAssignmentId)) {
+    if (selectedFixtureIds.has(fixtureAssignmentId)) {
       styles['borderColor'] = 'gold';
     } else {
       styles['borderColor'] = 'rgb(100, 256, 100)'

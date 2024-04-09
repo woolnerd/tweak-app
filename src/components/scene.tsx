@@ -1,8 +1,9 @@
 import { View, Pressable, Text, StyleSheet } from "react-native";
-import { getManualFixtureKeys } from "@/util/cache";
+import { clearCacheOnScene, getAllFixturesFromSceneKeys, getManualFixtureKeys } from "@/util/fixture-cache";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { db } from "@/db/client";
 import { fixtureAssignments } from "@/db/schema";
+import { SelectFixtureAssignment } from "@/db/types/tables";
 import { eq } from "drizzle-orm";
 import { FixtureType } from "./fixture";
 
@@ -18,46 +19,50 @@ export const Scene = (props: SceneProps) => {
   }
 
   const handleRecPress = async () => {
-
-    //get cached values
-    let getCache;
     try {
       const keys = await getManualFixtureKeys()
 
-      const result = await AsyncStorage.multiGet(keys)
+      let cachedFixtures;
 
-      let initialResult = result.filter((key) => key[0].startsWith(`sceneId:${props.id}`)).map((key) => JSON.parse(key[1]));
-      // console.log('this', result);
+      if (keys) {
+        cachedFixtures = await getAllFixturesFromSceneKeys(keys, props.id)
+      } else {
+        throw new Error('Something went wrong');
+      }
 
-      updateDb(initialResult).then(res => {
-        console.log('updated fixture assignments:', res);
-
-        result.filter((key) => key[0].startsWith(`sceneId:${props.id}`)).map((key) => key[0]);
-        AsyncStorage.multiRemove(result.filter((key) => key[0].startsWith(`sceneId:${props.id}`)).map((key) => key[0])).then(res => {
-          console.log('successfully updated and removes');
+      if (cachedFixtures) {
+        updateDb(cachedFixtures).then(res => {
+          console.log('Updated fixture assignments:');
+        }).then(res => {
+          clearCacheOnScene(keys, props.id)
         })
-      })
+
+      } else {
+        throw new Error('Could not find results in cache');
+      }
 
       } catch (e) {
       console.log(e);
     }
-
-    //upsert to fixture assignents
-    // update views to show colors of having increased (blue) or decreased (green)
   }
 
   const updateDb = async (cache: FixtureType[]) => {
-    let result: typeof fixtureAssignments[];
+
     try {
-      cache.forEach(async (fixture: FixtureType) => {
-        result = await db.update(fixtureAssignments).set({ values: fixture.values }).where(eq(fixtureAssignments.id, fixture.fixtureAssignmentId)).returning();
-      })
+
+      await db.transaction(async (tx) => {
+        cache.forEach(async (fixture: FixtureType) => {
+          await tx
+            .update(fixtureAssignments)
+            .set({ values: fixture.values })
+            .where(eq(fixtureAssignments.id, fixture.fixtureAssignmentId))
+            .returning();
+        })
+      }).then(res => console.log('completed', res)).catch(err => console.log(err));
     } catch (e) {
       console.log(e);
     }
-    return result;
   }
-
 
   return (
     <View style={{ flex: 2, flexDirection: 'row', ...styles.sceneCtrl }}>
@@ -70,7 +75,6 @@ export const Scene = (props: SceneProps) => {
     </View>
   )
 }
-
 
 const styles = StyleSheet.create({
   scene: {
@@ -104,5 +108,4 @@ const styles = StyleSheet.create({
     fontSize: 12,
     margin: "auto"
   },
-
 });
