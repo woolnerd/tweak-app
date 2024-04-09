@@ -2,9 +2,7 @@ import Base from "./base";
 import {
   fixtures,
   fixtureAssignments,
-  scenes,
   scenesToFixtureAssignments,
-  fixtureAssignmentRelations,
   profiles,
 } from "@/db/schema";
 import { Database, QueryKeys, MyQueryHelper } from "@/db/types/database";
@@ -26,8 +24,6 @@ export default class ScenesToFixtureAssignments extends Base<
     sceneId: number,
     selectedFixtureIds: Set<number>,
   ) {
-    console.log(selectedFixtureIds);
-
     try {
       return await this.db
         .select({

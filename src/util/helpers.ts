@@ -7,22 +7,23 @@ import { FixtureAssignmentResponse } from "@/components/layout-area";
 import { FixtureType } from "@/components/fixture";
 
 type FetchCallback = () => Promise<
-  | {
-      fixtureAssignmentId: number;
-      channel: number;
-      values: string | null;
-      title: string | null;
-      profileChannels: string | null;
-      profileName: string | null;
-      fixtureName: string | null;
-      fixtureNotes: string | null;
-      sceneId: number | null;
-    }[]
+  | FixtureType[]
+  // | {
+  //     fixtureAssignmentId: number;
+  //     channel: number;
+  //     values: string | null;
+  //     title: string | null;
+  //     profileChannels: string | null;
+  //     profileName: string | null;
+  //     fixtureName: string | null;
+  //     fixtureNotes: string | null;
+  //     sceneId: number | null;
+  //   }[]
   | undefined
 >;
 
 type SetCallback = (
-  arr: FixtureType | Awaited<FetchCallback>,
+  arr: Array<FixtureType | Awaited<FetchCallback>>,
 ) => Dispatch<SetStateAction<FixtureAssignmentResponse>>;
 
 export async function mergeCacheWithDBFixtures(
@@ -41,7 +42,12 @@ export async function mergeCacheWithDBFixtures(
       const dbFixtures = await fetchCallback();
 
       if (cachedFixtures instanceof Array && dbFixtures instanceof Array) {
-        setCallback([...cachedFixtures, ...dbFixtures]);
+        setCallback(
+          [...cachedFixtures, ...dbFixtures].sort(
+            //sort by id, later use X,Y for draggable interface
+            (a, b) => a.fixtureAssignmentId - b.fixtureAssignmentId,
+          ),
+        );
       } else {
         throw new Error();
       }

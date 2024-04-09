@@ -34,7 +34,7 @@ export type InsertPatch = typeof patches.$inferInsert;
 export type InsertSceneToFixtureAssignment =
   typeof scenesToFixtureAssignments.$inferInsert;
 export type SelectSceneToFixtureAssignment =
-  typeof scenesToFixtureAssignments.$inferSelect;
+  typeof scenesToFixtureAssignments.$inferSelect & { id: number };
 
 export enum TableNames {
   Fixtures = "fixtures",

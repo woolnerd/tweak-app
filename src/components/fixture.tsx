@@ -49,13 +49,13 @@ export const Fixture = ({
     values: string,
   ): string | null {
     if (!profileChannels || !values) {
-      return;
+      return null;
     }
 
     const parsedProfileChannels: Channels = JSON.parse(profileChannels);
-    const parsedValues: Array<number> = JSON.parse(values);
+    const parsedValues: Array<number[]> = JSON.parse(values);
 
-    const output: Array<string> = [];
+    let output: Array<string> = [];
 
     parsedValues.forEach((value) => {
       const [key, outputVal] = value;
@@ -63,7 +63,7 @@ export const Fixture = ({
       output.push(`${Math.trunc((outputVal / 255) * 100)}%`);
     });
 
-    return output;
+    return output[0];
   }
 
   useEffect(() => {
@@ -75,7 +75,6 @@ export const Fixture = ({
   }, [ctrlPanelCtx]);
 
   useEffect(() => {
-    // console.log(selectedFixtureIds);
     if (selectedFixtureIds.has(fixtureAssignmentId)) {
       addManualFixture({
         channel,

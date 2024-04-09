@@ -60,7 +60,9 @@
     "babel-jest": "^29.7.0",
     "babel-plugin-transform-typescript-metadata": "^0.3.2",
     "drizzle-kit": "^0.20.14",
+    "eslint-config-prettier": "^9.1.0",
     "jest-mock-extended": "^3.0.5",
+    "prettier": "3.2.5",
     "prisma": "^5.11.0",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
@@ -73,7 +75,7 @@
     ],
     "clearMocks": true,
     "testEnvironment": "node",
-    "collectCoverage": true,
+    "collectCoverage": false,
     "collectCoverageFrom": [
       "**/*.{js,jsx,ts,tsx}",
       "**/models/**",
