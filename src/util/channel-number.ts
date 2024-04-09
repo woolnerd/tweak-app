@@ -1,4 +1,4 @@
-import RangedValue from './ranged-value';
+import RangedValue from "./ranged-value";
 
 export class ChannelNumber extends RangedValue {
   constructor(value: number) {

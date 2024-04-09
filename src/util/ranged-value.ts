@@ -11,7 +11,7 @@ export default abstract class RangedValue {
       this.value = value;
     } else {
       throw new Error(
-        `Value must be between ${this.lowerBound} and ${this.upperBound}`
+        `Value must be between ${this.lowerBound} and ${this.upperBound}`,
       );
     }
   }

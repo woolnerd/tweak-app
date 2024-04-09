@@ -1,4 +1,4 @@
-import { db } from "@/db/client"
+import { db } from "@/db/client";
 import { QueryBuilder } from "drizzle-orm/sqlite-core";
 
 export type Database = typeof db;

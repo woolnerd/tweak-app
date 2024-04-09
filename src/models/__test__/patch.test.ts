@@ -1,16 +1,22 @@
-import Patch from '../patch';
-import { Database } from '@/db/types/database';
-import { db } from '@/db/client';
-import { insertPatch, mockDbInsert, mockDbSelectNoOverlap, mockDbSelectOverlap, selectPatch} from '@/models/__mocks__/patch.mock'
+import Patch from "../patch";
+import { Database } from "@/db/types/database";
+import { db } from "@/db/client";
+import {
+  insertPatch,
+  mockDbInsert,
+  mockDbSelectNoOverlap,
+  mockDbSelectOverlap,
+  selectPatch,
+} from "@/models/__mocks__/patch.mock";
 
-jest.mock('@/db/client', () => ({
+jest.mock("@/db/client", () => ({
   db: {
     insert: jest.fn(),
     select: jest.fn(),
   },
 }));
 
-describe('Patch', () => {
+describe("Patch", () => {
   let patch: Patch;
   let mockDb: Database;
   const MIN_START_ADDRESS = 1;
@@ -20,33 +26,40 @@ describe('Patch', () => {
     patch = new Patch(mockDb);
   });
 
-  test('create throws error when startAddress greater than endAddress', async () => {
-    const errorPatch = {...insertPatch, startAddress: 10, endAddress: 1}
-    await expect(patch.create(errorPatch)).rejects.toThrow(`Starting address (${errorPatch.startAddress}) cannot be greater than ending address (${errorPatch.endAddress}).`);
+  test("create throws error when startAddress greater than endAddress", async () => {
+    const errorPatch = { ...insertPatch, startAddress: 10, endAddress: 1 };
+    await expect(patch.create(errorPatch)).rejects.toThrow(
+      `Starting address (${errorPatch.startAddress}) cannot be greater than ending address (${errorPatch.endAddress}).`,
+    );
   });
 
-  test('create should throw an error if startAddress is less than 1', async () => {
-
-    await expect(patch.create({...insertPatch, startAddress: MIN_START_ADDRESS - 1, })).rejects.toThrow('Starting address must be 1 or greater');
+  test("create should throw an error if startAddress is less than 1", async () => {
+    await expect(
+      patch.create({ ...insertPatch, startAddress: MIN_START_ADDRESS - 1 }),
+    ).rejects.toThrow("Starting address must be 1 or greater");
   });
 
-  test('checkOverlap returns true when overlap exists', async () => {
+  test("checkOverlap returns true when overlap exists", async () => {
     const startAddressForCheck = 5;
     const endAddressForCheck = 15;
     const showIdForCheck = 1;
 
     mockDbSelectOverlap(mockDb, [selectPatch]);
 
-    const result = await patch.checkOverlap(startAddressForCheck, endAddressForCheck, showIdForCheck);
+    const result = await patch.checkOverlap(
+      startAddressForCheck,
+      endAddressForCheck,
+      showIdForCheck,
+    );
     expect(result).toBe(true);
   });
 
-  test('create calls insert method when data is valid', async () => {
+  test("create calls insert method when data is valid", async () => {
     mockDbSelectOverlap(mockDb, []);
 
     (mockDb.insert as jest.Mock).mockReturnValue({
-      values: jest.fn().mockResolvedValue(insertPatch)
-    })
+      values: jest.fn().mockResolvedValue(insertPatch),
+    });
 
     await patch.create(insertPatch);
 

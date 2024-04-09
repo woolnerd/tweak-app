@@ -1,4 +1,4 @@
-import { sqliteTable } from 'drizzle-orm/sqlite-core';
+import { sqliteTable } from "drizzle-orm/sqlite-core";
 import {
   fixtures,
   manufacturers,
@@ -7,8 +7,8 @@ import {
   scenes,
   shows,
   patches,
-  scenesToFixtureAssignments
-} from '../schema';
+  scenesToFixtureAssignments,
+} from "../schema";
 
 export type SelectFixture = typeof fixtures.$inferSelect;
 export type InsertFixture = typeof fixtures.$inferInsert;
@@ -31,17 +31,18 @@ export type InsertShow = typeof shows.$inferInsert;
 export type SelectPatch = typeof patches.$inferSelect;
 export type InsertPatch = typeof patches.$inferInsert;
 
-export type InsertSceneToFixtureAssignment = typeof scenesToFixtureAssignments.$inferInsert
-export type SelectSceneToFixtureAssignment= typeof scenesToFixtureAssignments.$inferSelect
-
+export type InsertSceneToFixtureAssignment =
+  typeof scenesToFixtureAssignments.$inferInsert;
+export type SelectSceneToFixtureAssignment =
+  typeof scenesToFixtureAssignments.$inferSelect;
 
 export enum TableNames {
-  Fixtures = 'fixtures',
-  FixtureAssignments = 'fixtureAssignments',
-  Profiles = 'profiles',
-  Manufacturers = 'manufacturers',
-  Scenes = 'scenes',
-  Shows = 'shows',
-  Patches = 'patches',
-  ScenesToFixtureAssignments = 'scenesToFixtureAssignments'
-};
+  Fixtures = "fixtures",
+  FixtureAssignments = "fixtureAssignments",
+  Profiles = "profiles",
+  Manufacturers = "manufacturers",
+  Scenes = "scenes",
+  Shows = "shows",
+  Patches = "patches",
+  ScenesToFixtureAssignments = "scenesToFixtureAssignments",
+}

@@ -1,17 +1,17 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { KeyValuePair } from '@react-native-async-storage/async-storage/lib/typescript/types';
-import { FixtureType } from '@/components/fixture';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/typescript/types";
+import { FixtureType } from "@/components/fixture";
 function buildKey(sceneId: number, fixtureAssignmentId: number) {
   return `sceneId:${sceneId}#fixtureAssignementId:${fixtureAssignmentId}`;
 }
 
 export const getManualFixture = async (
   sceneId: number,
-  fixtureAssignmentId: number
+  fixtureAssignmentId: number,
 ) => {
   try {
     const jsonValue = await AsyncStorage.getItem(
-      buildKey(sceneId, fixtureAssignmentId)
+      buildKey(sceneId, fixtureAssignmentId),
     );
     return jsonValue !== null ? JSON.parse(jsonValue) : null;
   } catch (e) {
@@ -24,17 +24,17 @@ export const addManualFixture = async (fixture: FixtureType) => {
     const jsonValue = JSON.stringify(fixture);
     await AsyncStorage.setItem(
       buildKey(fixture.sceneId, fixture.fixtureAssignmentId),
-      jsonValue
+      jsonValue,
     );
   } catch (e) {
     console.log(e);
   }
-  console.log('Added.', buildKey(fixture.sceneId, fixture.fixtureAssignmentId));
+  console.log("Added.", buildKey(fixture.sceneId, fixture.fixtureAssignmentId));
 };
 
 export const removeManualFixture = async (
   sceneId: number,
-  fixtureAssignmentId: number
+  fixtureAssignmentId: number,
 ) => {
   try {
     await AsyncStorage.removeItem(buildKey(sceneId, fixtureAssignmentId));
@@ -42,7 +42,7 @@ export const removeManualFixture = async (
     console.log(e);
   }
 
-  console.log('removed', buildKey(sceneId, fixtureAssignmentId));
+  console.log("removed", buildKey(sceneId, fixtureAssignmentId));
 };
 
 export const getManualFixtureKeys = async () => {
@@ -55,27 +55,32 @@ export const getManualFixtureKeys = async () => {
   return keys;
 };
 
-export const getAllFixturesFromSceneKeys = async (keys: readonly string[], sceneId: number) => {
+export const getAllFixturesFromSceneKeys = async (
+  keys: readonly string[],
+  sceneId: number,
+) => {
   try {
-
-    const keyValuePairs: readonly KeyValuePair[] = await AsyncStorage.multiGet(keys)
+    const keyValuePairs: readonly KeyValuePair[] =
+      await AsyncStorage.multiGet(keys);
 
     return mapValuesToFixtures(
-      keyValuePairs.filter((key) => keyIncludesScene(key, sceneId))
-    )
+      keyValuePairs.filter((key) => keyIncludesScene(key, sceneId)),
+    );
   } catch (err) {
     console.log(err);
-
   }
-}
+};
 
-export const clearCacheOnScene = async (keys: readonly string[], sceneId: number) => {
-  const keysOnScenes = keys.filter((key) => keyIncludesScene(key, sceneId))
+export const clearCacheOnScene = async (
+  keys: readonly string[],
+  sceneId: number,
+) => {
+  const keysOnScenes = keys.filter((key) => keyIncludesScene(key, sceneId));
 
-  AsyncStorage.multiRemove(keysOnScenes).then(res => {
-    console.log('Successfully updated DB and removed cached fixtures');
-  })
-}
+  AsyncStorage.multiRemove(keysOnScenes).then((res) => {
+    console.log("Successfully updated DB and removed cached fixtures");
+  });
+};
 
 function keyIncludesScene(key: KeyValuePair | string, sceneId: number) {
   if (key instanceof String) {
@@ -92,5 +97,5 @@ function mapValuesToFixtures(keyValuePairs: KeyValuePair[]): FixtureType[] {
     } else {
       return {};
     }
-  })
+  });
 }

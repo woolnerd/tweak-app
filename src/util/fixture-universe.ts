@@ -1,4 +1,4 @@
-import Universe from './universe';
+import Universe from "./universe";
 
 export interface FixtureMap {
   fixtureId: string;
@@ -54,10 +54,10 @@ export default class FixtureUniverse extends Universe<FixtureMap> {
 
   public addressConflict(
     fixture: FixtureMap,
-    universe: UniverseConstruct
+    universe: UniverseConstruct,
   ): boolean {
     for (let i = fixture.startAddress; i <= fixture.endAddress; i++) {
-      if (universe[i] !== null && typeof universe[i] === 'string') return true;
+      if (universe[i] !== null && typeof universe[i] === "string") return true;
     }
 
     return false;
@@ -65,22 +65,22 @@ export default class FixtureUniverse extends Universe<FixtureMap> {
 
   public footprintTooLarge(
     fixture: FixtureMap,
-    universe: UniverseConstruct
+    universe: UniverseConstruct,
   ): boolean {
     return fixture.endAddress > universe.length;
   }
 
   private errorChecking(fixture: FixtureMap, universe: UniverseConstruct) {
     if (fixture.startAddress >= UNIVERSE_SIZE || fixture.startAddress < 0) {
-      throw new Error('Out of bounds');
+      throw new Error("Out of bounds");
     }
 
     if (this.addressConflict(fixture, universe)) {
-      throw new Error('Address not available');
+      throw new Error("Address not available");
     }
 
     if (this.footprintTooLarge(fixture, universe)) {
-      throw new Error('Fixture cannot fit at address');
+      throw new Error("Fixture cannot fit at address");
     }
   }
 }

@@ -1,3 +1,3 @@
-describe('profile', () => {
-  it('has a channel footprint', () => {});
+describe("profile", () => {
+  it("has a channel footprint", () => {});
 });

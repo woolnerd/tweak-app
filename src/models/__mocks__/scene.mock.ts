@@ -6,7 +6,6 @@ export const mockFromDsc = jest.fn(() => ({ orderBy: mockOrderByDsc }));
 export const mockOrderBy = jest.fn();
 export const mockOrderByDsc = jest.fn();
 
-
 export const dbMock = {
   select: mockSelect.mockReturnValue({ from: mockFrom }),
 };
@@ -16,15 +15,14 @@ export const dbMockDsc = {
 };
 
 export const mockScenes = [
-  { id: 1, name: 'Scene One', order: 1, showId: 1 },
-  { id: 2, name: 'Scene Two', order: 2, showId: 1 },
+  { id: 1, name: "Scene One", order: 1, showId: 1 },
+  { id: 2, name: "Scene Two", order: 2, showId: 1 },
 ];
 
 export const mockScenesDesc = [
-  { id: 2, name: 'Scene Two', order: 2, showId: 1 },
-  { id: 1, name: 'Scene One', order: 1, showId: 1 },
+  { id: 2, name: "Scene Two", order: 2, showId: 1 },
+  { id: 1, name: "Scene One", order: 1, showId: 1 },
 ];
-
 
 mockOrderBy.mockResolvedValue(mockScenes);
 mockOrderByDsc.mockResolvedValue(mockScenesDesc);

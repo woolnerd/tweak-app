@@ -1,8 +1,8 @@
-import Base from './base';
-import { patches } from '@/db/schema';
-import { InsertPatch, SelectPatch, TableNames } from '@/db/types/tables';
-import { Database } from '@/db/types/database';
-import { gte, lte, and, or, eq } from 'drizzle-orm';
+import Base from "./base";
+import { patches } from "@/db/schema";
+import { InsertPatch, SelectPatch, TableNames } from "@/db/types/tables";
+import { Database } from "@/db/types/database";
+import { gte, lte, and, or, eq } from "drizzle-orm";
 
 export default class Patch extends Base<typeof patches, SelectPatch> {
   readonly table = patches;
@@ -16,21 +16,23 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
 
   async create(data: InsertPatch) {
     if (data.startAddress > data.endAddress) {
-      throw Error(`Starting address (${data.startAddress}) cannot be greater than ending address (${data.endAddress}).`);
+      throw Error(
+        `Starting address (${data.startAddress}) cannot be greater than ending address (${data.endAddress}).`,
+      );
     }
 
     if (data.startAddress < this.MIN_START_ADDRESS) {
-      throw Error('Starting address must be 1 or greater');
+      throw Error("Starting address must be 1 or greater");
     }
 
     const isOverlap = await this.checkOverlap(
       data.startAddress,
       data.endAddress,
-      data.showId
+      data.showId,
     );
 
     if (isOverlap) {
-      throw new Error('Address overlaps with current patch address in scene');
+      throw new Error("Address overlaps with current patch address in scene");
     }
 
     return await this.db.insert(patches).values(data);
@@ -39,7 +41,7 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
   async checkOverlap(
     startAddressForCheck: number,
     endAddressForCheck: number,
-    showIdForCheck: number
+    showIdForCheck: number,
   ): Promise<boolean> {
     const overlaps = await this.db
       .select()
@@ -49,15 +51,15 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
           or(
             and(
               lte(this.table.startAddress, startAddressForCheck),
-              gte(this.table.endAddress, startAddressForCheck)
+              gte(this.table.endAddress, startAddressForCheck),
             ),
             and(
               lte(this.table.startAddress, endAddressForCheck),
-              gte(this.table.endAddress, endAddressForCheck)
-            )
+              gte(this.table.endAddress, endAddressForCheck),
+            ),
           ),
-          eq(this.table.showId, showIdForCheck)
-        )
+          eq(this.table.showId, showIdForCheck),
+        ),
       );
 
     return overlaps.length > 0;

@@ -1,19 +1,19 @@
-import ValueUniverse from '../value-universe';
-import { DmxValue } from '../dmx-value';
-import { ChannelNumber } from '../channel-number';
+import ValueUniverse from "../value-universe";
+import { DmxValue } from "../dmx-value";
+import { ChannelNumber } from "../channel-number";
 
-describe('ValueUniverse', () => {
+describe("ValueUniverse", () => {
   let valueUniverse: ValueUniverse;
 
   beforeEach(() => {
     valueUniverse = new ValueUniverse(1);
   });
 
-  it('creates a ValueUniverse instance', () => {
+  it("creates a ValueUniverse instance", () => {
     expect(valueUniverse).toBeInstanceOf(ValueUniverse);
   });
 
-  it('sets and gets DMX values', () => {
+  it("sets and gets DMX values", () => {
     const channel = new ChannelNumber(10);
     const dmxValue = new DmxValue(100);
     valueUniverse.setDmxValues = [channel, dmxValue];
@@ -23,7 +23,7 @@ describe('ValueUniverse', () => {
     expect(dmxValues[0]).toEqual([channel, dmxValue]);
   });
 
-  it('builds the universe display', () => {
+  it("builds the universe display", () => {
     const channel1 = new ChannelNumber(10);
     const dmxValue1 = new DmxValue(100);
     const channel2 = new ChannelNumber(20);

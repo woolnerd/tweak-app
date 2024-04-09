@@ -1,6 +1,6 @@
-import Universe from './universe';
-import { DmxValue } from './dmx-value';
-import { ChannelNumber } from './channel-number';
+import Universe from "./universe";
+import { DmxValue } from "./dmx-value";
+import { ChannelNumber } from "./channel-number";
 
 type DmxTuple = [ChannelNumber, DmxValue];
 
