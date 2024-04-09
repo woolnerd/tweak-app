@@ -54,6 +54,7 @@ export default class ScenesToFixtureAssignments extends Base<
         .where(
           and(
             eq(scenesToFixtureAssignments.sceneId, sceneId),
+            // exclude any of the fixtures that are cached
             notInArray(fixtureAssignments.id, Array.from(selectedFixtureIds)),
           ),
         );

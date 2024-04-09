@@ -1,7 +1,5 @@
 import { handleDatabaseError } from "../errors";
 describe("handleDatabaseError", () => {
-  console.log(process.env.NODE_ENV);
-
   test("should throw an error with a message when passed an instance of Error", () => {
     expect(() => handleDatabaseError(new Error("There was a problem"))).toThrow(
       "Database operation failed: There was a problem",

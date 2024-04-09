@@ -8,10 +8,10 @@ export type FixtureType = {
   values: string;
   title?: string;
   profileChannels: string;
-  profileName?: string;
+  profileName?: string | null;
   fixtureName: string;
-  fixtureNotes?: string;
-  fixtureId?: number;
+  fixtureNotes?: string | null;
+  fixtureId?: number | null;
   fixtureAssignmentId: number;
   sceneId: number;
 };

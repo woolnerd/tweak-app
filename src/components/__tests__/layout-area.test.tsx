@@ -15,7 +15,44 @@ describe("LayoutArea", () => {
 
   // Mock data to return from our mocked functions
   const mockFixtureResponse = [
-    { fixtureAssignmentId: 1, channel: 1, values: "[]", title: "Test Fixture" },
+    {
+      fixtureAssignmentId: 1,
+      channel: 1,
+      values: JSON.stringify([
+        [1, 100],
+        [2, 255],
+      ]),
+      title: "Fixture 1",
+      profileChannels: JSON.stringify({
+        1: "intensity",
+        2: "red",
+        3: "green",
+        4: "blue",
+      }),
+      profileName: "Profile 1",
+      fixtureName: "Fixture 1",
+      fixtureNotes: "no notes",
+      sceneId: 1,
+    },
+    {
+      fixtureAssignmentId: 2,
+      channel: 2,
+      values: JSON.stringify([
+        [1, 100],
+        [2, 255],
+      ]),
+      title: "Fixture 2",
+      profileChannels: JSON.stringify({
+        1: "intensity",
+        2: "red",
+        3: "green",
+        4: "blue",
+      }),
+      profileName: "Profile 1",
+      fixtureName: "Fixture 2",
+      fixtureNotes: "no notes",
+      sceneId: 1,
+    },
   ];
 
   beforeEach(() => {
@@ -26,12 +63,35 @@ describe("LayoutArea", () => {
     ScenesToFixtureAssignments.prototype.getFixturesAndAssignments = jest
       .fn()
       .mockResolvedValue(mockFixtureResponse);
-    fixtureUtils.getManualFixtureKeys = jest
+    (fixtureUtils.getManualFixtureKeys as jest.Mock) = jest
       .fn()
-      .mockResolvedValue(["key1", "key2"]);
-    fixtureUtils.getAllFixturesFromSceneKeys = jest
+      .mockResolvedValue([
+        "sceneId:1#fixtureAssignementId:1",
+        "sceneId:1#fixtureAssignementId:2",
+      ]);
+    (fixtureUtils.getAllFixturesFromSceneKeys as jest.Mock) = jest
       .fn()
-      .mockResolvedValue(mockFixtureResponse);
+      .mockResolvedValue([
+        {
+          fixtureAssignmentId: 3,
+          channel: 3,
+          values: JSON.stringify([
+            [1, 100],
+            [2, 255],
+          ]),
+          title: "Fixture 1",
+          profileChannels: JSON.stringify({
+            1: "intensity",
+            2: "red",
+            3: "green",
+            4: "blue",
+          }),
+          profileName: "Profile 1",
+          fixtureName: "Fixture 3",
+          fixtureNotes: "no notes",
+          sceneId: 1,
+        },
+      ]);
   });
 
   it("renders correctly", async () => {
@@ -39,9 +99,8 @@ describe("LayoutArea", () => {
 
     // Wait for async operations to complete
     await waitFor(() => {
-      expect(getByText("Test Fixture")).toBeTruthy();
+      expect(getByText("Fixture 1")).toBeTruthy();
+      expect(getByText("Fixture 3")).toBeTruthy();
     });
   });
-
-  // Add more tests here to cover other scenarios, like error handling, empty states, etc.
 });

@@ -22,7 +22,7 @@ type FetchCallback = () => Promise<
 >;
 
 type SetCallback = (
-  arr: Array<Awaited<FetchCallback> & FixtureType[]>,
+  arr: FixtureType | Awaited<FetchCallback>,
 ) => Dispatch<SetStateAction<FixtureAssignmentResponse>>;
 
 export async function mergeCacheWithDBFixtures(
@@ -37,7 +37,6 @@ export async function mergeCacheWithDBFixtures(
         keys,
         selectedSceneId,
       );
-      console.log(cachedFixtures);
 
       const dbFixtures = await fetchCallback();
 
