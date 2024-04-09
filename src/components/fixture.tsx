@@ -1,7 +1,7 @@
-import { ControlPanelContext } from '@/app/contexts/control-panel';
-import { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { removeManualFixture, addManualFixture } from '@/util/fixture-cache';
+import { ControlPanelContext } from "@/app/contexts/control-panel";
+import { useState, useContext, useEffect } from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { removeManualFixture, addManualFixture } from "@/util/fixture-cache";
 
 export type FixtureType = {
   channel: number;
@@ -14,12 +14,14 @@ export type FixtureType = {
   fixtureId?: number;
   fixtureAssignmentId: number;
   sceneId: number;
-}
+};
 
 export type FixtureProps = {
   selectedFixtureIds: Set<number>;
-  setSelectedFixtureIds: (fixtureIds: ( currentState: Set<number> )=> Set<number>) => void;
-} & FixtureType
+  setSelectedFixtureIds: (
+    fixtureIds: (currentState: Set<number>) => Set<number>,
+  ) => void;
+} & FixtureType;
 
 type OptionalProps<T> = { [P in keyof T]?: T[P] | null };
 type ChannelKey = number;
@@ -33,17 +35,18 @@ export const Fixture = ({
   fixtureAssignmentId,
   selectedFixtureIds,
   setSelectedFixtureIds,
-  sceneId
+  sceneId,
 }: FixtureProps) => {
   const ctrlPanelCtx = useContext(ControlPanelContext);
-  const [selectedValue, setSelectedValue] = useState<string | null>(handleChannelValues(profileChannels, values));
+  const [selectedValue, setSelectedValue] = useState<string | null>(
+    handleChannelValues(profileChannels, values),
+  );
   const [manualHighlight, setManualHighlight] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
 
-
   function handleChannelValues(
     profileChannels: string,
-    values: string
+    values: string,
   ): string | null {
     if (!profileChannels || !values) {
       return;
@@ -61,7 +64,7 @@ export const Fixture = ({
     });
 
     return output;
-  };
+  }
 
   useEffect(() => {
     if (selectedFixtureIds.has(fixtureAssignmentId)) {
@@ -69,8 +72,7 @@ export const Fixture = ({
       setManualHighlight(true);
       setUnsavedChanges(true);
     }
-
-  }, [ctrlPanelCtx])
+  }, [ctrlPanelCtx]);
 
   useEffect(() => {
     // console.log(selectedFixtureIds);
@@ -81,12 +83,12 @@ export const Fixture = ({
         profileChannels,
         values: JSON.stringify([[1, 200]]), //here we need the correctly parsed value
         fixtureAssignmentId,
-        sceneId
-      })
+        sceneId,
+      });
     } else {
       removeManualFixture(sceneId, fixtureAssignmentId);
     }
-  }, [selectedFixtureIds])
+  }, [selectedFixtureIds]);
 
   const handleOutput = (fixture: FixtureType) => {
     // toggles multiple fixtures in and out of set
@@ -105,23 +107,23 @@ export const Fixture = ({
         return dupe;
       });
     }
-    console.log('ctrlpanelctx', ctrlPanelCtx);
+    console.log("ctrlpanelctx", ctrlPanelCtx);
   };
 
   const selectedStyle = (fixtureAssignmentId: number) => {
-    const styles: {color?: string, borderColor?: string} = {};
+    const styles: { color?: string; borderColor?: string } = {};
 
     if (unsavedChanges) {
-      styles['color'] = 'rgb(256, 50, 30)';
+      styles["color"] = "rgb(256, 50, 30)";
     }
 
     if (selectedFixtureIds.has(fixtureAssignmentId)) {
-      styles['borderColor'] = 'gold';
+      styles["borderColor"] = "gold";
     } else {
-      styles['borderColor'] = 'rgb(100, 256, 100)'
+      styles["borderColor"] = "rgb(100, 256, 100)";
     }
     return styles;
-  }
+  };
 
   return (
     <View
@@ -134,29 +136,31 @@ export const Fixture = ({
           profileChannels,
           values,
           fixtureAssignmentId,
-          sceneId
+          sceneId,
         })
       }
     >
       <Text style={styles.text}>{channel}</Text>
       <Text style={styles.text}>{fixtureName}</Text>
-      <Text style={{...styles.text, ...selectedStyle(fixtureAssignmentId)}}>{selectedValue}</Text>
+      <Text style={{ ...styles.text, ...selectedStyle(fixtureAssignmentId) }}>
+        {selectedValue}
+      </Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   fixtures: {
-    backgroundColor: 'purple',
+    backgroundColor: "purple",
     width: 200,
     height: 130,
     borderWidth: 4,
     margin: 10,
-    borderColor: 'gold',
+    borderColor: "gold",
   },
   text: {
-    fontWeight: '800',
-    textAlign: 'center',
+    fontWeight: "800",
+    textAlign: "center",
     fontSize: 20,
   },
 });

@@ -1,14 +1,14 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
-import ScenesToFixtureAssignments from '@/models/scene-to-fixture-assignments';
-import { Fixture as FixtureComponent } from './fixture';
-import { db } from '@/db/client';
-import { mergeCacheWithDBFixtures } from '@/util/helpers';
+import React, { useEffect, useState, useCallback } from "react";
+import { StyleSheet, View } from "react-native";
+import ScenesToFixtureAssignments from "@/models/scene-to-fixture-assignments";
+import { Fixture as FixtureComponent } from "./fixture";
+import { db } from "@/db/client";
+import { mergeCacheWithDBFixtures } from "@/util/helpers";
 
 type LayoutAreaProps = {
   selectedSceneId: number;
   goToOut: boolean;
-}
+};
 
 export type FixtureAssignmentResponse = {
   fixtureAssignmentId: number;
@@ -26,26 +26,15 @@ export type FixtureAssignmentResponse = {
 const DRIZZLE_ARRAY_CHECK_VALUE = -1;
 
 export const LayoutArea = (props: LayoutAreaProps): React.JSX.Element => {
-
   const [fixtures, setFixtures] = useState<FixtureAssignmentResponse>([]);
-  const [selectedFixtureIds, setSelectedFixtureIds] = useState<Set<number>>(new Set([DRIZZLE_ARRAY_CHECK_VALUE]));
-
-  // const fetchFixtures = async () => {
-  //   try {
-  //     const fixturesWithAssignments = await new ScenesToFixtureAssignments(
-  //       db
-  //     ).getFixturesAndAssignments(props.selectedSceneId, selectedFixtureIds);
-
-  //     return fixturesWithAssignments;
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // };
+  const [selectedFixtureIds, setSelectedFixtureIds] = useState<Set<number>>(
+    new Set([DRIZZLE_ARRAY_CHECK_VALUE]),
+  );
 
   const fetchFixtures = useCallback(async () => {
     try {
       const fixturesWithAssignments = await new ScenesToFixtureAssignments(
-        db
+        db,
       ).getFixturesAndAssignments(props.selectedSceneId, selectedFixtureIds);
 
       return fixturesWithAssignments;
@@ -54,23 +43,20 @@ export const LayoutArea = (props: LayoutAreaProps): React.JSX.Element => {
     }
   }, [props.selectedSceneId, selectedFixtureIds]);
 
-
   useEffect(() => {
     if (props.goToOut) {
-
     }
-  }, [props.goToOut])
+  }, [props.goToOut]);
 
   useEffect(() => {
-   mergeCacheWithDBFixtures(props.selectedSceneId, fetchFixtures, setFixtures)
-
+    mergeCacheWithDBFixtures(props.selectedSceneId, fetchFixtures, setFixtures);
   }, [props.selectedSceneId, fetchFixtures]);
 
   return (
     <View
       style={{
         ...styles.container,
-        alignItems: 'center',
+        alignItems: "center",
       }}
     >
       {fixtures?.map((fixtureProps) => (
@@ -87,34 +73,34 @@ export const LayoutArea = (props: LayoutAreaProps): React.JSX.Element => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#000',
+    backgroundColor: "#000",
     // borderColor: '#cba601',
     // borderWidth: 2,
     margin: 4,
-    height: 'auto',
+    height: "auto",
   },
 
   scene: {
-    borderColor: 'purple',
+    borderColor: "purple",
     borderWidth: 2,
     margin: 4,
-    height: '100%',
+    height: "100%",
     minWidth: 130,
   },
 
   rec: {
-    borderColor: 'red',
+    borderColor: "red",
     borderWidth: 2,
     margin: 4,
-    color: '#fff',
-    textAlign: 'center',
+    color: "#fff",
+    textAlign: "center",
     minWidth: 60,
     padding: 4,
     // height: "100%"
   },
 
   bigButtons: {
-    borderColor: 'blue',
+    borderColor: "blue",
     minHeight: 60,
     padding: 18,
     borderWidth: 2,
@@ -127,23 +113,23 @@ const styles = StyleSheet.create({
     minHeight: 40,
     marginTop: 8,
     marginBottom: 8,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
 
   btnText: {
-    color: 'black',
-    textAlign: 'center',
+    color: "black",
+    textAlign: "center",
     fontSize: 12,
-    margin: 'auto',
+    margin: "auto",
   },
 
   fixtures: {
-    backgroundColor: 'yellow',
+    backgroundColor: "yellow",
     width: 100,
     height: 100,
-    borderColor: 'black',
+    borderColor: "black",
     borderWidth: 4,
     margin: 10,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

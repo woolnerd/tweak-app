@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
-import { LayoutArea } from '@/components/layout-area';
-import { Scene as SceneComponent, SceneProps } from '@/components/scene';
-import { drizzle } from 'drizzle-orm/expo-sqlite';
-import { openDatabaseSync } from 'expo-sqlite/next';
-import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
+import React, { useEffect, useState } from "react";
+import { StyleSheet, View, Text, Pressable } from "react-native";
+import { LayoutArea } from "@/components/layout-area";
+import { Scene as SceneComponent, SceneProps } from "@/components/scene";
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { openDatabaseSync } from "expo-sqlite/next";
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 // import migrations from './drizzle/migrations';
 // import * as FileSystem from 'expo-file-system';
-import * as schema from '@/db/schema';
-import Scene from '@/models/scene';
-import { SelectScene } from '@/db/types/tables';
+import * as schema from "@/db/schema";
+import Scene from "@/models/scene";
+import { SelectScene } from "@/db/types/tables";
 // import { migrate } from 'drizzle-orm/expo-sqlite/migrator';
-import { ControlPanel } from '@/components/control-panel';
-import { ControlPanelContext } from '../contexts/control-panel';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ControlPanel } from "@/components/control-panel";
+import { ControlPanelContext } from "../contexts/control-panel";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const expoDb = openDatabaseSync('dev.db');
+const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
 
 const App = () => {
@@ -35,30 +35,26 @@ const App = () => {
     fetchScenes().then((scenes) => setScenes(scenes));
   }, []);
 
-  const handleGoToOut = () => {
-  }
+  const handleGoToOut = () => {};
 
   return (
     <View
       style={{
         flex: 1,
-        flexDirection: 'row',
-        height: '80%',
-        margin: 'auto',
-        backgroundColor: 'black',
+        flexDirection: "row",
+        height: "80%",
+        margin: "auto",
+        backgroundColor: "black",
         padding: 20,
         borderWidth: 4,
-        borderColor: 'yellow',
+        borderColor: "yellow",
       }}
     >
       <View style={{ flex: 1, ...styles.container }}>
         <View>
-          <View style={{ flex: 1, borderColor: 'yellow', height: 100 }} />
+          <View style={{ flex: 1, borderColor: "yellow", height: 100 }} />
 
-          <Pressable
-            style={styles.bigButtons}
-            onPress={handleGoToOut}
-          >
+          <Pressable style={styles.bigButtons} onPress={handleGoToOut}>
             <Text style={{ ...styles.btnText, fontSize: 18 }}>Go to Out</Text>
           </Pressable>
 
@@ -73,7 +69,7 @@ const App = () => {
 
           <Pressable
             style={styles.bigButtons}
-            onPress={() => console.log('Simple Pressable pressed')}
+            onPress={() => console.log("Simple Pressable pressed")}
           >
             <Text style={{ ...styles.btnText, fontSize: 18 }}>Label</Text>
           </Pressable>
@@ -98,7 +94,7 @@ const App = () => {
         </ControlPanelContext.Provider>
       </View>
 
-      <View style={{ flex: 1.5, flexDirection: 'row', ...styles.container }}>
+      <View style={{ flex: 1.5, flexDirection: "row", ...styles.container }}>
         <ControlPanel setControlPanelValue={setControlPanelValue} />
       </View>
     </View>
@@ -109,14 +105,14 @@ export default App;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#000',
-    borderColor: '#cba601',
+    backgroundColor: "#000",
+    borderColor: "#cba601",
     borderWidth: 2,
     margin: 4,
   },
 
   bigButtons: {
-    borderColor: 'blue',
+    borderColor: "blue",
     minHeight: 60,
     padding: 18,
     borderWidth: 2,
@@ -126,9 +122,9 @@ const styles = StyleSheet.create({
   },
 
   btnText: {
-    color: '#fff',
-    textAlign: 'center',
+    color: "#fff",
+    textAlign: "center",
     fontSize: 12,
-    margin: 'auto',
+    margin: "auto",
   },
 });

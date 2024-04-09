@@ -1,9 +1,15 @@
-import Base from './base';
-import { fixtures, fixtureAssignments, scenes, scenesToFixtureAssignments, fixtureAssignmentRelations, profiles } from '@/db/schema';
-import { Database, QueryKeys, MyQueryHelper } from '@/db/types/database';
-import { SelectSceneToFixtureAssignment, TableNames } from '@/db/types/tables';
-import { and, eq, notInArray } from 'drizzle-orm';
-
+import Base from "./base";
+import {
+  fixtures,
+  fixtureAssignments,
+  scenes,
+  scenesToFixtureAssignments,
+  fixtureAssignmentRelations,
+  profiles,
+} from "@/db/schema";
+import { Database, QueryKeys, MyQueryHelper } from "@/db/types/database";
+import { SelectSceneToFixtureAssignment, TableNames } from "@/db/types/tables";
+import { and, eq, notInArray } from "drizzle-orm";
 
 export default class ScenesToFixtureAssignments extends Base<
   typeof scenesToFixtureAssignments,
@@ -16,7 +22,10 @@ export default class ScenesToFixtureAssignments extends Base<
     super(db);
   }
 
-  async getFixturesAndAssignments(sceneId: number, selectedFixtureIds: Set<number>) {
+  async getFixturesAndAssignments(
+    sceneId: number,
+    selectedFixtureIds: Set<number>,
+  ) {
     console.log(selectedFixtureIds);
 
     try {
@@ -30,21 +39,26 @@ export default class ScenesToFixtureAssignments extends Base<
           profileName: profiles.name,
           fixtureName: fixtures.name,
           fixtureNotes: fixtures.notes,
-          sceneId: scenesToFixtureAssignments.sceneId
+          sceneId: scenesToFixtureAssignments.sceneId,
         })
         .from(fixtureAssignments)
         .leftJoin(fixtures, eq(fixtures.id, fixtureAssignments.fixtureId))
-        .leftJoin(scenesToFixtureAssignments, eq(fixtureAssignments.id, scenesToFixtureAssignments.fixtureAssignmentId))
+        .leftJoin(
+          scenesToFixtureAssignments,
+          eq(
+            fixtureAssignments.id,
+            scenesToFixtureAssignments.fixtureAssignmentId,
+          ),
+        )
         .leftJoin(profiles, eq(fixtureAssignments.profileId, profiles.id))
         .where(
           and(
             eq(scenesToFixtureAssignments.sceneId, sceneId),
-            notInArray(fixtureAssignments.id, Array.from(selectedFixtureIds))
-         )
-        )
-
+            notInArray(fixtureAssignments.id, Array.from(selectedFixtureIds)),
+          ),
+        );
     } catch (err) {
       this.handleError(err);
     }
   }
- }
+}
