@@ -1,14 +1,14 @@
 import { Pressable, Text, StyleSheet } from "react-native";
 
-import { ControlButton } from "@/util/helpers";
+import { ControlButton } from "../util/helpers.ts";
 
-export const ControlPanelButton = ({
+export default function ControlPanelButton({
   buttonData,
   handleTouch,
 }: {
   buttonData: ControlButton;
   handleTouch: (str: string) => void;
-}) => {
+}) {
   return (
     <Pressable
       key={buttonData.id}
@@ -26,7 +26,7 @@ export const ControlPanelButton = ({
       </Text>
     </Pressable>
   );
-};
+}
 
 const styles = StyleSheet.create({
   touchpadBtn: {

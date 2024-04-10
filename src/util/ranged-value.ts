@@ -1,6 +1,8 @@
 export default abstract class RangedValue {
   public value: number;
+
   protected lowerBound: number;
+
   protected upperBound: number;
 
   constructor(value: number, lowerBound: number, upperBound: number) {

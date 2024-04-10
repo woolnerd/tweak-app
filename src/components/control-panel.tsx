@@ -1,27 +1,22 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  GestureResponderEvent,
-  Pressable,
-} from "react-native";
+import { View } from "react-native";
 
-import { ControlPanelButton } from "./control-panel-button";
-
-import { controlPanelButtonData } from "@/util/helpers";
+import ControlPanelButton from "./control-panel-button.tsx";
+import { controlPanelButtonData } from "../util/helpers.ts";
 
 type ControlPanelProps = {
   setControlPanelValue: any;
 };
-export const ControlPanel = ({ setControlPanelValue }: ControlPanelProps) => {
+export default function ControlPanel({
+  setControlPanelValue,
+}: ControlPanelProps) {
   // const [outputVal, setOutputVal] = useState<string | null>(null);
 
   const handleTouch = (val: string) => {
     setControlPanelValue(val);
   };
 
-  const buildPanel = () => {
-    return controlPanelButtonData.map((col) => (
+  const buildPanel = () =>
+    controlPanelButtonData.map((col) => (
       <View
         key={col.id}
         style={{
@@ -39,19 +34,5 @@ export const ControlPanel = ({ setControlPanelValue }: ControlPanelProps) => {
         ))}
       </View>
     ));
-  };
-
   return buildPanel();
-};
-
-const styles = StyleSheet.create({
-  touchpadBtn: {
-    height: 48,
-    width: "90%",
-    backgroundColor: "gray",
-    marginVertical: 2,
-    borderColor: "blue",
-    borderWidth: 2,
-    gap: 2,
-  },
-});
+}

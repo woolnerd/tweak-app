@@ -7,7 +7,8 @@ import {
   InsertShow,
   InsertPatch,
   InsertSceneToFixtureAssignment,
-} from "@/db/types/tables";
+} from "./types/tables.ts";
+
 const fixture = { name: "Vortex", notes: "test" };
 const manufacturer = { name: "Creamsource", website: "www.creamsource.com" };
 const patch = {

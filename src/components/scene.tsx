@@ -1,15 +1,14 @@
 import { eq } from "drizzle-orm";
 import { View, Pressable, Text, StyleSheet } from "react-native";
 
-import { FixtureType } from "./fixture";
-
-import { db } from "@/db/client";
-import { fixtureAssignments } from "@/db/schema";
+import { FixtureType } from "./fixture.tsx";
+import { db } from "../db/client.ts";
+import { fixtureAssignments } from "../db/schema.ts";
 import {
   clearCacheOnScene,
   getAllFixturesFromSceneKeys,
   getManualFixtureKeys,
-} from "@/util/fixture-cache";
+} from "../util/fixture-cache.ts";
 
 export type SceneProps = {
   name: string;
@@ -17,7 +16,7 @@ export type SceneProps = {
   setSelectedSceneId: (id: number) => void;
 };
 
-export const Scene = (props: SceneProps) => {
+export function Scene(props: SceneProps) {
   const handleScenePress = () => {
     props.setSelectedSceneId(props.id);
   };
@@ -79,7 +78,7 @@ export const Scene = (props: SceneProps) => {
       </Pressable>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   scene: {

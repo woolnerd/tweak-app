@@ -28,7 +28,9 @@ interface Profile {
  */
 class Fixture {
   dimmerLevel: number;
+
   profiles: Profile[];
+
   id: string;
 
   constructor(id: string) {

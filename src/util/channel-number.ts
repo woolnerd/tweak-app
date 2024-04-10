@@ -1,6 +1,6 @@
-import RangedValue from "./ranged-value";
+import RangedValue from "./ranged-value.ts";
 
-export class ChannelNumber extends RangedValue {
+export default class ChannelNumber extends RangedValue {
   constructor(value: number) {
     const LOW_CHANNEL_BOUND = 0;
     const HIGH_CHANNEL_BOUND = 511;

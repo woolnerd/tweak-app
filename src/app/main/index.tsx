@@ -5,23 +5,21 @@ import { openDatabaseSync } from "expo-sqlite/next";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 
-import { ControlPanelContext } from "../contexts/control-panel";
-
-import { ControlPanel } from "@/components/control-panel";
-import { LayoutArea } from "@/components/layout-area";
-import { Scene as SceneComponent, SceneProps } from "@/components/scene";
-
+import ControlPanel from "../../components/control-panel.tsx";
+import LayoutArea from "../../components/layout-area.tsx";
+import { Scene as SceneComponent } from "../../components/scene.tsx";
+import * as schema from "../../db/schema.ts";
+import { SelectScene } from "../../db/types/tables.ts";
+import Scene from "../../models/scene.ts";
+import { ControlPanelContext } from "../contexts/control-panel.ts";
+// import { migrate } from 'drizzle-orm/expo-sqlite/migrator';
 // import migrations from './drizzle/migrations';
 // import * as FileSystem from 'expo-file-system';
-import * as schema from "@/db/schema";
-import { SelectScene } from "@/db/types/tables";
-import Scene from "@/models/scene";
-// import { migrate } from 'drizzle-orm/expo-sqlite/migrator';
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
 
-const App = () => {
+function App() {
   const [scenes, setScenes] = useState<SelectScene[]>([]);
   // const [isLoading, setIsLoading] = useState(false);
   const [ctrlPanelValue, setControlPanelValue] = useState<string | null>(null);
@@ -30,12 +28,12 @@ const App = () => {
   // const { success, error } = useMigrations(db, migrations);
 
   const fetchScenes = async () => {
-    const scenes = await new Scene(db).getAllOrdered();
-    return !scenes ? [] : scenes;
+    const response = await new Scene(db).getAllOrdered();
+    return !response ? [] : response;
   };
 
   useEffect(() => {
-    fetchScenes().then((scenes) => setScenes(scenes));
+    fetchScenes().then((response) => setScenes(response));
   }, []);
 
   const handleGoToOut = () => {};
@@ -98,7 +96,7 @@ const App = () => {
       </View>
     </View>
   );
-};
+}
 
 export default App;
 

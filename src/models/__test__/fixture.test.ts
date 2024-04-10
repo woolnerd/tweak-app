@@ -1,7 +1,6 @@
-import * as mock from "../__mocks__/fixture.mock";
-import Fixture from "../fixture";
-
-import { SelectFixture } from "@/db/types/tables";
+import { SelectFixture } from "../../db/types/tables.ts";
+import * as mock from "../__mocks__/fixture.mock.ts";
+import Fixture from "../fixture.ts";
 
 describe("Fixture model", () => {
   afterEach(() => {

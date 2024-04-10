@@ -1,12 +1,13 @@
-import Base from "./base";
+import Base from "./base.ts";
+import { fixtureAssignments } from "../db/schema.ts";
+import { QueryKeys } from "../db/types/database.ts";
+import { SelectFixtureAssignment, TableNames } from "../db/types/tables.ts";
 
-import { fixtureAssignments } from "@/db/schema";
-import { QueryKeys } from "@/db/types/database";
-import { SelectFixtureAssignment, TableNames } from "@/db/types/tables";
 export default class FixtureAssignment extends Base<
   typeof fixtureAssignments,
   SelectFixtureAssignment
 > {
   readonly table = fixtureAssignments;
+
   readonly name: QueryKeys = TableNames.FixtureAssignments;
 }

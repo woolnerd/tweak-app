@@ -1,13 +1,11 @@
-// tests/show.test.ts
-import { dbMock } from "../__mocks__/dbmock";
-
-import Show from "@/models/show";
+import { dbMock } from "../__mocks__/dbmock.ts";
+import Show from "../show.ts";
 
 describe("Show", () => {
   let show: Show;
 
   beforeEach(() => {
-    show = new Show(dbMock as any); // Casting as any for simplicity
+    show = new Show(dbMock as any);
   });
 
   it("should create a new show", async () => {
@@ -23,6 +21,4 @@ describe("Show", () => {
     expect(dbMock.returning).toHaveBeenCalled();
     expect(result).toEqual("mocked value");
   });
-
-  // Add more tests for other methods like getAll, getById, update, delete...
 });

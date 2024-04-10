@@ -12,8 +12,8 @@ type Test =
     }[]
   | undefined;
 
+// eslint-disable-next-line
 export const mockData = {
-  // Define mock data here
   fixtureAssignments: [
     {
       fixtureAssignmentId: 1,
@@ -71,6 +71,16 @@ export const mockData = {
       fixtureName: "Fixture 3",
       fixtureNotes: "no notes",
       sceneId: 1,
+    },
+  ],
+  patches: [
+    {
+      id: 1,
+      startAddress: 1,
+      endAddress: 10,
+      fixtureId: 1,
+      profileId: 1,
+      showId: 1,
     },
   ],
 };

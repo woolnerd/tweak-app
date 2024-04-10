@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 
-import { Fixture as FixtureComponent } from "./fixture";
-
-import { db } from "@/db/client";
-import ScenesToFixtureAssignments from "@/models/scene-to-fixture-assignments";
-import { mergeCacheWithDBFixtures } from "@/util/helpers";
+import { Fixture as FixtureComponent } from "./fixture.tsx";
+import { db } from "../db/client.ts";
+import ScenesToFixtureAssignments from "../models/scene-to-fixture-assignments.ts";
+import { mergeCacheWithDBFixtures } from "../util/helpers.ts";
 
 type LayoutAreaProps = {
   selectedSceneId: number;
@@ -24,10 +23,10 @@ export type FixtureAssignmentResponse = {
   sceneId: number;
 }[];
 // inArray method must have at least one value in the array.
-//using -1, because we should never have that id.
+// using -1, because we should never have that id.
 const DRIZZLE_ARRAY_CHECK_VALUE = -1;
 
-export const LayoutArea = (props: LayoutAreaProps): React.JSX.Element => {
+export default function LayoutArea(props: LayoutAreaProps): React.JSX.Element {
   const [fixtures, setFixtures] = useState<FixtureAssignmentResponse>([]);
   const [selectedFixtureIds, setSelectedFixtureIds] = useState<Set<number>>(
     new Set([DRIZZLE_ARRAY_CHECK_VALUE]),
@@ -70,7 +69,7 @@ export const LayoutArea = (props: LayoutAreaProps): React.JSX.Element => {
       ))}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

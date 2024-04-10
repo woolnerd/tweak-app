@@ -1,4 +1,4 @@
-import Universe from "./universe";
+import Universe from "./universe.ts";
 
 export interface FixtureMap {
   fixtureId: string;
@@ -11,30 +11,30 @@ export type UniverseConstruct = null[] | FixtureMap[];
 const UNIVERSE_SIZE = 512;
 
 export default class FixtureUniverse extends Universe<FixtureMap> {
-  constructor(_number: number) {
-    super(_number);
-  }
-
   public get getFixtures() {
-    return this._addresses;
+    return this.addresses;
   }
 
   public addFixture(fixture: FixtureMap) {
-    this.errorChecking(fixture, this.buildUniverse());
+    FixtureUniverse.errorChecking(fixture, this.buildUniverse());
 
-    this._addresses.push(fixture);
+    this.addresses.push(fixture);
 
-    //ensure sorted by start index
-    this._addresses.sort((a, b) => a.startAddress - b.startAddress);
+    // ensure sorted by start index
+    this.addresses.sort((a, b) => a.startAddress - b.startAddress);
   }
 
   public removeFixture(fixture: FixtureMap) {
     const universe = this.buildUniverse();
 
-    this.errorChecking(fixture, universe);
+    FixtureUniverse.errorChecking(fixture, universe);
 
-    this.getFixtures.forEach((fixture) => {
-      for (let i = fixture.startAddress; i <= fixture.endAddress; i++) {
+    this.getFixtures.forEach((fixtureEle) => {
+      for (
+        let i = fixtureEle.startAddress;
+        i <= fixtureEle.endAddress;
+        i += 1
+      ) {
         universe[i] = null;
       }
     });
@@ -44,7 +44,7 @@ export default class FixtureUniverse extends Universe<FixtureMap> {
     const display = Array(UNIVERSE_SIZE).fill(null);
 
     this.getFixtures.forEach((fixture) => {
-      for (let i = fixture.startAddress; i <= fixture.endAddress; i++) {
+      for (let i = fixture.startAddress; i <= fixture.endAddress; i += 1) {
         display[i] = fixture.fixtureId;
       }
     });
@@ -52,34 +52,34 @@ export default class FixtureUniverse extends Universe<FixtureMap> {
     return display;
   }
 
-  public addressConflict(
+  static addressConflict(
     fixture: FixtureMap,
     universe: UniverseConstruct,
   ): boolean {
-    for (let i = fixture.startAddress; i <= fixture.endAddress; i++) {
+    for (let i = fixture.startAddress; i <= fixture.endAddress; i += 1) {
       if (universe[i] !== null && typeof universe[i] === "string") return true;
     }
 
     return false;
   }
 
-  public footprintTooLarge(
+  static footprintTooLarge(
     fixture: FixtureMap,
     universe: UniverseConstruct,
   ): boolean {
     return fixture.endAddress > universe.length;
   }
 
-  private errorChecking(fixture: FixtureMap, universe: UniverseConstruct) {
+  static errorChecking(fixture: FixtureMap, universe: UniverseConstruct) {
     if (fixture.startAddress >= UNIVERSE_SIZE || fixture.startAddress < 0) {
       throw new Error("Out of bounds");
     }
 
-    if (this.addressConflict(fixture, universe)) {
+    if (FixtureUniverse.addressConflict(fixture, universe)) {
       throw new Error("Address not available");
     }
 
-    if (this.footprintTooLarge(fixture, universe)) {
+    if (FixtureUniverse.footprintTooLarge(fixture, universe)) {
       throw new Error("Fixture cannot fit at address");
     }
   }

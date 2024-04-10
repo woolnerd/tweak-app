@@ -8,7 +8,7 @@ export default function Tab() {
   const buildUniverse = () => {
     const universe: React.JSX.Element[] = [];
     let row: React.JSX.Element[] = [];
-    for (let i = 1; i <= UNIVERSE_SIZE; i++) {
+    for (let i = 1; i <= UNIVERSE_SIZE; i += 1) {
       row.push(
         <View
           key={i}
@@ -26,7 +26,7 @@ export default function Tab() {
       if (i % 10 === 0) {
         universe.push(
           <View
-            key={`row` + i}
+            key={`row${i}`}
             style={{ width: "auto", justifyContent: "space-evenly" }}>
             {row}
           </View>,

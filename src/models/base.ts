@@ -5,16 +5,20 @@ import {
   SQLiteTable,
 } from "drizzle-orm/sqlite-core";
 
-import { Database, QueryKeys, MyQueryHelper } from "@/db/types/database";
-import { handleDatabaseError } from "@/util/errors";
+import { Database, QueryKeys, MyQueryHelper } from "../db/types/database.ts";
+import handleDatabaseError from "../util/errors.ts";
+
 export default abstract class Base<
   T extends SQLiteTable<TableConfig>,
   K extends { id: number },
 > {
   abstract readonly table: any;
+
   abstract readonly name: QueryKeys;
+
   protected db: Database;
-  protected handleError(error: unknown) {}
+
+  protected handleError: (error: unknown) => void;
 
   constructor(db: Database) {
     this.db = db;
@@ -27,16 +31,17 @@ export default abstract class Base<
     try {
       return await this.db.insert(this.table).values(data).returning();
     } catch (err) {
-      this.handleError(err);
+      return this.handleError(err);
     }
   }
-  async getAll(options?: any): Promise<typeof this.table.$inferSelect> {
+
+  async getAll(options?: any): Promise<typeof this.table.$inferSelect | Error> {
     try {
       return await (this.db.query[this.name] as MyQueryHelper).findMany(
         options,
       );
     } catch (err) {
-      this.handleError(err);
+      return this.handleError(err);
     }
   }
 
@@ -47,7 +52,7 @@ export default abstract class Base<
         .from(this.table)
         .where(eq(this.table.id, id));
     } catch (err) {
-      this.handleError(err);
+      return this.handleError(err);
     }
   }
 
@@ -62,7 +67,7 @@ export default abstract class Base<
         .where(eq(this.table.id, id))
         .returning();
     } catch (err) {
-      this.handleError(err);
+      return this.handleError(err);
     }
   }
 
@@ -79,7 +84,7 @@ export default abstract class Base<
 
       return result;
     } catch (err) {
-      this.handleError(err);
+      return this.handleError(err);
     }
   }
 }

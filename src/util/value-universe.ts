@@ -1,16 +1,16 @@
-import { ChannelNumber } from "./channel-number";
-import { DmxValue } from "./dmx-value";
-import Universe from "./universe";
+import ChannelNumber from "./channel-number.ts";
+import DmxValue from "./dmx-value.ts";
+import Universe from "./universe.ts";
 
 type DmxTuple = [ChannelNumber, DmxValue];
 
 export default class ValueUniverse extends Universe<DmxTuple> {
   public get getDmxValues() {
-    return this._addresses;
+    return this.addresses;
   }
 
   public set setDmxValues(dmxTuple: DmxTuple) {
-    this._addresses.push(dmxTuple);
+    this.addresses.push(dmxTuple);
   }
 
   public buildUniverse(): (number | null)[] {

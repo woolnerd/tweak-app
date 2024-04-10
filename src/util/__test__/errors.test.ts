@@ -1,4 +1,5 @@
-import { handleDatabaseError } from "../errors";
+import handleDatabaseError from "../errors.ts";
+
 describe("handleDatabaseError", () => {
   test("should throw an error with a message when passed an instance of Error", () => {
     expect(() => handleDatabaseError(new Error("There was a problem"))).toThrow(

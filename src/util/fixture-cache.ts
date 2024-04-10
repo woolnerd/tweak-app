@@ -1,9 +1,27 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/typescript/types";
 
-import { FixtureType } from "@/components/fixture";
+import { FixtureType } from "../components/fixture.tsx";
+
 function buildKey(sceneId: number, fixtureAssignmentId: number) {
   return `sceneId:${sceneId}#fixtureAssignementId:${fixtureAssignmentId}`;
+}
+
+function keyIncludesScene(key: KeyValuePair | string, sceneId: number) {
+  if (key instanceof String) {
+    return key.startsWith(`sceneId:${sceneId}`);
+  }
+  return key[0].startsWith(`sceneId:${sceneId}`);
+}
+
+function mapValuesToFixtures(keyValuePairs: KeyValuePair[]): FixtureType[] {
+  return keyValuePairs.map((key) => {
+    const value = key[1];
+    if (value !== null) {
+      return JSON.parse(value);
+    }
+    return {};
+  });
 }
 
 export const getManualFixture = async (
@@ -82,21 +100,3 @@ export const clearCacheOnScene = async (
     console.log("Successfully updated DB and removed cached fixtures");
   });
 };
-
-function keyIncludesScene(key: KeyValuePair | string, sceneId: number) {
-  if (key instanceof String) {
-    return key.startsWith(`sceneId:${sceneId}`);
-  }
-  return key[0].startsWith(`sceneId:${sceneId}`);
-}
-
-function mapValuesToFixtures(keyValuePairs: KeyValuePair[]): FixtureType[] {
-  return keyValuePairs.map((key) => {
-    const value = key[1];
-    if (value !== null) {
-      return JSON.parse(value);
-    } else {
-      return {};
-    }
-  });
-}

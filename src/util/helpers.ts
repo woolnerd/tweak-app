@@ -3,10 +3,9 @@ import { SetStateAction, Dispatch } from "react";
 import {
   getManualFixtureKeys,
   getAllFixturesFromSceneKeys,
-} from "./fixture-cache";
-
-import { FixtureType } from "@/components/fixture";
-import { FixtureAssignmentResponse } from "@/components/layout-area";
+} from "./fixture-cache.ts";
+import { FixtureType } from "../components/fixture.tsx";
+import { FixtureAssignmentResponse } from "../components/layout-area.tsx";
 
 type FetchCallback = () => Promise<
   | FixtureType[]
@@ -46,7 +45,7 @@ export async function mergeCacheWithDBFixtures(
       if (cachedFixtures instanceof Array && dbFixtures instanceof Array) {
         setCallback(
           [...cachedFixtures, ...dbFixtures].sort(
-            //sort by id, later use X,Y for draggable interface
+            // sort by id, later use X,Y for draggable interface
             (a, b) => a.fixtureAssignmentId - b.fixtureAssignmentId,
           ),
         );
