@@ -1,6 +1,8 @@
+const { migrations } = require("drizzle/migrations");
 const { migrate } = require("drizzle-orm/expo-sqlite/migrator");
-const { db } = require("../src/db/client")
-const { migrations }  = require("drizzle/migrations");
+
+const { db } = require("../src/db/client");
+
 const main = async () => {
   try {
     // await migrate(db, migrations);
@@ -14,4 +16,4 @@ const main = async () => {
   }
 };
 
-void main();
+main();
