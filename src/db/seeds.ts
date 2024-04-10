@@ -8,6 +8,7 @@ import {
   InsertPatch,
   InsertSceneToFixtureAssignment,
 } from "@/db/types/tables";
+
 const fixture = { name: "Vortex", notes: "test" };
 const manufacturer = { name: "Creamsource", website: "www.creamsource.com" };
 const patch = {

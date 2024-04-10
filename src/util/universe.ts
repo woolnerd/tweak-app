@@ -1,13 +1,14 @@
 export default abstract class Universe<T> {
-  protected _addresses: T[];
-  protected _number: number;
+  protected addresses: T[];
+
+  protected number: number;
 
   constructor(number: number) {
-    this._number = number;
-    this._addresses = [];
+    this.number = number;
+    this.addresses = [];
   }
 
-  public get number() {
-    return this._number;
+  public get getNumber() {
+    return this.number;
   }
 }

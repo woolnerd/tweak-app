@@ -1,5 +1,5 @@
-import * as mock from "../__mocks__/manufacturer.mock";
-import Manufacturer from "../manufacturer";
+import * as mock from "../__mocks__/manufacturer.mock.ts";
+import Manufacturer from "../manufacturer.ts";
 
 afterEach(() => {
   jest.clearAllMocks();

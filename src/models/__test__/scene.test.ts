@@ -2,15 +2,13 @@ import {
   mockSelect,
   mockFrom,
   mockOrderBy,
-  mockOrderByDsc,
   dbMock,
   dbMockDsc,
   mockScenes,
   mockScenesDesc,
   mockSelectDsc,
-  mockFromDsc,
-} from "../__mocks__/scene.mock";
-import Scene from "../scene";
+} from "../__mocks__/scene.mock.ts";
+import Scene from "../scene.ts";
 
 describe("Scene model - getAllOrdered", () => {
   beforeEach(() => {

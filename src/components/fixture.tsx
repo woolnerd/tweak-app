@@ -1,8 +1,8 @@
 import { useState, useContext, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-import { ControlPanelContext } from "@/app/contexts/control-panel";
-import { removeManualFixture, addManualFixture } from "@/util/fixture-cache";
+import { ControlPanelContext } from "@/app/contexts/control-panel.ts";
+import { removeManualFixture, addManualFixture } from "@/util/fixture-cache.ts";
 
 export type FixtureType = {
   channel: number;
@@ -28,7 +28,7 @@ type OptionalProps<T> = { [P in keyof T]?: T[P] | null };
 type ChannelKey = number;
 type Value = number;
 type Channels = [ChannelKey, Value][];
-export const Fixture = ({
+export function Fixture({
   channel,
   fixtureName,
   profileChannels,
@@ -37,7 +37,7 @@ export const Fixture = ({
   selectedFixtureIds,
   setSelectedFixtureIds,
   sceneId,
-}: FixtureProps) => {
+}: FixtureProps) {
   const ctrlPanelCtx = useContext(ControlPanelContext);
   const [selectedValue, setSelectedValue] = useState<string | null>(
     handleChannelValues(profileChannels, values),
@@ -81,7 +81,7 @@ export const Fixture = ({
         channel,
         fixtureName,
         profileChannels,
-        values: JSON.stringify([[1, 200]]), //here we need the correctly parsed value
+        values: JSON.stringify([[1, 200]]), // here we need the correctly parsed value
         fixtureAssignmentId,
         sceneId,
       });
@@ -114,13 +114,13 @@ export const Fixture = ({
     const styles: { color?: string; borderColor?: string } = {};
 
     if (unsavedChanges) {
-      styles["color"] = "rgb(256, 50, 30)";
+      styles.color = "rgb(256, 50, 30)";
     }
 
     if (selectedFixtureIds.has(fixtureAssignmentId)) {
-      styles["borderColor"] = "gold";
+      styles.borderColor = "gold";
     } else {
-      styles["borderColor"] = "rgb(100, 256, 100)";
+      styles.borderColor = "rgb(100, 256, 100)";
     }
     return styles;
   };
@@ -146,7 +146,7 @@ export const Fixture = ({
       </Text>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   fixtures: {

@@ -1,6 +1,6 @@
-import { ChannelNumber } from "../channel-number";
-import { DmxValue } from "../dmx-value";
-import ValueUniverse from "../value-universe";
+import ChannelNumber from "../channel-number.ts";
+import DmxValue from "../dmx-value.ts";
+import ValueUniverse from "../value-universe.ts";
 
 describe("ValueUniverse", () => {
   let valueUniverse: ValueUniverse;

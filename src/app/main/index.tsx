@@ -21,7 +21,7 @@ import Scene from "@/models/scene";
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
 
-const App = () => {
+function App() {
   const [scenes, setScenes] = useState<SelectScene[]>([]);
   // const [isLoading, setIsLoading] = useState(false);
   const [ctrlPanelValue, setControlPanelValue] = useState<string | null>(null);
@@ -98,7 +98,7 @@ const App = () => {
       </View>
     </View>
   );
-};
+}
 
 export default App;
 

@@ -1,5 +1,5 @@
-import { mockDb } from "../__mocks__/profile.mock";
-import Profile from "../profile";
+import { mockDb } from "../__mocks__/profile.mock.ts";
+import Profile from "../profile.ts";
 
 describe("Profile model", () => {
   let profile: Profile;

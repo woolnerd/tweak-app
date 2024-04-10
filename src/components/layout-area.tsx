@@ -24,10 +24,10 @@ export type FixtureAssignmentResponse = {
   sceneId: number;
 }[];
 // inArray method must have at least one value in the array.
-//using -1, because we should never have that id.
+// using -1, because we should never have that id.
 const DRIZZLE_ARRAY_CHECK_VALUE = -1;
 
-export const LayoutArea = (props: LayoutAreaProps): React.JSX.Element => {
+export default function LayoutArea(props: LayoutAreaProps): React.JSX.Element {
   const [fixtures, setFixtures] = useState<FixtureAssignmentResponse>([]);
   const [selectedFixtureIds, setSelectedFixtureIds] = useState<Set<number>>(
     new Set([DRIZZLE_ARRAY_CHECK_VALUE]),
@@ -70,7 +70,7 @@ export const LayoutArea = (props: LayoutAreaProps): React.JSX.Element => {
       ))}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

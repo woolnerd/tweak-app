@@ -1,6 +1,37 @@
-//@ts-nocheck
-import { Database } from "@/db/types/database";
-import { SelectFixture, InsertFixture, TableNames } from "@/db/types/tables";
+import { Database } from "../../db/types/database.ts";
+import {
+  SelectFixture,
+  InsertFixture,
+  TableNames,
+} from "../../db/types/tables.ts";
+
+export const mockFixtureArray: SelectFixture[] = [
+  {
+    id: 1,
+    name: "Test Fixture1",
+    notes: "Test notes1",
+    manufacturerId: 1,
+  },
+  {
+    id: 2,
+    name: "Test Fixture2",
+    notes: "Test notes2",
+    manufacturerId: 1,
+  },
+];
+
+export const mockFixture: SelectFixture = {
+  id: 1,
+  name: "Test Fixture",
+  notes: "Test notes",
+  manufacturerId: 1,
+};
+
+export const mockInsertFixture: InsertFixture = {
+  name: "Test Fixture",
+  notes: "Test notes",
+  manufacturerId: 1,
+};
 
 export const mockInsertDb: Database = {
   insert: jest.fn().mockReturnThis(),
@@ -35,36 +66,4 @@ export const mockDeleteDb: Database = {
   where: jest.fn().mockReturnThis(),
   set: jest.fn().mockReturnThis(),
   delete: jest.fn().mockReturnThis(),
-};
-
-export const mockFixtureArray: SelectFixture[] = [
-  {
-    id: 1,
-    name: "Test Fixture1",
-    notes: "Test notes1",
-    assigned: true,
-    manufacturerId: 1,
-  },
-  {
-    id: 2,
-    name: "Test Fixture2",
-    notes: "Test notes2",
-    assigned: false,
-    manufacturerId: 1,
-  },
-];
-
-export const mockFixture: SelectFixture = {
-  id: 1,
-  name: "Test Fixture",
-  notes: "Test notes",
-  assigned: true,
-  manufacturerId: 1,
-};
-
-export const mockInsertFixture: InsertFixture = {
-  name: "Test Fixture",
-  notes: "Test notes",
-  assigned: true,
-  manufacturerId: 1,
 };

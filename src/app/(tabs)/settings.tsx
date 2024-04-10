@@ -26,7 +26,7 @@ export default function Tab() {
       if (i % 10 === 0) {
         universe.push(
           <View
-            key={`row` + i}
+            key={`row${i}`}
             style={{ width: "auto", justifyContent: "space-evenly" }}>
             {row}
           </View>,

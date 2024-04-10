@@ -1,10 +1,10 @@
-//@ts-nocheck
-import { Database } from "@/db/types/database";
+import { SQLiteTable } from "drizzle-orm/sqlite-core/table";
+import { Database } from "../../db/types/database.ts";
 import {
   SelectFixtureAssignment,
   InsertFixtureAssignment,
   TableNames,
-} from "@/db/types/tables";
+} from "../../db/types/tables.ts";
 
 export const mockInsertDb: Database = {
   insert: jest.fn().mockReturnThis(),

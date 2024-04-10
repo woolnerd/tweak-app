@@ -1,26 +1,25 @@
 import { and, eq, notInArray } from "drizzle-orm";
 
-import Base from "./base";
-
+import Base from "./base.ts";
 import {
   fixtures,
   fixtureAssignments,
   scenesToFixtureAssignments,
   profiles,
-} from "@/db/schema";
-import { Database, QueryKeys, MyQueryHelper } from "@/db/types/database";
-import { SelectSceneToFixtureAssignment, TableNames } from "@/db/types/tables";
+} from "../db/schema.ts";
+import { QueryKeys } from "../db/types/database.ts";
+import {
+  SelectSceneToFixtureAssignment,
+  TableNames,
+} from "../db/types/tables.ts";
 
 export default class ScenesToFixtureAssignments extends Base<
   typeof scenesToFixtureAssignments,
   SelectSceneToFixtureAssignment
 > {
   readonly table = scenesToFixtureAssignments;
-  readonly name: QueryKeys = TableNames.ScenesToFixtureAssignments;
 
-  constructor(db: Database) {
-    super(db);
-  }
+  readonly name: QueryKeys = TableNames.ScenesToFixtureAssignments;
 
   async getFixturesAndAssignments(
     sceneId: number,
@@ -57,7 +56,7 @@ export default class ScenesToFixtureAssignments extends Base<
           ),
         );
     } catch (err) {
-      this.handleError(err);
+      return this.handleError(err);
     }
   }
 }

@@ -1,20 +1,15 @@
 import { gte, lte, and, or, eq } from "drizzle-orm";
 
-import Base from "./base";
-
-import { patches } from "@/db/schema";
-import { Database } from "@/db/types/database";
-import { InsertPatch, SelectPatch, TableNames } from "@/db/types/tables";
+import Base from "./base.ts";
+import { patches } from "../db/schema.ts";
+import { InsertPatch, SelectPatch, TableNames } from "../db/types/tables.ts";
 
 export default class Patch extends Base<typeof patches, SelectPatch> {
   readonly table = patches;
-  readonly name = TableNames.Patches;
-  readonly MIN_START_ADDRESS = 1;
 
-  constructor(db: Database) {
-    super(db);
-    this.db = db;
-  }
+  readonly name = TableNames.Patches;
+
+  readonly MIN_START_ADDRESS = 1;
 
   async create(data: InsertPatch) {
     if (data.startAddress > data.endAddress) {
