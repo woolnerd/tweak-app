@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/typescript/types";
 
-import { FixtureType } from "../components/fixture.tsx";
+import { FixtureControlData } from "../components/types/fixture.ts";
 
 function buildKey(sceneId: number, fixtureAssignmentId: number) {
   return `sceneId:${sceneId}#fixtureAssignementId:${fixtureAssignmentId}`;
@@ -14,7 +14,9 @@ function keyIncludesScene(key: KeyValuePair | string, sceneId: number) {
   return key[0].startsWith(`sceneId:${sceneId}`);
 }
 
-function mapValuesToFixtures(keyValuePairs: KeyValuePair[]): FixtureType[] {
+function mapValuesToFixtures(
+  keyValuePairs: KeyValuePair[],
+): FixtureControlData[] {
   return keyValuePairs.map((key) => {
     const value = key[1];
     if (value !== null) {
@@ -35,10 +37,11 @@ export const getManualFixture = async (
     return jsonValue !== null ? JSON.parse(jsonValue) : null;
   } catch (e) {
     console.log(e);
+    throw new Error("Cache error");
   }
 };
 
-export const addManualFixture = async (fixture: FixtureType) => {
+export const addManualFixture = async (fixture: FixtureControlData) => {
   try {
     const jsonValue = JSON.stringify(fixture);
     await AsyncStorage.setItem(
@@ -47,6 +50,7 @@ export const addManualFixture = async (fixture: FixtureType) => {
     );
   } catch (e) {
     console.log(e);
+    throw new Error("Cache error");
   }
   console.log("Added.", buildKey(fixture.sceneId, fixture.fixtureAssignmentId));
 };
@@ -59,6 +63,7 @@ export const removeManualFixture = async (
     await AsyncStorage.removeItem(buildKey(sceneId, fixtureAssignmentId));
   } catch (e) {
     console.log(e);
+    throw new Error("Cache error");
   }
 
   console.log("removed", buildKey(sceneId, fixtureAssignmentId));
@@ -70,6 +75,7 @@ export const getManualFixtureKeys = async () => {
     keys = await AsyncStorage.getAllKeys();
   } catch (e) {
     console.log(e);
+    throw new Error("Cache error");
   }
   return keys;
 };
@@ -87,6 +93,7 @@ export const getAllFixturesFromSceneKeys = async (
     );
   } catch (err) {
     console.log(err);
+    throw new Error("Cache error");
   }
 };
 

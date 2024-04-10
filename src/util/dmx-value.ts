@@ -1,4 +1,5 @@
 import RangedValue from "./ranged-value.ts";
+
 export default class DmxValue extends RangedValue {
   constructor(value: number) {
     const LOW_DMX_BOUND = 0;

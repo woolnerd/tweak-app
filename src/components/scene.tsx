@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { View, Pressable, Text, StyleSheet } from "react-native";
 
-import { FixtureType } from "./fixture.tsx";
+import { FixtureControlData } from "./fixture.tsx";
 import { db } from "../db/client.ts";
 import { fixtureAssignments } from "../db/schema.ts";
 import {
@@ -49,11 +49,11 @@ export function Scene(props: SceneProps) {
     }
   };
 
-  const updateDb = async (cache: FixtureType[]) => {
+  const updateDb = async (cache: FixtureControlData[]) => {
     try {
       await db
         .transaction(async (tx) => {
-          cache.forEach(async (fixture: FixtureType) => {
+          cache.forEach(async (fixture: FixtureControlData) => {
             await tx
               .update(fixtureAssignments)
               .set({ values: fixture.values })

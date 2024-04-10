@@ -1,5 +1,3 @@
-import { sqliteTable } from "drizzle-orm/sqlite-core";
-
 import {
   fixtures,
   manufacturers,
@@ -9,7 +7,7 @@ import {
   shows,
   patches,
   scenesToFixtureAssignments,
-} from "../schema";
+} from "../schema.ts";
 
 export type SelectFixture = typeof fixtures.$inferSelect;
 export type InsertFixture = typeof fixtures.$inferInsert;

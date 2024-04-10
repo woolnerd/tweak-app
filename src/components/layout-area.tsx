@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { Fixture as FixtureComponent } from "./fixture.tsx";
+import { FixtureAssignmentResponse } from "./types/fixture.ts";
 import { db } from "../db/client.ts";
 import ScenesToFixtureAssignments from "../models/scene-to-fixture-assignments.ts";
 import { mergeCacheWithDBFixtures } from "../util/helpers.ts";
@@ -11,22 +12,14 @@ type LayoutAreaProps = {
   goToOut: boolean;
 };
 
-export type FixtureAssignmentResponse = {
-  fixtureAssignmentId: number;
-  channel: number;
-  values: string | null;
-  title: string | null;
-  profileChannels: string | null;
-  profileName: string | null;
-  fixtureName: string | null;
-  fixtureNotes: string | null;
-  sceneId: number;
-}[];
 // inArray method must have at least one value in the array.
 // using -1, because we should never have that id.
 const DRIZZLE_ARRAY_CHECK_VALUE = -1;
 
-export default function LayoutArea(props: LayoutAreaProps): React.JSX.Element {
+export default function LayoutArea({
+  selectedSceneId,
+  goToOut,
+}: LayoutAreaProps): React.JSX.Element {
   const [fixtures, setFixtures] = useState<FixtureAssignmentResponse>([]);
   const [selectedFixtureIds, setSelectedFixtureIds] = useState<Set<number>>(
     new Set([DRIZZLE_ARRAY_CHECK_VALUE]),
@@ -36,22 +29,23 @@ export default function LayoutArea(props: LayoutAreaProps): React.JSX.Element {
     try {
       const fixturesWithAssignments = await new ScenesToFixtureAssignments(
         db,
-      ).getFixturesAndAssignments(props.selectedSceneId, selectedFixtureIds);
+      ).getFixturesAndAssignments(selectedSceneId, selectedFixtureIds);
 
       return fixturesWithAssignments;
     } catch (e) {
       console.log(e);
+      throw new Error();
     }
-  }, [props.selectedSceneId, selectedFixtureIds]);
+  }, [selectedSceneId, selectedFixtureIds]);
 
   useEffect(() => {
-    if (props.goToOut) {
+    if (goToOut) {
     }
-  }, [props.goToOut]);
+  }, [goToOut]);
 
   useEffect(() => {
-    mergeCacheWithDBFixtures(props.selectedSceneId, fetchFixtures, setFixtures);
-  }, [props.selectedSceneId, fetchFixtures]);
+    mergeCacheWithDBFixtures(selectedSceneId, fetchFixtures, setFixtures);
+  }, [selectedSceneId, fetchFixtures]);
 
   return (
     <View
@@ -64,7 +58,13 @@ export default function LayoutArea(props: LayoutAreaProps): React.JSX.Element {
           key={fixtureProps.fixtureAssignmentId}
           selectedFixtureIds={selectedFixtureIds}
           setSelectedFixtureIds={setSelectedFixtureIds}
-          {...fixtureProps}
+          fixtureAssignmentId={fixtureProps.fixtureAssignmentId}
+          channel={fixtureProps.channel}
+          profileChannels={fixtureProps.profileChannels}
+          profileName={fixtureProps.profileName}
+          sceneId={fixtureProps.sceneId}
+          fixtureName={fixtureProps.fixtureName}
+          fixtureNotes={fixtureProps.fixtureNotes}
         />
       ))}
     </View>

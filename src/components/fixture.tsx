@@ -1,31 +1,19 @@
 import { useState, useContext, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
+import { FixtureControlData } from "./types/fixture.ts";
 import { ControlPanelContext } from "../app/contexts/control-panel.ts";
 import {
   removeManualFixture,
   addManualFixture,
 } from "../util/fixture-cache.ts";
 
-export type FixtureType = {
-  channel: number;
-  values: string;
-  title?: string;
-  profileChannels: string;
-  profileName?: string | null;
-  fixtureName: string;
-  fixtureNotes?: string | null;
-  fixtureId?: number | null;
-  fixtureAssignmentId: number;
-  sceneId: number;
-};
-
 export type FixtureProps = {
   selectedFixtureIds: Set<number>;
   setSelectedFixtureIds: (
     fixtureIds: (currentState: Set<number>) => Set<number>,
   ) => void;
-} & FixtureType;
+} & FixtureControlData;
 
 type OptionalProps<T> = { [P in keyof T]?: T[P] | null };
 type ChannelKey = number;
@@ -94,7 +82,7 @@ export function Fixture({
     }
   }, [selectedFixtureIds]);
 
-  const handleOutput = (fixture: FixtureType) => {
+  const handleOutput = (fixture: FixtureControlData) => {
     // toggles multiple fixtures in and out of set
 
     if (selectedFixtureIds.has(fixture.fixtureAssignmentId)) {

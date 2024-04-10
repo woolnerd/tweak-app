@@ -1,4 +1,5 @@
 import { SQLiteTable } from "drizzle-orm/sqlite-core/table";
+
 import { Database } from "../../db/types/database.ts";
 import {
   SelectFixtureAssignment,
