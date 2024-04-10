@@ -11,9 +11,12 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.davewoolner.tweakapp"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,6 +27,11 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "scheme": "tweakapp"
+    "scheme": "tweakapp",
+    "extra": {
+      "eas": {
+        "projectId": "250f7caf-3869-4dc7-a5d4-1677b8aee3d3"
+      }
+    }
   }
 }
