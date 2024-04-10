@@ -27,7 +27,11 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
       throw Error("Starting address must be 1 or greater");
     }
 
-    const isOverlap = await this.checkOverlap(data.startAddress, data.endAddress, data.showId);
+    const isOverlap = await this.checkOverlap(
+      data.startAddress,
+      data.endAddress,
+      data.showId,
+    );
 
     if (isOverlap) {
       throw new Error("Address overlaps with current patch address in scene");

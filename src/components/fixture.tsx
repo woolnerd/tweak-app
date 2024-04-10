@@ -19,7 +19,9 @@ export type FixtureType = {
 
 export type FixtureProps = {
   selectedFixtureIds: Set<number>;
-  setSelectedFixtureIds: (fixtureIds: (currentState: Set<number>) => Set<number>) => void;
+  setSelectedFixtureIds: (
+    fixtureIds: (currentState: Set<number>) => Set<number>,
+  ) => void;
 } & FixtureType;
 
 type OptionalProps<T> = { [P in keyof T]?: T[P] | null };
@@ -43,7 +45,10 @@ export const Fixture = ({
   const [manualHighlight, setManualHighlight] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
 
-  function handleChannelValues(profileChannels: string, values: string): string | null {
+  function handleChannelValues(
+    profileChannels: string,
+    values: string,
+  ): string | null {
     if (!profileChannels || !values) {
       return null;
     }
@@ -136,7 +141,9 @@ export const Fixture = ({
       }>
       <Text style={styles.text}>{channel}</Text>
       <Text style={styles.text}>{fixtureName}</Text>
-      <Text style={{ ...styles.text, ...selectedStyle(fixtureAssignmentId) }}>{selectedValue}</Text>
+      <Text style={{ ...styles.text, ...selectedStyle(fixtureAssignmentId) }}>
+        {selectedValue}
+      </Text>
     </View>
   );
 };

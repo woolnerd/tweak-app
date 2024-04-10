@@ -52,7 +52,10 @@ export default class FixtureUniverse extends Universe<FixtureMap> {
     return display;
   }
 
-  public addressConflict(fixture: FixtureMap, universe: UniverseConstruct): boolean {
+  public addressConflict(
+    fixture: FixtureMap,
+    universe: UniverseConstruct,
+  ): boolean {
     for (let i = fixture.startAddress; i <= fixture.endAddress; i++) {
       if (universe[i] !== null && typeof universe[i] === "string") return true;
     }
@@ -60,7 +63,10 @@ export default class FixtureUniverse extends Universe<FixtureMap> {
     return false;
   }
 
-  public footprintTooLarge(fixture: FixtureMap, universe: UniverseConstruct): boolean {
+  public footprintTooLarge(
+    fixture: FixtureMap,
+    universe: UniverseConstruct,
+  ): boolean {
     return fixture.endAddress > universe.length;
   }
 

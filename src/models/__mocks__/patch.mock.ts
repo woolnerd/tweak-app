@@ -8,7 +8,10 @@ export const mockDbSelectOverlap = (db: Database, returnVal: SelectPatch[]) => {
   });
 };
 
-export const mockDbSelectNoOverlap = (db: Database, returnVal: SelectPatch[]) => {
+export const mockDbSelectNoOverlap = (
+  db: Database,
+  returnVal: SelectPatch[],
+) => {
   db.select = jest.fn().mockReturnValue({
     from: jest.fn().mockReturnThis(),
     where: jest.fn().mockResolvedValue(returnVal), // Simulating no existing patch

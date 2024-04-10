@@ -6,8 +6,12 @@ describe("ChannelNumber", () => {
   });
 
   it("throws an error for out-of-bounds value", () => {
-    expect(() => new ChannelNumber(-1)).toThrow("Value must be between 0 and 511");
-    expect(() => new ChannelNumber(512)).toThrow("Value must be between 0 and 511");
+    expect(() => new ChannelNumber(-1)).toThrow(
+      "Value must be between 0 and 511",
+    );
+    expect(() => new ChannelNumber(512)).toThrow(
+      "Value must be between 0 and 511",
+    );
   });
 
   it("sets the value property correctly", () => {

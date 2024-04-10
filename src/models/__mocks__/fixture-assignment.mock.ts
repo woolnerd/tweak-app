@@ -1,6 +1,10 @@
 //@ts-nocheck
 import { Database } from "@/db/types/database";
-import { SelectFixtureAssignment, InsertFixtureAssignment, TableNames } from "@/db/types/tables";
+import {
+  SelectFixtureAssignment,
+  InsertFixtureAssignment,
+  TableNames,
+} from "@/db/types/tables";
 
 export const mockInsertDb: Database = {
   insert: jest.fn().mockReturnThis(),

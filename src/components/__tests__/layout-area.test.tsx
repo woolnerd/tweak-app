@@ -67,28 +67,33 @@ describe("LayoutArea", () => {
       .mockResolvedValue(mockFixtureResponse);
     (fixtureUtils.getManualFixtureKeys as jest.Mock) = jest
       .fn()
-      .mockResolvedValue(["sceneId:1#fixtureAssignementId:1", "sceneId:1#fixtureAssignementId:2"]);
-    (fixtureUtils.getAllFixturesFromSceneKeys as jest.Mock) = jest.fn().mockResolvedValue([
-      {
-        fixtureAssignmentId: 3,
-        channel: 3,
-        values: JSON.stringify([
-          [1, 100],
-          [2, 255],
-        ]),
-        title: "Fixture 1",
-        profileChannels: JSON.stringify({
-          1: "intensity",
-          2: "red",
-          3: "green",
-          4: "blue",
-        }),
-        profileName: "Profile 1",
-        fixtureName: "Fixture 3",
-        fixtureNotes: "no notes",
-        sceneId: 1,
-      },
-    ]);
+      .mockResolvedValue([
+        "sceneId:1#fixtureAssignementId:1",
+        "sceneId:1#fixtureAssignementId:2",
+      ]);
+    (fixtureUtils.getAllFixturesFromSceneKeys as jest.Mock) = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          fixtureAssignmentId: 3,
+          channel: 3,
+          values: JSON.stringify([
+            [1, 100],
+            [2, 255],
+          ]),
+          title: "Fixture 1",
+          profileChannels: JSON.stringify({
+            1: "intensity",
+            2: "red",
+            3: "green",
+            4: "blue",
+          }),
+          profileName: "Profile 1",
+          fixtureName: "Fixture 3",
+          fixtureNotes: "no notes",
+          sceneId: 1,
+        },
+      ]);
   });
 
   it("renders correctly", async () => {

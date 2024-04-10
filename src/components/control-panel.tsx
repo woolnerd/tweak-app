@@ -1,4 +1,10 @@
-import { View, Text, StyleSheet, GestureResponderEvent, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  GestureResponderEvent,
+  Pressable,
+} from "react-native";
 
 import { ControlPanelButton } from "./control-panel-button";
 

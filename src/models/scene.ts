@@ -17,7 +17,10 @@ export default class Scene extends Base<typeof scenes, SelectScene> {
   async getAllOrdered(options?: { desc: boolean }) {
     try {
       const func = options && options.desc ? desc : asc;
-      return await this.db.select().from(this.table).orderBy(func(this.table.order));
+      return await this.db
+        .select()
+        .from(this.table)
+        .orderBy(func(this.table.order));
     } catch (err) {
       this.handleError(err);
     }

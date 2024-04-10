@@ -1,5 +1,10 @@
 import { relations, sql } from "drizzle-orm";
-import { sqliteTable, primaryKey, text, integer } from "drizzle-orm/sqlite-core";
+import {
+  sqliteTable,
+  primaryKey,
+  text,
+  integer,
+} from "drizzle-orm/sqlite-core";
 
 export const fixtures = sqliteTable("fixtures", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -79,17 +84,20 @@ export const fixtureAssignments = sqliteTable("fixtureAssignments", {
   profileId: integer("profile_id"),
 });
 
-export const fixtureAssignmentRelations = relations(fixtureAssignments, ({ one, many }) => ({
-  fixture: one(fixtures, {
-    fields: [fixtureAssignments.fixtureId],
-    references: [fixtures.id],
+export const fixtureAssignmentRelations = relations(
+  fixtureAssignments,
+  ({ one, many }) => ({
+    fixture: one(fixtures, {
+      fields: [fixtureAssignments.fixtureId],
+      references: [fixtures.id],
+    }),
+    profile: one(profiles, {
+      fields: [fixtureAssignments.profileId],
+      references: [profiles.id],
+    }),
+    scenesToFixtureAssignments: many(scenesToFixtureAssignments),
   }),
-  profile: one(profiles, {
-    fields: [fixtureAssignments.profileId],
-    references: [profiles.id],
-  }),
-  scenesToFixtureAssignments: many(scenesToFixtureAssignments),
-}));
+);
 
 export const scenes = sqliteTable("scenes", {
   id: integer("id").primaryKey({ autoIncrement: true }),

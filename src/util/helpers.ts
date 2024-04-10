@@ -1,6 +1,9 @@
 import { SetStateAction, Dispatch } from "react";
 
-import { getManualFixtureKeys, getAllFixturesFromSceneKeys } from "./fixture-cache";
+import {
+  getManualFixtureKeys,
+  getAllFixturesFromSceneKeys,
+} from "./fixture-cache";
 
 import { FixtureType } from "@/components/fixture";
 import { FixtureAssignmentResponse } from "@/components/layout-area";
@@ -33,7 +36,10 @@ export async function mergeCacheWithDBFixtures(
   try {
     const keys = await getManualFixtureKeys();
     if (keys) {
-      const cachedFixtures = await getAllFixturesFromSceneKeys(keys, selectedSceneId);
+      const cachedFixtures = await getAllFixturesFromSceneKeys(
+        keys,
+        selectedSceneId,
+      );
 
       const dbFixtures = await fetchCallback();
 

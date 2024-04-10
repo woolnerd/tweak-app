@@ -75,7 +75,9 @@ const App = () => {
             <Text style={{ ...styles.btnText, fontSize: 18 }}>Label</Text>
           </Pressable>
 
-          <Pressable style={styles.bigButtons} onPress={() => AsyncStorage.clear()}>
+          <Pressable
+            style={styles.bigButtons}
+            onPress={() => AsyncStorage.clear()}>
             <Text style={{ ...styles.btnText, fontSize: 18 }}>Clear Cache</Text>
           </Pressable>
         </View>

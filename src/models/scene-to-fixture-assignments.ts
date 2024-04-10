@@ -2,7 +2,12 @@ import { and, eq, notInArray } from "drizzle-orm";
 
 import Base from "./base";
 
-import { fixtures, fixtureAssignments, scenesToFixtureAssignments, profiles } from "@/db/schema";
+import {
+  fixtures,
+  fixtureAssignments,
+  scenesToFixtureAssignments,
+  profiles,
+} from "@/db/schema";
 import { Database, QueryKeys, MyQueryHelper } from "@/db/types/database";
 import { SelectSceneToFixtureAssignment, TableNames } from "@/db/types/tables";
 
@@ -17,7 +22,10 @@ export default class ScenesToFixtureAssignments extends Base<
     super(db);
   }
 
-  async getFixturesAndAssignments(sceneId: number, selectedFixtureIds: Set<number>) {
+  async getFixturesAndAssignments(
+    sceneId: number,
+    selectedFixtureIds: Set<number>,
+  ) {
     try {
       return await this.db
         .select({
@@ -35,7 +43,10 @@ export default class ScenesToFixtureAssignments extends Base<
         .leftJoin(fixtures, eq(fixtures.id, fixtureAssignments.fixtureId))
         .leftJoin(
           scenesToFixtureAssignments,
-          eq(fixtureAssignments.id, scenesToFixtureAssignments.fixtureAssignmentId),
+          eq(
+            fixtureAssignments.id,
+            scenesToFixtureAssignments.fixtureAssignmentId,
+          ),
         )
         .leftJoin(profiles, eq(fixtureAssignments.profileId, profiles.id))
         .where(

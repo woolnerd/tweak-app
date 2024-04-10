@@ -5,10 +5,6 @@ import Universe from "./universe";
 type DmxTuple = [ChannelNumber, DmxValue];
 
 export default class ValueUniverse extends Universe<DmxTuple> {
-  constructor(_number: number) {
-    super(_number);
-  }
-
   public get getDmxValues() {
     return this._addresses;
   }
