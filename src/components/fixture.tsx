@@ -32,7 +32,6 @@ type ChannelKey = number;
 type Value = number;
 type Channels = [ChannelKey, Value][];
 export function Fixture({
-export function Fixture({
   channel,
   fixtureName,
   profileChannels,
@@ -41,7 +40,6 @@ export function Fixture({
   selectedFixtureIds,
   setSelectedFixtureIds,
   sceneId,
-}: FixtureProps) {
 }: FixtureProps) {
   const ctrlPanelCtx = useContext(ControlPanelContext);
   const [selectedValue, setSelectedValue] = useState<string | null>(
@@ -155,7 +153,6 @@ export function Fixture({
       </Text>
     </View>
   );
-}
 }
 
 const styles = StyleSheet.create({

@@ -1,6 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { drizzle } from "drizzle-orm/expo-sqlite";
-import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { openDatabaseSync } from "expo-sqlite/next";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
@@ -12,20 +11,14 @@ import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
 import Scene from "../../models/scene.ts";
 import { ControlPanelContext } from "../contexts/control-panel.ts";
-// import { migrate } from 'drizzle-orm/expo-sqlite/migrator';
-// import migrations from './drizzle/migrations';
-// import * as FileSystem from 'expo-file-system';
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
 
 function App() {
   const [scenes, setScenes] = useState<SelectScene[]>([]);
-  // const [isLoading, setIsLoading] = useState(false);
   const [ctrlPanelValue, setControlPanelValue] = useState<string | null>(null);
   const [selectedSceneId, setSelectedSceneId] = useState<number>(1);
-  // console.log(FileSystem.documentDirectory);
-  // const { success, error } = useMigrations(db, migrations);
 
   const fetchScenes = async () => {
     const response = await new Scene(db).getAllOrdered();
