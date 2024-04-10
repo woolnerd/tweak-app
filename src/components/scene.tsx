@@ -1,15 +1,17 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { eq } from "drizzle-orm";
 import { View, Pressable, Text, StyleSheet } from "react-native";
+
+import { FixtureType } from "./fixture";
+
+import { db } from "@/db/client";
+import { fixtureAssignments } from "@/db/schema";
+import { SelectFixtureAssignment } from "@/db/types/tables";
 import {
   clearCacheOnScene,
   getAllFixturesFromSceneKeys,
   getManualFixtureKeys,
 } from "@/util/fixture-cache";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { db } from "@/db/client";
-import { fixtureAssignments } from "@/db/schema";
-import { SelectFixtureAssignment } from "@/db/types/tables";
-import { eq } from "drizzle-orm";
-import { FixtureType } from "./fixture";
 
 export type SceneProps = {
   name: string;

@@ -1,8 +1,10 @@
+import { desc, asc } from "drizzle-orm";
+
 import Base from "./base";
+
 import { scenes } from "@/db/schema";
 import { Database, QueryKeys } from "@/db/types/database";
 import { SelectScene, TableNames } from "@/db/types/tables";
-import { desc, asc } from "drizzle-orm";
 
 export default class Scene extends Base<typeof scenes, SelectScene> {
   readonly table = scenes;
@@ -15,10 +17,7 @@ export default class Scene extends Base<typeof scenes, SelectScene> {
   async getAllOrdered(options?: { desc: boolean }) {
     try {
       const func = options && options.desc ? desc : asc;
-      return await this.db
-        .select()
-        .from(this.table)
-        .orderBy(func(this.table.order));
+      return await this.db.select().from(this.table).orderBy(func(this.table.order));
     } catch (err) {
       this.handleError(err);
     }

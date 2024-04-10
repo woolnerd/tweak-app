@@ -1,6 +1,6 @@
-import Universe from "./universe";
-import { DmxValue } from "./dmx-value";
 import { ChannelNumber } from "./channel-number";
+import { DmxValue } from "./dmx-value";
+import Universe from "./universe";
 
 type DmxTuple = [ChannelNumber, DmxValue];
 
@@ -17,8 +17,8 @@ export default class ValueUniverse extends Universe<DmxTuple> {
     this._addresses.push(dmxTuple);
   }
 
-  public buildUniverse(): Array<number | null> {
-    const display: Array<number | null> = Array(512).fill(null);
+  public buildUniverse(): (number | null)[] {
+    const display: (number | null)[] = Array(512).fill(null);
 
     this.getDmxValues.forEach((tuple) => {
       const [channel, dmxValue] = tuple;

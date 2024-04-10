@@ -1,6 +1,6 @@
+import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { View, Text } from "react-native";
-import { Link } from "expo-router";
 
 export default function Tab() {
   const UNIVERSE_SIZE = 512;
@@ -19,17 +19,13 @@ export default function Tab() {
             margin: 2,
             borderColor: "red",
             borderWidth: 1,
-          }}
-        >
+          }}>
           <Text>{i}</Text>
         </View>,
       );
       if (i % 10 === 0) {
         universe.push(
-          <View
-            key={`row` + i}
-            style={{ width: "auto", justifyContent: "space-evenly" }}
-          >
+          <View key={`row` + i} style={{ width: "auto", justifyContent: "space-evenly" }}>
             {row}
           </View>,
         );
@@ -41,9 +37,7 @@ export default function Tab() {
 
   return (
     <View style={{ justifyContent: "center", alignItems: "center", flex: 1 }}>
-      <View style={{ height: 600, flexDirection: "row" }}>
-        {buildUniverse()}
-      </View>
+      <View style={{ height: 600, flexDirection: "row" }}>{buildUniverse()}</View>
     </View>
   );
 }

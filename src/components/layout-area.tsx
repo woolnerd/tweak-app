@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { StyleSheet, View } from "react-native";
-import ScenesToFixtureAssignments from "@/models/scene-to-fixture-assignments";
+
 import { Fixture as FixtureComponent } from "./fixture";
+
 import { db } from "@/db/client";
+import ScenesToFixtureAssignments from "@/models/scene-to-fixture-assignments";
 import { mergeCacheWithDBFixtures } from "@/util/helpers";
 
 type LayoutAreaProps = {
@@ -57,8 +59,7 @@ export const LayoutArea = (props: LayoutAreaProps): React.JSX.Element => {
       style={{
         ...styles.container,
         alignItems: "center",
-      }}
-    >
+      }}>
       {fixtures?.map((fixtureProps) => (
         <FixtureComponent
           key={fixtureProps.fixtureAssignmentId}

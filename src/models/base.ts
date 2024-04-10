@@ -1,15 +1,9 @@
 import { eq } from "drizzle-orm";
+import { SQLiteInsertValue, TableConfig, SQLiteTable } from "drizzle-orm/sqlite-core";
+
 import { Database, QueryKeys, MyQueryHelper } from "@/db/types/database";
 import { handleDatabaseError } from "@/util/errors";
-import {
-  SQLiteInsertValue,
-  TableConfig,
-  SQLiteTable,
-} from "drizzle-orm/sqlite-core";
-export default abstract class Base<
-  T extends SQLiteTable<TableConfig>,
-  K extends { id: number },
-> {
+export default abstract class Base<T extends SQLiteTable<TableConfig>, K extends { id: number }> {
   abstract readonly table: any;
   abstract readonly name: QueryKeys;
   protected db: Database;
@@ -31,9 +25,7 @@ export default abstract class Base<
   }
   async getAll(options?: any): Promise<typeof this.table.$inferSelect> {
     try {
-      return await (this.db.query[this.name] as MyQueryHelper).findMany(
-        options,
-      );
+      return await (this.db.query[this.name] as MyQueryHelper).findMany(options);
     } catch (err) {
       this.handleError(err);
     }
@@ -41,19 +33,13 @@ export default abstract class Base<
 
   async getById(id: number): Promise<typeof this.table.$inferSelect> {
     try {
-      return await this.db
-        .select()
-        .from(this.table)
-        .where(eq(this.table.id, id));
+      return await this.db.select().from(this.table).where(eq(this.table.id, id));
     } catch (err) {
       this.handleError(err);
     }
   }
 
-  async update({
-    id,
-    ...restData
-  }: K): Promise<typeof this.table.$inferSelect> {
+  async update({ id, ...restData }: K): Promise<typeof this.table.$inferSelect> {
     try {
       return await this.db
         .update(this.table)
@@ -67,10 +53,7 @@ export default abstract class Base<
 
   async delete(id: number): Promise<typeof this.table.$inferSelect> {
     try {
-      const result = await this.db
-        .delete(this.table)
-        .where(eq(this.table.id, id))
-        .returning();
+      const result = await this.db.delete(this.table).where(eq(this.table.id, id)).returning();
 
       if (result instanceof Array && result.length === 0) {
         throw new Error(`No record found with id ${id}`);

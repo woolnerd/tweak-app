@@ -1,5 +1,6 @@
-import FixtureAssignment from "../fixture-assignment";
 import * as mock from "../__mocks__/fixture-assignment.mock";
+import FixtureAssignment from "../fixture-assignment";
+
 import { TableNames } from "@/db/types/tables";
 
 describe("Fixture Assignment Model", () => {
@@ -10,9 +11,7 @@ describe("Fixture Assignment Model", () => {
   test("should create a new fixture assignment", async () => {
     const { mockInsertDb, mockFixtureAssignment } = mock;
 
-    const result = await new FixtureAssignment(mockInsertDb).create(
-      mockFixtureAssignment,
-    );
+    const result = await new FixtureAssignment(mockInsertDb).create(mockFixtureAssignment);
     expect(mockInsertDb.insert).toHaveBeenCalledTimes(1);
     expect(result).toEqual(mockFixtureAssignment);
   });
@@ -23,9 +22,7 @@ describe("Fixture Assignment Model", () => {
     const result = await new FixtureAssignment(mockGetAllDb).getAll();
 
     expect(result).toEqual(mockFixtureAssignmentArray);
-    expect(
-      mockGetAllDb.query[TableNames.FixtureAssignments].findMany,
-    ).toHaveBeenCalledTimes(1);
+    expect(mockGetAllDb.query[TableNames.FixtureAssignments].findMany).toHaveBeenCalledTimes(1);
   });
 
   test("should get fixture assignment by it's id", async () => {
@@ -52,9 +49,7 @@ describe("Fixture Assignment Model", () => {
 
     const assignmentId = 1;
 
-    const result = await new FixtureAssignment(mockDeleteDb).delete(
-      assignmentId,
-    );
+    const result = await new FixtureAssignment(mockDeleteDb).delete(assignmentId);
 
     expect(result).toEqual(mockFixtureAssignment);
     expect(mockDeleteDb.where).toHaveBeenCalledTimes(1);

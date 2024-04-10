@@ -1,4 +1,5 @@
 import { Pressable, Text, StyleSheet } from "react-native";
+
 import { ControlButton } from "@/util/helpers";
 
 export const ControlPanelButton = ({
@@ -12,8 +13,7 @@ export const ControlPanelButton = ({
     <Pressable
       key={buttonData.id}
       style={styles.touchpadBtn}
-      onPressIn={() => handleTouch(buttonData.label)}
-    >
+      onPressIn={() => handleTouch(buttonData.label)}>
       <Text
         style={{
           fontSize: 12,
@@ -21,8 +21,7 @@ export const ControlPanelButton = ({
           padding: 15,
           fontWeight: "800",
           backgroundColor: `${buttonData.styles.color}`,
-        }}
-      >
+        }}>
         {buttonData.label}
       </Text>
     </Pressable>

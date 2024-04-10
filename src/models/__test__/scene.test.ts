@@ -1,4 +1,3 @@
-import Scene from "../scene";
 import {
   mockSelect,
   mockFrom,
@@ -11,6 +10,7 @@ import {
   mockSelectDsc,
   mockFromDsc,
 } from "../__mocks__/scene.mock";
+import Scene from "../scene";
 
 describe("Scene model - getAllOrdered", () => {
   beforeEach(() => {

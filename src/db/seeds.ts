@@ -1,3 +1,13 @@
+import {
+  InsertFixture,
+  InsertManufacturer,
+  InsertProfile,
+  InsertFixtureAssignment,
+  InsertScene,
+  InsertShow,
+  InsertPatch,
+  InsertSceneToFixtureAssignment,
+} from "@/db/types/tables";
 const fixture = { name: "Vortex", notes: "test" };
 const manufacturer = { name: "Creamsource", website: "www.creamsource.com" };
 const patch = {
@@ -12,16 +22,6 @@ const profile = {
   channels: JSON.stringify({ 1: "Red", 2: "Green", 3: "Blue", 4: "Intensity" }),
   name: "mode 6",
 };
-import {
-  InsertFixture,
-  InsertManufacturer,
-  InsertProfile,
-  InsertFixtureAssignment,
-  InsertScene,
-  InsertShow,
-  InsertPatch,
-  InsertSceneToFixtureAssignment,
-} from "@/db/types/tables";
 
 export type Seeds = {
   fixtures: InsertFixture[];

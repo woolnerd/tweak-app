@@ -1,10 +1,9 @@
 import { SetStateAction, Dispatch } from "react";
-import {
-  getManualFixtureKeys,
-  getAllFixturesFromSceneKeys,
-} from "./fixture-cache";
-import { FixtureAssignmentResponse } from "@/components/layout-area";
+
+import { getManualFixtureKeys, getAllFixturesFromSceneKeys } from "./fixture-cache";
+
 import { FixtureType } from "@/components/fixture";
+import { FixtureAssignmentResponse } from "@/components/layout-area";
 
 type FetchCallback = () => Promise<
   | FixtureType[]
@@ -23,7 +22,7 @@ type FetchCallback = () => Promise<
 >;
 
 type SetCallback = (
-  arr: Array<FixtureType | Awaited<FetchCallback>>,
+  arr: (FixtureType | Awaited<FetchCallback>)[],
 ) => Dispatch<SetStateAction<FixtureAssignmentResponse>>;
 
 export async function mergeCacheWithDBFixtures(
@@ -34,10 +33,7 @@ export async function mergeCacheWithDBFixtures(
   try {
     const keys = await getManualFixtureKeys();
     if (keys) {
-      const cachedFixtures = await getAllFixturesFromSceneKeys(
-        keys,
-        selectedSceneId,
-      );
+      const cachedFixtures = await getAllFixturesFromSceneKeys(keys, selectedSceneId);
 
       const dbFixtures = await fetchCallback();
 

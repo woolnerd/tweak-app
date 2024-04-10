@@ -1,12 +1,8 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  GestureResponderEvent,
-  Pressable,
-} from "react-native";
-import { controlPanelButtonData } from "@/util/helpers";
+import { View, Text, StyleSheet, GestureResponderEvent, Pressable } from "react-native";
+
 import { ControlPanelButton } from "./control-panel-button";
+
+import { controlPanelButtonData } from "@/util/helpers";
 
 type ControlPanelProps = {
   setControlPanelValue: any;
@@ -27,8 +23,7 @@ export const ControlPanel = ({ setControlPanelValue }: ControlPanelProps) => {
           flexGrow: 1,
           justifyContent: "center",
           alignItems: "center",
-        }}
-      >
+        }}>
         {col.buttons.map((buttonData) => (
           <ControlPanelButton
             key={buttonData.id}

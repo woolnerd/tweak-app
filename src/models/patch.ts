@@ -1,8 +1,10 @@
-import Base from "./base";
-import { patches } from "@/db/schema";
-import { InsertPatch, SelectPatch, TableNames } from "@/db/types/tables";
-import { Database } from "@/db/types/database";
 import { gte, lte, and, or, eq } from "drizzle-orm";
+
+import Base from "./base";
+
+import { patches } from "@/db/schema";
+import { Database } from "@/db/types/database";
+import { InsertPatch, SelectPatch, TableNames } from "@/db/types/tables";
 
 export default class Patch extends Base<typeof patches, SelectPatch> {
   readonly table = patches;
@@ -25,11 +27,7 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
       throw Error("Starting address must be 1 or greater");
     }
 
-    const isOverlap = await this.checkOverlap(
-      data.startAddress,
-      data.endAddress,
-      data.showId,
-    );
+    const isOverlap = await this.checkOverlap(data.startAddress, data.endAddress, data.showId);
 
     if (isOverlap) {
       throw new Error("Address overlaps with current patch address in scene");

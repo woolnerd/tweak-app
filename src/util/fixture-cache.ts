@@ -1,18 +1,14 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/typescript/types";
+
 import { FixtureType } from "@/components/fixture";
 function buildKey(sceneId: number, fixtureAssignmentId: number) {
   return `sceneId:${sceneId}#fixtureAssignementId:${fixtureAssignmentId}`;
 }
 
-export const getManualFixture = async (
-  sceneId: number,
-  fixtureAssignmentId: number,
-) => {
+export const getManualFixture = async (sceneId: number, fixtureAssignmentId: number) => {
   try {
-    const jsonValue = await AsyncStorage.getItem(
-      buildKey(sceneId, fixtureAssignmentId),
-    );
+    const jsonValue = await AsyncStorage.getItem(buildKey(sceneId, fixtureAssignmentId));
     return jsonValue !== null ? JSON.parse(jsonValue) : null;
   } catch (e) {
     console.log(e);
@@ -22,20 +18,14 @@ export const getManualFixture = async (
 export const addManualFixture = async (fixture: FixtureType) => {
   try {
     const jsonValue = JSON.stringify(fixture);
-    await AsyncStorage.setItem(
-      buildKey(fixture.sceneId, fixture.fixtureAssignmentId),
-      jsonValue,
-    );
+    await AsyncStorage.setItem(buildKey(fixture.sceneId, fixture.fixtureAssignmentId), jsonValue);
   } catch (e) {
     console.log(e);
   }
   console.log("Added.", buildKey(fixture.sceneId, fixture.fixtureAssignmentId));
 };
 
-export const removeManualFixture = async (
-  sceneId: number,
-  fixtureAssignmentId: number,
-) => {
+export const removeManualFixture = async (sceneId: number, fixtureAssignmentId: number) => {
   try {
     await AsyncStorage.removeItem(buildKey(sceneId, fixtureAssignmentId));
   } catch (e) {
@@ -55,26 +45,17 @@ export const getManualFixtureKeys = async () => {
   return keys;
 };
 
-export const getAllFixturesFromSceneKeys = async (
-  keys: readonly string[],
-  sceneId: number,
-) => {
+export const getAllFixturesFromSceneKeys = async (keys: readonly string[], sceneId: number) => {
   try {
-    const keyValuePairs: readonly KeyValuePair[] =
-      await AsyncStorage.multiGet(keys);
+    const keyValuePairs: readonly KeyValuePair[] = await AsyncStorage.multiGet(keys);
 
-    return mapValuesToFixtures(
-      keyValuePairs.filter((key) => keyIncludesScene(key, sceneId)),
-    );
+    return mapValuesToFixtures(keyValuePairs.filter((key) => keyIncludesScene(key, sceneId)));
   } catch (err) {
     console.log(err);
   }
 };
 
-export const clearCacheOnScene = async (
-  keys: readonly string[],
-  sceneId: number,
-) => {
+export const clearCacheOnScene = async (keys: readonly string[], sceneId: number) => {
   const keysOnScenes = keys.filter((key) => keyIncludesScene(key, sceneId));
 
   AsyncStorage.multiRemove(keysOnScenes).then((res) => {

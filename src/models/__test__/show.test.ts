@@ -1,6 +1,7 @@
 // tests/show.test.ts
-import Show from "@/models/show";
 import { dbMock } from "../__mocks__/dbmock";
+
+import Show from "@/models/show";
 
 describe("Show", () => {
   let show: Show;

@@ -1,4 +1,5 @@
 import { sqliteTable } from "drizzle-orm/sqlite-core";
+
 import {
   fixtures,
   manufacturers,
@@ -31,10 +32,10 @@ export type InsertShow = typeof shows.$inferInsert;
 export type SelectPatch = typeof patches.$inferSelect;
 export type InsertPatch = typeof patches.$inferInsert;
 
-export type InsertSceneToFixtureAssignment =
-  typeof scenesToFixtureAssignments.$inferInsert;
-export type SelectSceneToFixtureAssignment =
-  typeof scenesToFixtureAssignments.$inferSelect & { id: number };
+export type InsertSceneToFixtureAssignment = typeof scenesToFixtureAssignments.$inferInsert;
+export type SelectSceneToFixtureAssignment = typeof scenesToFixtureAssignments.$inferSelect & {
+  id: number;
+};
 
 export enum TableNames {
   Fixtures = "fixtures",

@@ -1,19 +1,22 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+import { openDatabaseSync } from "expo-sqlite/next";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
+
+import { ControlPanelContext } from "../contexts/control-panel";
+
+import { ControlPanel } from "@/components/control-panel";
 import { LayoutArea } from "@/components/layout-area";
 import { Scene as SceneComponent, SceneProps } from "@/components/scene";
-import { drizzle } from "drizzle-orm/expo-sqlite";
-import { openDatabaseSync } from "expo-sqlite/next";
-import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+
 // import migrations from './drizzle/migrations';
 // import * as FileSystem from 'expo-file-system';
 import * as schema from "@/db/schema";
-import Scene from "@/models/scene";
 import { SelectScene } from "@/db/types/tables";
+import Scene from "@/models/scene";
 // import { migrate } from 'drizzle-orm/expo-sqlite/migrator';
-import { ControlPanel } from "@/components/control-panel";
-import { ControlPanelContext } from "../contexts/control-panel";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
@@ -48,8 +51,7 @@ const App = () => {
         padding: 20,
         borderWidth: 4,
         borderColor: "yellow",
-      }}
-    >
+      }}>
       <View style={{ flex: 1, ...styles.container }}>
         <View>
           <View style={{ flex: 1, borderColor: "yellow", height: 100 }} />
@@ -69,15 +71,11 @@ const App = () => {
 
           <Pressable
             style={styles.bigButtons}
-            onPress={() => console.log("Simple Pressable pressed")}
-          >
+            onPress={() => console.log("Simple Pressable pressed")}>
             <Text style={{ ...styles.btnText, fontSize: 18 }}>Label</Text>
           </Pressable>
 
-          <Pressable
-            style={styles.bigButtons}
-            onPress={() => AsyncStorage.clear()}
-          >
+          <Pressable style={styles.bigButtons} onPress={() => AsyncStorage.clear()}>
             <Text style={{ ...styles.btnText, fontSize: 18 }}>Clear Cache</Text>
           </Pressable>
         </View>
@@ -87,8 +85,7 @@ const App = () => {
         style={{
           flex: 3,
           ...styles.container,
-        }}
-      >
+        }}>
         <ControlPanelContext.Provider value={ctrlPanelValue}>
           <LayoutArea selectedSceneId={selectedSceneId} goToOut={false} />
         </ControlPanelContext.Provider>
