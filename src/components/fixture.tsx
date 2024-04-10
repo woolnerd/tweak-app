@@ -32,6 +32,7 @@ type ChannelKey = number;
 type Value = number;
 type Channels = [ChannelKey, Value][];
 export function Fixture({
+export function Fixture({
   channel,
   fixtureName,
   profileChannels,
@@ -40,6 +41,7 @@ export function Fixture({
   selectedFixtureIds,
   setSelectedFixtureIds,
   sceneId,
+}: FixtureProps) {
 }: FixtureProps) {
   const ctrlPanelCtx = useContext(ControlPanelContext);
   const [selectedValue, setSelectedValue] = useState<string | null>(
@@ -85,6 +87,7 @@ export function Fixture({
         fixtureName,
         profileChannels,
         values: JSON.stringify([[1, 200]]), // here we need the correctly parsed value
+        values: JSON.stringify([[1, 200]]), // here we need the correctly parsed value
         fixtureAssignmentId,
         sceneId,
       });
@@ -118,11 +121,14 @@ export function Fixture({
 
     if (unsavedChanges) {
       styles.color = "rgb(256, 50, 30)";
+      styles.color = "rgb(256, 50, 30)";
     }
 
     if (selectedFixtureIds.has(fixtureAssignmentId)) {
       styles.borderColor = "gold";
+      styles.borderColor = "gold";
     } else {
+      styles.borderColor = "rgb(100, 256, 100)";
       styles.borderColor = "rgb(100, 256, 100)";
     }
     return styles;
@@ -149,6 +155,7 @@ export function Fixture({
       </Text>
     </View>
   );
+}
 }
 
 const styles = StyleSheet.create({
