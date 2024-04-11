@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import { SetStateAction, Dispatch } from "react";
 
 import {
@@ -8,15 +9,9 @@ import {
   FixtureControlData,
   FixtureAssignmentResponse,
 } from "../components/types/fixture.ts";
-<<<<<<< Updated upstream
-import { Button } from "react-native";
-
-type FetchCallback = () => Promise<FixtureControlData[] | undefined>;
-=======
 import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 
 type FetchCallback = () => Promise<ParsedCompositeFixtureInfo[] | undefined>;
->>>>>>> Stashed changes
 
 type SetCallback = (
   arr: (FixtureControlData | Awaited<FetchCallback>)[],
