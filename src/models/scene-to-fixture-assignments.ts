@@ -33,7 +33,7 @@ export default class ScenesToFixtureAssignments extends Base<
     selectedFixtureIds: Set<number>,
   ) {
     try {
-      return await this.db
+      this.fetchedData = await this.db
         .select({
           fixtureAssignmentId: fixtureAssignments.id,
           channel: fixtureAssignments.channel,
@@ -65,6 +65,8 @@ export default class ScenesToFixtureAssignments extends Base<
             notInArray(fixtureAssignments.id, Array.from(selectedFixtureIds)),
           ),
         );
+
+      return this.parseStringColumnsToJSON();
     } catch (err) {
       return this.handleError(err);
     }

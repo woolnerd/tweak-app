@@ -30,33 +30,9 @@ export function Fixture({
   sceneId,
 }: FixtureProps) {
   const ctrlPanelCtx = useContext(ControlPanelContext);
-  const [selectedValue, setSelectedValue] = useState<string | null>(
-    handleChannelValues(profileChannels, values),
-  );
+  const [selectedValue, setSelectedValue] = useState<string | null>([1, 50]);
   const [manualHighlight, setManualHighlight] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
-
-  function handleChannelValues(
-    profileChannels: string,
-    values: string,
-  ): string | null {
-    if (!profileChannels || !values) {
-      return null;
-    }
-
-    const parsedProfileChannels: Channels = JSON.parse(profileChannels);
-    const parsedValues: number[][] = JSON.parse(values);
-
-    const output: string[] = [];
-
-    parsedValues.forEach((value) => {
-      const [key, outputVal] = value;
-      // output.push([parsedProfileChannels[key], outputVal]);
-      output.push(`${Math.trunc((outputVal / 255) * 100)}%`);
-    });
-
-    return output[0];
-  }
 
   useEffect(() => {
     if (selectedFixtureIds.has(fixtureAssignmentId)) {

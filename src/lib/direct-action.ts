@@ -1,14 +1,10 @@
-import { ControlButton } from "../db/button-data.ts";
+import { FixtureControlData } from "../components/types/fixture.ts";
+import { DirectActionButton } from "../db/button-data.ts";
 
 export default class DirectAction {
-<<<<<<< Updated upstream
-  constructor(buttonData: ControlButton) {}
-=======
   protected buttonData: DirectActionButton;
 
   protected selectedFixtures: FixtureControlData[];
-
-  protected handleChannelValues: () => any;
 
   constructor(
     buttonData: DirectActionButton,
@@ -22,7 +18,7 @@ export default class DirectAction {
     this.buttonData.value;
   }
 
-  private function handleChannelValues(
+  function handleChannelValues(
     profileChannels: string,
     values: string,
   ): string | null {
@@ -43,5 +39,4 @@ export default class DirectAction {
 
     return output[0];
   }
->>>>>>> Stashed changes
 }
