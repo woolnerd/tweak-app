@@ -2,9 +2,9 @@ import React, { useEffect, useState, useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { Fixture as FixtureComponent } from "./fixture.tsx";
-import { FixtureAssignmentResponse } from "./types/fixture.ts";
 import { db } from "../db/client.ts";
 import ScenesToFixtureAssignments from "../models/scene-to-fixture-assignments.ts";
+import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 import { mergeCacheWithDBFixtures } from "../util/helpers.ts";
 
 type LayoutAreaProps = {
@@ -20,32 +20,37 @@ export default function LayoutArea({
   selectedSceneId,
   goToOut,
 }: LayoutAreaProps): React.JSX.Element {
-  const [fixtures, setFixtures] = useState<FixtureAssignmentResponse>([]);
+  const [compositeFixtures, setCompositeFixtures] = useState<
+    ParsedCompositeFixtureInfo[]
+  >([]);
   const [selectedFixtureIds, setSelectedFixtureIds] = useState<Set<number>>(
     new Set([DRIZZLE_ARRAY_CHECK_VALUE]),
   );
 
-  const fetchFixtures = useCallback(async () => {
+  const fetchCompositeFixtures = useCallback(async () => {
     try {
-      const fixturesWithAssignments = await new ScenesToFixtureAssignments(
+      const compositeFixtureInfoObjs = await new ScenesToFixtureAssignments(
         db,
-      ).getFixturesAndAssignments(selectedSceneId, selectedFixtureIds);
+      ).getCompositeFixtureInfo(selectedSceneId, selectedFixtureIds);
 
-      return fixturesWithAssignments;
+      return compositeFixtureInfoObjs;
     } catch (e) {
       console.log(e);
       throw new Error();
     }
   }, [selectedSceneId, selectedFixtureIds]);
 
-  // useEffect(() => {
-  //   if (goToOut) {
-  //   }
-  // }, [goToOut]);
+  useEffect(() => {
+    console.log(compositeFixtures[0]);
+  }, [compositeFixtures]);
 
   useEffect(() => {
-    mergeCacheWithDBFixtures(selectedSceneId, fetchFixtures, setFixtures);
-  }, [selectedSceneId, fetchFixtures]);
+    mergeCacheWithDBFixtures(
+      selectedSceneId,
+      fetchCompositeFixtures,
+      setCompositeFixtures,
+    );
+  }, [selectedSceneId, fetchCompositeFixtures]);
 
   return (
     <View
@@ -53,7 +58,7 @@ export default function LayoutArea({
         ...styles.container,
         alignItems: "center",
       }}>
-      {fixtures?.map((fixtureProps) => (
+      {compositeFixtures?.map((fixtureProps) => (
         <FixtureComponent
           key={fixtureProps.fixtureAssignmentId}
           selectedFixtureIds={selectedFixtureIds}
