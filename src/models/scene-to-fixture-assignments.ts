@@ -2,13 +2,10 @@ import { and, eq, notInArray } from "drizzle-orm";
 
 import Base from "./base.ts";
 import {
-<<<<<<< Updated upstream
-=======
   ParsedCompositeFixtureInfo,
   UnparsedCompositeFixtureInfo,
 } from "./types/scene-to-fixture-assignment.ts";
 import {
->>>>>>> Stashed changes
   fixtures,
   fixtureAssignments,
   scenesToFixtureAssignments,
@@ -29,13 +26,9 @@ export default class ScenesToFixtureAssignments extends Base<
 
   readonly name: QueryKeys = TableNames.ScenesToFixtureAssignments;
 
-<<<<<<< Updated upstream
-  async getFixturesAndAssignments(
-=======
   private fetchedData: UnparsedCompositeFixtureInfo[];
 
   async getCompositeFixtureInfo(
->>>>>>> Stashed changes
     sceneId: number,
     selectedFixtureIds: Set<number>,
   ) {
@@ -76,8 +69,6 @@ export default class ScenesToFixtureAssignments extends Base<
       return this.handleError(err);
     }
   }
-<<<<<<< Updated upstream
-=======
 
   private parseStringColumnsToJSON(): ParsedCompositeFixtureInfo[] {
     return this.fetchedData.map(
@@ -92,5 +83,4 @@ export default class ScenesToFixtureAssignments extends Base<
       }),
     );
   }
->>>>>>> Stashed changes
 }
