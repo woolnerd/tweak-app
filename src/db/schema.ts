@@ -41,6 +41,7 @@ export const patches = sqliteTable("patches", {
   fixtureId: integer("fixture_id").notNull(),
   profileId: integer("profile_id").notNull(),
   showId: integer("show_id").notNull(),
+  fixtureAssignmentId: integer("fixture_assignment_id"),
 });
 
 export const patchesRelations = relations(patches, ({ one, many }) => ({
@@ -55,6 +56,10 @@ export const patchesRelations = relations(patches, ({ one, many }) => ({
   show: one(shows, {
     fields: [patches.showId],
     references: [shows.id],
+  }),
+  fixtureAssignment: one(fixtureAssignments, {
+    fields: [patches.id],
+    references: [fixtureAssignments.id],
   }),
 }));
 
@@ -82,6 +87,7 @@ export const fixtureAssignments = sqliteTable("fixtureAssignments", {
   values: text("values"),
   fixtureId: integer("fixture_id"),
   profileId: integer("profile_id"),
+  patchId: integer("patch_id"),
 });
 
 export const fixtureAssignmentRelations = relations(
@@ -96,6 +102,10 @@ export const fixtureAssignmentRelations = relations(
       references: [profiles.id],
     }),
     scenesToFixtureAssignments: many(scenesToFixtureAssignments),
+    patch: one(patches, {
+      fields: [fixtureAssignments.patchId],
+      references: [patches.id],
+    }),
   }),
 );
 
