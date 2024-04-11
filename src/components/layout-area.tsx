@@ -38,10 +38,10 @@ export default function LayoutArea({
     }
   }, [selectedSceneId, selectedFixtureIds]);
 
-  useEffect(() => {
-    if (goToOut) {
-    }
-  }, [goToOut]);
+  // useEffect(() => {
+  //   if (goToOut) {
+  //   }
+  // }, [goToOut]);
 
   useEffect(() => {
     mergeCacheWithDBFixtures(selectedSceneId, fetchFixtures, setFixtures);
@@ -65,6 +65,7 @@ export default function LayoutArea({
           sceneId={fixtureProps.sceneId}
           fixtureName={fixtureProps.fixtureName}
           fixtureNotes={fixtureProps.fixtureNotes}
+          values={fixtureProps.values}
         />
       ))}
     </View>

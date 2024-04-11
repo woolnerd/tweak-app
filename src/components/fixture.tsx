@@ -1,3 +1,4 @@
+/* eslint-disable drizzle/enforce-delete-with-where */
 import { useState, useContext, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
@@ -8,17 +9,20 @@ import {
   addManualFixture,
 } from "../util/fixture-cache.ts";
 
+// type OptionalProps<T> = { [P in keyof T]?: T[P] | null };
+type ProfileKey = number;
+type Value = number;
+type ChannelTuples = [ProfileKey, Value][];
+
 export type FixtureProps = {
   selectedFixtureIds: Set<number>;
   setSelectedFixtureIds: (
     fixtureIds: (currentState: Set<number>) => Set<number>,
   ) => void;
-} & FixtureControlData;
-
-type OptionalProps<T> = { [P in keyof T]?: T[P] | null };
-type ChannelKey = number;
-type Value = number;
-type Channels = [ChannelKey, Value][];
+} & FixtureControlData & {
+    values: ChannelTuples;
+    profileChannels: { ProfileKey: string }[];
+  };
 export function Fixture({
   channel,
   fixtureName,
@@ -34,51 +38,58 @@ export function Fixture({
   const [manualHighlight, setManualHighlight] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
 
+  const fixtureIsCached = selectedFixtureIds.has(fixtureAssignmentId);
+
+  const removeFixtureFromState = (fixture: FixtureControlData): void => {
+    setSelectedFixtureIds((curSet: Set<number>) => {
+      const dupe = new Set([...curSet]);
+      dupe.delete(fixture.fixtureAssignmentId);
+      return dupe;
+    });
+  };
+
+  const addFixtureToState = (fixture: FixtureControlData): void => {
+    setSelectedFixtureIds((curSet: Set<number>) => {
+      const dupe = new Set([...curSet]);
+      dupe.add(fixture.fixtureAssignmentId);
+      return dupe;
+    });
+  };
+
   useEffect(() => {
-    if (selectedFixtureIds.has(fixtureAssignmentId)) {
+    if (fixtureIsCached) {
       setSelectedValue(ctrlPanelCtx);
       setManualHighlight(true);
       setUnsavedChanges(true);
     }
-  }, [ctrlPanelCtx]);
+  }, [ctrlPanelCtx, fixtureIsCached]);
 
   useEffect(() => {
-    if (selectedFixtureIds.has(fixtureAssignmentId)) {
+    if (fixtureIsCached) {
       addManualFixture({
         channel,
         fixtureName,
         profileChannels,
-        values: JSON.stringify([[1, 200]]), // here we need the correctly parsed value
-        values: JSON.stringify([[1, 200]]), // here we need the correctly parsed value
+        values, // here we need the correctly parsed value
         fixtureAssignmentId,
         sceneId,
       });
     } else {
       removeManualFixture(sceneId, fixtureAssignmentId);
     }
-  }, [selectedFixtureIds]);
+  }, [selectedFixtureIds, fixtureIsCached]);
 
   const handleOutput = (fixture: FixtureControlData) => {
     // toggles multiple fixtures in and out of set
-
-    if (selectedFixtureIds.has(fixture.fixtureAssignmentId)) {
-      setSelectedFixtureIds((curSet: Set<number>) => {
-        const dupe = new Set([...curSet]);
-        dupe.delete(fixture.fixtureAssignmentId);
-
-        return dupe;
-      });
+    if (fixtureIsCached) {
+      removeFixtureFromState(fixture);
     } else {
-      setSelectedFixtureIds((curSet: Set<number>) => {
-        const dupe = new Set([...curSet]);
-        dupe.add(fixture.fixtureAssignmentId);
-        return dupe;
-      });
+      addFixtureToState(fixture);
     }
     console.log("ctrlpanelctx", ctrlPanelCtx);
   };
 
-  const selectedStyle = (fixtureAssignmentId: number) => {
+  const selectedStyle = (id: number) => {
     const styles: { color?: string; borderColor?: string } = {};
 
     if (unsavedChanges) {
@@ -86,7 +97,7 @@ export function Fixture({
       styles.color = "rgb(256, 50, 30)";
     }
 
-    if (selectedFixtureIds.has(fixtureAssignmentId)) {
+    if (fixtureIsCached) {
       styles.borderColor = "gold";
       styles.borderColor = "gold";
     } else {
