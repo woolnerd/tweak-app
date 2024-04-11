@@ -9,12 +9,12 @@ interface BaseButton {
   styles: { color: string };
 }
 
-interface DirectActionButton extends BaseButton {
+export interface DirectActionButton extends BaseButton {
   type: Buttons.DIRECT_ACTION_BUTTON;
   value: number;
 }
 
-interface CommandButton extends BaseButton {
+export interface CommandButton extends BaseButton {
   type: Buttons.COMMAND_BUTTON;
 }
 
