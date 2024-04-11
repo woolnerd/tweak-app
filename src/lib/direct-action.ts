@@ -6,6 +6,8 @@ export default class DirectAction {
 
   protected selectedFixtures: FixtureControlData[];
 
+  protected handleChannelValues: () => any;
+
   constructor(
     buttonData: DirectActionButton,
     selectedFixtures: FixtureControlData[],
@@ -18,7 +20,7 @@ export default class DirectAction {
     this.buttonData.value;
   }
 
-  function handleChannelValues(
+  private function handleChannelValues(
     profileChannels: string,
     values: string,
   ): string | null {
