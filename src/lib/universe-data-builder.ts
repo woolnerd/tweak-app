@@ -1,5 +1,5 @@
 /* eslint-disable spaced-comment */
-import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment";
+import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 
 type UniverseDataObject = Record<number, number[]>;
 
