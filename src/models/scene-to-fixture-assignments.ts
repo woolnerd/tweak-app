@@ -2,10 +2,18 @@ import { and, eq, notInArray } from "drizzle-orm";
 
 import Base from "./base.ts";
 import {
+<<<<<<< Updated upstream
+=======
+  ParsedCompositeFixtureInfo,
+  UnparsedCompositeFixtureInfo,
+} from "./types/scene-to-fixture-assignment.ts";
+import {
+>>>>>>> Stashed changes
   fixtures,
   fixtureAssignments,
   scenesToFixtureAssignments,
   profiles,
+  patches,
 } from "../db/schema.ts";
 import { QueryKeys } from "../db/types/database.ts";
 import {
@@ -21,7 +29,13 @@ export default class ScenesToFixtureAssignments extends Base<
 
   readonly name: QueryKeys = TableNames.ScenesToFixtureAssignments;
 
+<<<<<<< Updated upstream
   async getFixturesAndAssignments(
+=======
+  private fetchedData: UnparsedCompositeFixtureInfo[];
+
+  async getCompositeFixtureInfo(
+>>>>>>> Stashed changes
     sceneId: number,
     selectedFixtureIds: Set<number>,
   ) {
@@ -37,6 +51,8 @@ export default class ScenesToFixtureAssignments extends Base<
           fixtureName: fixtures.name,
           fixtureNotes: fixtures.notes,
           sceneId: scenesToFixtureAssignments.sceneId,
+          addressStart: patches.startAddress,
+          addressEnd: patches.endAddress,
         })
         .from(fixtureAssignments)
         .leftJoin(fixtures, eq(fixtures.id, fixtureAssignments.fixtureId))
@@ -48,6 +64,7 @@ export default class ScenesToFixtureAssignments extends Base<
           ),
         )
         .leftJoin(profiles, eq(fixtureAssignments.profileId, profiles.id))
+        .leftJoin(patches, eq(fixtureAssignments.patchId, patches.id))
         .where(
           and(
             eq(scenesToFixtureAssignments.sceneId, sceneId),
@@ -59,4 +76,21 @@ export default class ScenesToFixtureAssignments extends Base<
       return this.handleError(err);
     }
   }
+<<<<<<< Updated upstream
+=======
+
+  private parseStringColumnsToJSON(): ParsedCompositeFixtureInfo[] {
+    return this.fetchedData.map(
+      (
+        assignmentObj: UnparsedCompositeFixtureInfo,
+      ): ParsedCompositeFixtureInfo => ({
+        ...assignmentObj,
+        values: assignmentObj.values ? JSON.parse(assignmentObj.values) : null,
+        profileChannels: assignmentObj.profileChannels
+          ? JSON.parse(assignmentObj.profileChannels)
+          : null,
+      }),
+    );
+  }
+>>>>>>> Stashed changes
 }

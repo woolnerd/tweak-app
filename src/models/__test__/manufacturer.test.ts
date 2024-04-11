@@ -1,4 +1,4 @@
-import * as mock from "../__mocks__/manufacturer.mock.ts";
+import * as mock from "../__mocks__/manufacturer.ts";
 import Manufacturer from "../manufacturer.ts";
 
 afterEach(() => {

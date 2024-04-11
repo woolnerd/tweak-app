@@ -1,4 +1,4 @@
-import { mockDb } from "../__mocks__/profile.mock.ts";
+import { mockDb } from "../__mocks__/profile.ts";
 import Profile from "../profile.ts";
 
 describe("Profile model", () => {

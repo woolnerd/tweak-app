@@ -2,7 +2,7 @@ import { Database } from "@/db/types/database";
 import { TableNames, SelectPatch, InsertPatch } from "@/db/types/tables";
 
 export const mockDbSelectOverlap = (db: Database, returnVal: SelectPatch[]) => {
-  db.select = jest.fn().mockReturnValue({
+  (db.select as jest.Mock).mockReturnValue({
     from: jest.fn().mockReturnThis(),
     where: jest.fn().mockResolvedValue(returnVal), // Simulating an existing patch
   });

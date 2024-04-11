@@ -1,5 +1,5 @@
 import { SelectFixture } from "../../db/types/tables.ts";
-import * as mock from "../__mocks__/fixture.mock.ts";
+import * as mock from "../__mocks__/fixture.ts";
 import Fixture from "../fixture.ts";
 
 describe("Fixture model", () => {

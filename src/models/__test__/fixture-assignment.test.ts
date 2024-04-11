@@ -1,5 +1,5 @@
 import { TableNames } from "../../db/types/tables.ts";
-import * as mock from "../__mocks__/fixture-assignment.mock.ts";
+import * as mock from "../__mocks__/fixture-assignment.ts";
 import FixtureAssignment from "../fixture-assignment.ts";
 
 describe("Fixture Assignment Model", () => {

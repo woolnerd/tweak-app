@@ -7,7 +7,7 @@ import {
   mockScenes,
   mockScenesDesc,
   mockSelectDsc,
-} from "../__mocks__/scene.mock.ts";
+} from "../__mocks__/scene.ts";
 import Scene from "../scene.ts";
 
 describe("Scene model - getAllOrdered", () => {

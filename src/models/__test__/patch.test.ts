@@ -3,7 +3,7 @@ import {
   insertPatch,
   mockDbSelectOverlap,
   selectPatch,
-} from "../__mocks__/patch.mock.ts";
+} from "../__mocks__/patch.ts";
 import Patch from "../patch.ts";
 
 jest.mock("@/db/client", () =>
@@ -17,11 +17,11 @@ jest.mock("@/db/client", () =>
 
 describe("Patch", () => {
   let patch: Patch;
-  let mockDb: Database;
+  let mockDb: Database = jest.mock();
   const MIN_START_ADDRESS = 1;
 
   beforeEach(() => {
-    patch = new Patch(jest.mocked);
+    patch = new Patch(mockDb);
   });
 
   test("create throws error when startAddress greater than endAddress", async () => {
