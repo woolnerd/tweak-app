@@ -9,6 +9,8 @@ export type FixtureControlData = {
   fixtureId?: number | null;
   fixtureAssignmentId: number;
   sceneId: number;
+  startAddress: number;
+  endAddress: number;
 };
 
 export type FixtureAssignmentResponse = {
@@ -21,4 +23,6 @@ export type FixtureAssignmentResponse = {
   fixtureName: string | null;
   fixtureNotes: string | null;
   sceneId: number;
+  startAddress: number;
+  endAddress: number;
 }[];

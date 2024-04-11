@@ -23,9 +23,10 @@ export default function ControlPanel({
 
   const handleTouch = (data: ControlButton) => {
     // setControlPanelValue(val);
-    if (data.type === Buttons.DIRECT_ACTION_BUTTON) {
-      const action = new DirectAction(data);
-    }
+    // if (data.type === Buttons.DIRECT_ACTION_BUTTON) {
+    //   const action = new DirectAction(data);
+    // }
+    console.log(data);
   };
 
   const buildPanel = () =>

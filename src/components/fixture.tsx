@@ -32,6 +32,8 @@ export function Fixture({
   selectedFixtureIds,
   setSelectedFixtureIds,
   sceneId,
+  startAddress,
+  endAddress,
 }: FixtureProps) {
   const ctrlPanelCtx = useContext(ControlPanelContext);
   const [selectedValue, setSelectedValue] = useState<string | null>([1, 50]);
@@ -73,6 +75,8 @@ export function Fixture({
         values, // here we need the correctly parsed value
         fixtureAssignmentId,
         sceneId,
+        startAddress,
+        endAddress,
       });
     } else {
       removeManualFixture(sceneId, fixtureAssignmentId);
@@ -119,6 +123,8 @@ export function Fixture({
           values,
           fixtureAssignmentId,
           sceneId,
+          startAddress,
+          endAddress,
         })
       }>
       <Text style={styles.text}>{channel}</Text>
