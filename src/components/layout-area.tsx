@@ -6,6 +6,8 @@ import { db } from "../db/client.ts";
 import ScenesToFixtureAssignments from "../models/scene-to-fixture-assignments.ts";
 import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 import { mergeCacheWithDBFixtures } from "../util/helpers.ts";
+import UniverseDataBuilder from "../lib/universe-data-builder.ts";
+import ValueUniverse, { DmxTuple } from "../util/value-universe.ts";
 
 type LayoutAreaProps = {
   selectedSceneId: number;
@@ -41,7 +43,15 @@ export default function LayoutArea({
   }, [selectedSceneId, selectedFixtureIds]);
 
   useEffect(() => {
-    console.log(compositeFixtures[0]);
+    const universeObjs = compositeFixtures.map((compFixture) =>
+      new UniverseDataBuilder(compFixture).toUniverseTuples(),
+    );
+    const universe = new ValueUniverse(1);
+    universeObjs.flat().forEach((uni: DmxTuple) => {
+      console.log(uni);
+
+      universe.addDmxValues(uni);
+    });
   }, [compositeFixtures]);
 
   useEffect(() => {

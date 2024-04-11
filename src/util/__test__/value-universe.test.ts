@@ -16,7 +16,7 @@ describe("ValueUniverse", () => {
   it("sets and gets DMX values", () => {
     const channel = new ChannelNumber(10);
     const dmxValue = new DmxValue(100);
-    valueUniverse.setDmxValues = [channel, dmxValue];
+    valueUniverse.addDmxValues([channel, dmxValue]);
 
     const dmxValues = valueUniverse.getDmxValues;
     expect(dmxValues.length).toBe(1);
@@ -28,8 +28,8 @@ describe("ValueUniverse", () => {
     const dmxValue1 = new DmxValue(100);
     const channel2 = new ChannelNumber(20);
     const dmxValue2 = new DmxValue(200);
-    valueUniverse.setDmxValues = [channel1, dmxValue1];
-    valueUniverse.setDmxValues = [channel2, dmxValue2];
+    valueUniverse.addDmxValues([channel1, dmxValue1]);
+    valueUniverse.addDmxValues([channel2, dmxValue2]);
 
     const display = valueUniverse.buildUniverse();
     expect(display[channel1.value]).toBe(dmxValue1.value);
