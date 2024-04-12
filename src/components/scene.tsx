@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { View, Pressable, Text, StyleSheet } from "react-native";
 
-import { FixtureControlData } from "./fixture.tsx";
+import { FixtureControlData } from "./types/fixture.ts";
 import { db } from "../db/client.ts";
 import { fixtureAssignments } from "../db/schema.ts";
 import {
