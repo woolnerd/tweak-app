@@ -24,9 +24,8 @@ export default function ControlPanel({
     // setControlPanelValue(val);
 
     const clStack = CommandLineStack.getInstance();
+
     clStack.add(data);
-    // clStack.clearAll();
-    console.log(clStack);
 
     console.log(data.label);
   };
