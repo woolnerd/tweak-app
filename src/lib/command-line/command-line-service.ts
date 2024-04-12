@@ -16,12 +16,18 @@ export default class CommandLineService {
 
   history: HistoryStack;
 
-  public set setEvents(events: ControlButton[]) {
-    this.commandEvents = events;
+  selection: number[];
+
+  valueDirective: number;
+
+  constructor(commandEvents: ControlButton[]) {
+    this.commandEvents = commandEvents;
+    this.buildSelectionArray();
+    this.getValueDirective();
   }
 
-  process(commandEvents: ControlButton[]) {
-    this.setEvents = commandEvents;
+  process() {
+    this.buildAction();
     //  examples:
     // ["3","thru","5","@","50%"],
     // ["Group", "2", "@", "10%"] A FixtureGroups should be a table of fixture ids;
@@ -30,9 +36,7 @@ export default class CommandLineService {
   }
 
   buildAction(): void {
-    const action: ActionObject = {};
-    // do stuff;
-    this.action = action;
+    this.action = { selection: this.selection, directive: this.valueDirective };
   }
 
   checkUndoEvent(): boolean {
@@ -43,9 +47,9 @@ export default class CommandLineService {
     );
   }
 
-  adaptProfile(): void {
-    this.profileAdapter.parse(this.commandEvents);
-  }
+  // adaptProfile(): void {
+  // this.profileAdapter.parse();
+  // }
 
   addToHistory(): void {
     this.history.add(this.commandEvents);
@@ -55,8 +59,9 @@ export default class CommandLineService {
     return this.commandEvents.map((event) => event.label);
   }
 
-  private buildFixtureArray() {
+  private buildSelectionArray() {
     // ["Chan", "1", "thru", "10", "+", "20", "@", "3200"];
+    this.selection = this.getRangeAndAddAdditionals();
   }
 
   getRange() {
@@ -66,5 +71,24 @@ export default class CommandLineService {
       parseInt(labelArray[index - 1], 10),
       parseInt(labelArray[index + 1], 10),
     );
+  }
+
+  getValueDirective() {
+    const labelArray = this.getLabels();
+    const index = labelArray.indexOf("@");
+    this.valueDirective = parseInt(labelArray[index + 1], 10);
+  }
+
+  getRangeAndAddAdditionals() {
+    const buildingRange = this.getRange();
+    const labelArray = this.getLabels();
+    labelArray.forEach((label, idx) => {
+      // if we find a + the next value must be a new value.
+      if (label === "+") {
+        buildingRange.push(parseInt(labelArray[idx + 1], 10));
+      }
+    });
+
+    return buildingRange;
   }
 }

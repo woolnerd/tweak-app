@@ -20,7 +20,6 @@ export default class CommandLine {
     }
     this.commandEvents = new CommandLineStack();
     this.errors = new CommandLineErrorHandler();
-    this.service = new CommandLineService();
   }
 
   static getInstance() {
@@ -44,10 +43,11 @@ export default class CommandLine {
     this.commandEvents.add(data);
     if (this.onEnterPress()) {
       this.commandEvents.clearLast();
-      this.service.process(this.commandEvents.commands);
-      return true;
+      this.service = new CommandLineService(this.commandEvents.commands);
+      this.service.process();
+      return this.sendAction();
     }
-    return false;
+    return null;
   }
 
   onEnterPress() {

@@ -1,3 +1,4 @@
 export type ActionObject = {
-  action?: string;
+  selection: number[];
+  directive: number;
 };
