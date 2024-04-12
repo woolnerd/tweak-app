@@ -1,10 +1,12 @@
+import { CommandButton } from "../types/buttons.ts";
+
 /* eslint-disable class-methods-use-this */
 export default class CommandLineErrorHandler {
-  commands: string[]; // this probably requires types as well;
+  commands: CommandButton[]; // this probably requires types as well;
 
   errors: string[];
 
-  ensureValid(str: string) {
+  ensureValid(str: CommandButton["label"]) {
     // checks the commands for proper syntax;
     // allowNextCommand?
   }

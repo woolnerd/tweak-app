@@ -1,29 +1,4 @@
-export enum Buttons {
-  DIRECT_ACTION_BUTTON = "DIRECT_ACTION_BUTTON",
-  COMMAND_BUTTON = "COMMAND_BUTTON",
-}
-
-interface BaseButton {
-  id: string;
-  label: string;
-  styles: { color: string };
-}
-
-export interface DirectActionButton extends BaseButton {
-  type: Buttons.DIRECT_ACTION_BUTTON;
-  value: number;
-}
-
-export interface CommandButton extends BaseButton {
-  type: Buttons.COMMAND_BUTTON;
-}
-
-export type ControlButton = CommandButton | DirectActionButton;
-
-type ButtonColumn = {
-  id: string;
-  buttons: ControlButton[];
-};
+import { ButtonColumn, Buttons } from "../lib/types/buttons.ts";
 
 const controlPanelButtonData: ButtonColumn[] = [
   {

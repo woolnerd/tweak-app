@@ -1,5 +1,5 @@
 export default class StackBase<T> {
-  private stack: T[] = [];
+  protected stack: T[] = [];
 
   get read() {
     return this.stack;

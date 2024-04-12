@@ -1,7 +1,9 @@
 import { View } from "react-native";
 
 import ControlPanelButton from "./control-panel-button.tsx";
-import controlPanelButtonData, { ControlButton } from "../db/button-data.ts";
+import controlPanelButtonData from "../db/button-data.ts";
+import CommandLineStack from "../lib/command-line/command-line-stack.ts";
+import { ControlButton } from "../lib/types/buttons.ts";
 
 // send the button object to an instance of ActionRouter
 // ActionRouter handles the logic of what the button directive is.
@@ -20,9 +22,12 @@ export default function ControlPanel({
 
   const handleTouch = (data: ControlButton) => {
     // setControlPanelValue(val);
-    // if (data.type === Buttons.DIRECT_ACTION_BUTTON) {
-    //   const action = new DirectAction(data);
-    // }
+
+    const clStack = CommandLineStack.getInstance();
+    clStack.add(data);
+    // clStack.clearAll();
+    console.log(clStack);
+
     console.log(data.label);
   };
 
