@@ -6,8 +6,6 @@ export default class DirectAction {
 
   protected selectedFixtures: FixtureControlData[];
 
-  protected handleChannelValues: () => any;
-
   constructor(
     buttonData: DirectActionButton,
     selectedFixtures: FixtureControlData[],
@@ -18,27 +16,5 @@ export default class DirectAction {
 
   private handleIntensity() {
     this.buttonData.value;
-  }
-
-  private function handleChannelValues(
-    profileChannels: string,
-    values: string,
-  ): string | null {
-    if (!profileChannels || !values) {
-      return null;
-    }
-
-    const parsedProfileChannels: Channels = JSON.parse(profileChannels);
-    const parsedValues: number[][] = JSON.parse(values);
-
-    const output: string[] = [];
-
-    parsedValues.forEach((value) => {
-      const [key, outputVal] = value;
-      // output.push([parsedProfileChannels[key], outputVal]);
-      output.push(`${Math.trunc((outputVal / 255) * 100)}%`);
-    });
-
-    return output[0];
   }
 }

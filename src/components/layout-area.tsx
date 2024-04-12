@@ -43,15 +43,16 @@ export default function LayoutArea({
   }, [selectedSceneId, selectedFixtureIds]);
 
   useEffect(() => {
-    const universeObjs = compositeFixtures.map((compFixture) =>
-      new UniverseDataBuilder(compFixture).toUniverseTuples(),
-    );
-    const universe = new ValueUniverse(1);
-    universeObjs.flat().forEach((uni: DmxTuple) => {
-      console.log(uni);
-
-      universe.addDmxValues(uni);
-    });
+    if (compositeFixtures.length > 0) {
+      // const universeObjs = compositeFixtures.map((compFixture) =>
+      //   new UniverseDataBuilder(compFixture).toUniverseTuples(),
+      // );
+      // const universe = new ValueUniverse(1);
+      // universeObjs.flat().forEach((uni: DmxTuple) => {
+      //   universe.addDmxValues(uni);
+      // });
+      // console.log(universe);
+    }
   }, [compositeFixtures]);
 
   useEffect(() => {

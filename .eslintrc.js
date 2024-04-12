@@ -25,6 +25,7 @@ module.exports = {
       { ignore: ["navigation", "navigation.navigate"] },
     ],
     "react/react-in-jsx-scope": "off",
+    "no-console": "off",
   },
   plugins: ["drizzle"],
 };

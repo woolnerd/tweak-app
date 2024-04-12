@@ -8,6 +8,7 @@ import {
   removeManualFixture,
   addManualFixture,
 } from "../util/fixture-cache.ts";
+import { handleChannelValues, presentValueAsPercent } from "../util/helpers.ts";
 
 // type OptionalProps<T> = { [P in keyof T]?: T[P] | null };
 type ProfileKey = number;
@@ -36,7 +37,7 @@ export function Fixture({
   endAddress,
 }: FixtureProps) {
   const ctrlPanelCtx = useContext(ControlPanelContext);
-  const [selectedValue, setSelectedValue] = useState<string | null>([1, 50]);
+  const [selectedValue, setSelectedValue] = useState<string | null>([150]);
   const [manualHighlight, setManualHighlight] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
 
@@ -111,6 +112,15 @@ export function Fixture({
     return styles;
   };
 
+  const buildOutputDetails = () => {
+    const details = handleChannelValues(profileChannels, values);
+    return Object.keys(details as object).map((profileField) => (
+      <Text style={{ ...styles.text, ...selectedStyle(fixtureAssignmentId) }}>
+        {`${profileField}: ${details ? presentValueAsPercent(details[profileField]) : ""}`}
+      </Text>
+    ));
+  };
+
   return (
     <View
       key={fixtureAssignmentId}
@@ -129,9 +139,10 @@ export function Fixture({
       }>
       <Text style={styles.text}>{channel}</Text>
       <Text style={styles.text}>{fixtureName}</Text>
-      <Text style={{ ...styles.text, ...selectedStyle(fixtureAssignmentId) }}>
+      {/* <Text style={{ ...styles.text, ...selectedStyle(fixtureAssignmentId) }}>
         {selectedValue}
-      </Text>
+      </Text> */}
+      {buildOutputDetails()}
     </View>
   );
 }

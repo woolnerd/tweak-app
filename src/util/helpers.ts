@@ -11,7 +11,7 @@ import {
 } from "../components/types/fixture.ts";
 import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 
-type FetchCallback = () => Promise<ParsedCompositeFixtureInfo[] | undefined>;
+type FetchCallback = () => Promise<ParsedCompositeFixtureInfo[] | void>;
 
 type SetCallback = (
   arr: (FixtureControlData | Awaited<FetchCallback>)[],
@@ -49,4 +49,34 @@ export async function mergeCacheWithDBFixtures(
   } catch (err) {
     console.log(err);
   }
+}
+
+export function handleChannelValues(
+  profileChannels: ParsedCompositeFixtureInfo["profileChannels"],
+  values: ParsedCompositeFixtureInfo["values"],
+): Record<string, number> | null {
+  if (!profileChannels || !values) {
+    return null;
+  }
+
+  const result = {};
+
+  values.forEach((tuple) => {
+    const [key, value] = tuple;
+    const profile = profileChannels[key.toString()];
+    if (profile) {
+      result[profile] = value;
+    }
+  });
+
+  // parsedValues.forEach((value) => {
+  //   const [key, outputVal] = value;
+  //   // output.push([parsedProfileChannels[key], outputVal]);
+  //   output.push(`${Math.trunc((outputVal / 255) * 100)}%`);
+  // });
+
+  return result;
+}
+export function presentValueAsPercent(val: number) {
+  return `${Math.trunc((val / 255) * 100)}%`;
 }

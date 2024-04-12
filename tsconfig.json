@@ -15,8 +15,7 @@
     "strict": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "strictPropertyInitialization": false,
-    "module": "ESNext"
+    "strictPropertyInitialization": false
   },
   "extends": "expo/tsconfig.base",
   "include": [

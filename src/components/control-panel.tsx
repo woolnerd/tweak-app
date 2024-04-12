@@ -1,3 +1,4 @@
+import React from "react";
 import { View } from "react-native";
 
 import ControlPanelButton from "./control-panel-button.tsx";
@@ -26,7 +27,7 @@ export default function ControlPanel({
     // if (data.type === Buttons.DIRECT_ACTION_BUTTON) {
     //   const action = new DirectAction(data);
     // }
-    console.log(data);
+    console.log(data.label);
   };
 
   const buildPanel = () =>
