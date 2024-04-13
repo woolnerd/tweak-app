@@ -8,7 +8,7 @@ export default class CommandLine {
   // eslint-disable-next-line no-use-before-define
   static instance: null | CommandLine = null;
 
-  private commandEvents: CommandLineStack;
+  public commandEvents: CommandLineStack;
 
   private errors: CommandLineErrorHandler;
 
@@ -41,13 +41,14 @@ export default class CommandLine {
 
   process(data: ControlButton) {
     this.commandEvents.add(data);
+
     if (this.onEnterPress()) {
       this.commandEvents.clearLast();
       this.service = new CommandLineService(this.commandEvents.commands);
       this.service.process();
       return this.sendAction();
     }
-    return null;
+    return {};
   }
 
   onEnterPress() {

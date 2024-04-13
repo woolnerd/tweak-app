@@ -1,4 +1,4 @@
-import { range, isNumber } from "lodash";
+import { range } from "lodash";
 
 import { ActionObject } from "./types/command-line-types.ts";
 import ProfileAdapter from "../adapters/profile-adapter.ts";
@@ -56,7 +56,7 @@ export default class CommandLineService {
   }
 
   private getLabels() {
-    return this.commandEvents.map((event) => event.label);
+    return this.commandEvents.map((event) => event.label.toLowerCase());
   }
 
   private buildSelectionArray() {
@@ -69,7 +69,7 @@ export default class CommandLineService {
     const index = labelArray.indexOf("thru");
     return range(
       parseInt(labelArray[index - 1], 10),
-      parseInt(labelArray[index + 1], 10),
+      parseInt(labelArray[index + 1], 10) + 1,
     );
   }
 

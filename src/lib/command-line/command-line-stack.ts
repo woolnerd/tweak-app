@@ -7,6 +7,11 @@ export default class CommandLineStack extends StackBase<ControlButton> {
 
   errorHandler = new CommandLineErrorHandler();
 
+  constructor() {
+    super();
+    this.commands = this.stack;
+  }
+
   clearAll() {
     this.commands = [];
   }

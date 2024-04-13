@@ -2,7 +2,8 @@ import { View } from "react-native";
 
 import ControlPanelButton from "./control-panel-button.tsx";
 import controlPanelButtonData from "../db/button-data.ts";
-import CommandLineStack from "../lib/command-line/command-line-stack.ts";
+import CommandLine from "../lib/command-line/command-line.ts";
+import { ActionObject } from "../lib/command-line/types/command-line-types.ts";
 import { ControlButton } from "../lib/types/buttons.ts";
 
 // send the button object to an instance of ActionRouter
@@ -22,12 +23,9 @@ export default function ControlPanel({
 
   const handleTouch = (data: ControlButton) => {
     // setControlPanelValue(val);
-
-    const clStack = CommandLineStack.getInstance();
-
-    clStack.add(data);
-
-    console.log(data.label);
+    const commandLineInstance = CommandLine.getInstance();
+    const action: ActionObject | object = commandLineInstance.process(data);
+    console.log(action);
   };
 
   const buildPanel = () =>
