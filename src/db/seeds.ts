@@ -248,7 +248,7 @@ export const seeds: Seeds = {
   shows: [{ name: "my first show" }, { name: "my second show" }],
 };
 
-[
+export const testData = [
   {
     addressEnd: 5,
     addressStart: 1,
