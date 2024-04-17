@@ -2,6 +2,7 @@
 export enum Buttons {
   DIRECT_ACTION_BUTTON = "DIRECT_ACTION_BUTTON",
   COMMAND_BUTTON = "COMMAND_BUTTON",
+  KEYPAD_BUTTON = "KEYPAD_BUTTON",
 }
 
 export enum ProfileTarget {
@@ -27,7 +28,11 @@ export interface CommandButton extends BaseButton {
   type: Buttons.COMMAND_BUTTON;
 }
 
-export type ControlButton = CommandButton | DirectActionButton;
+export interface KeyPadButton extends BaseButton {
+  type: Buttons.KEYPAD_BUTTON;
+}
+
+export type ControlButton = CommandButton | DirectActionButton | KeyPadButton;
 
 export type ButtonColumn = {
   id: string;
