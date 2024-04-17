@@ -41,12 +41,13 @@ export default class CommandLine {
 
   process(data: ControlButton) {
     this.commandEvents.add(data);
-
     if (this.onEnterPress()) {
       this.commandEvents.clearLast();
       this.service = new CommandLineService(this.commandEvents.commands);
       this.service.process();
-      return this.sendAction();
+      const action = this.sendAction();
+      this.commandEvents.clearAll();
+      return action;
     }
     return {};
   }
@@ -54,4 +55,17 @@ export default class CommandLine {
   onEnterPress() {
     return this.commandEvents.peak.label.toLowerCase() === "enter";
   }
+
+  // build(currentButtonData: ControlButton) {
+  //   const previousButtonData = this.commandEvents.peak;
+  //   if (
+  //     CommandLineService.shouldBuildKeyPadVals(
+  //       currentButtonData,
+  //       previousButtonData,
+  //     )
+  //   ) {
+  //     const
+
+  //   }
+  // }
 }
