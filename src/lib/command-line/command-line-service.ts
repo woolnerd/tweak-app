@@ -35,17 +35,6 @@ export default class CommandLineService {
     this.getProfileTarget();
   }
 
-  // static shouldBuildKeyPadVals(prevVal: ControlButton, curVal: ControlButton) {
-  //   return (
-  //     prevVal.type === Buttons.KEYPAD_BUTTON &&
-  //     curVal.type === Buttons.KEYPAD_BUTTON
-  //   );
-  // }
-
-  // static buildKeyPadVals(prevData: KeyPadButton, curData: KeyPadButton) {
-  //   return prevData.label.
-  // }
-
   process() {
     this.buildAction();
     //  examples:
@@ -80,17 +69,26 @@ export default class CommandLineService {
   }
 
   private buildCommandArray() {
+    console.log("buildComandArr", this.concatKeyPadEntries());
+
     return this.concatKeyPadEntries().map((event) => event.label.toLowerCase());
   }
 
   private buildSelectionArray() {
     // ["Chan", "1", "thru", "10", "+", "20", "@", "3200"];
     this.selection = this.getRangeAndAddAdditionals();
+    console.log(this.selection);
   }
 
   getRange() {
     const labelArray = this.buildCommandArray();
-    const index = labelArray.indexOf("thru");
+    console.log("getRange", labelArray);
+
+    const index = labelArray.indexOf("thru"); // handles one 'thru' for now
+
+    if (index === -1) {
+      return -1;
+    }
     return range(
       parseInt(labelArray[index - 1], 10),
       parseInt(labelArray[index + 1], 10) + 1,
@@ -99,7 +97,7 @@ export default class CommandLineService {
 
   getValueDirective() {
     const directive = this.getDirectiveButtonEvent();
-    this.valueDirective = parseInt(directive.label, 10);
+    this.valueDirective = directive.value;
   }
 
   getProfileTarget() {
@@ -119,44 +117,55 @@ export default class CommandLineService {
   }
 
   getRangeAndAddAdditionals() {
-    const buildingRange = this.getRange();
+    const capturedRange = this.getRange();
+    const buildingRange = capturedRange === -1 ? [] : capturedRange;
+
     const labelArray = this.buildCommandArray();
+
     labelArray.forEach((label, idx) => {
       // if we find a + the next value must be a new value.
       if (label === "+") {
+        if (idx === 1) {
+          buildingRange.push(parseInt(labelArray[idx - 1], 10));
+        }
+
         buildingRange.push(parseInt(labelArray[idx + 1], 10));
       }
     });
-
     return buildingRange;
   }
 
   concatKeyPadEntries() {
-    let dummyBtn: KeyPadButton = {
-      id: "dummyButton",
-      type: Buttons.KEYPAD_BUTTON,
-      label: "",
-      styles: { color: "" },
-    };
-    // ["Chan", "1", "thru", "1", "0", "0", "+", "2", "0", "@", "3200"];
+    let btnIdx = 1;
+    let dummyBtn: KeyPadButton = CommandLineService.makeDummyButton(btnIdx);
+
     const result: ControlButton[] = [];
+
     this.commandEvents.forEach((buttonEvent) => {
+      if (
+        buttonEvent.type !== Buttons.KEYPAD_BUTTON &&
+        dummyBtn.label.length > 0
+      ) {
+        result.push(dummyBtn);
+        dummyBtn = CommandLineService.makeDummyButton((btnIdx += 1));
+      }
+
       if (buttonEvent.type === Buttons.KEYPAD_BUTTON) {
         dummyBtn.label += buttonEvent.label;
-      } else if (dummyBtn.label.length > 0) {
-        result.push(dummyBtn);
-        dummyBtn = {
-          id: "dummyButton",
-          type: Buttons.KEYPAD_BUTTON,
-          label: "",
-          styles: { color: "" },
-        };
       } else {
         result.push(buttonEvent);
       }
     });
-    console.log(result);
 
     return result;
+  }
+
+  static makeDummyButton(idx: number): KeyPadButton {
+    return {
+      id: `MergedKeyPadButton${idx}`,
+      type: Buttons.KEYPAD_BUTTON,
+      label: "",
+      styles: { color: "" },
+    };
   }
 }

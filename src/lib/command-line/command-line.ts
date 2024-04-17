@@ -41,12 +41,21 @@ export default class CommandLine {
 
   process(data: ControlButton) {
     this.commandEvents.add(data);
+
+    if (this.onClearPress()) {
+      this.clearCommands();
+      console.log("Cleared");
+      return {};
+    }
+
     if (this.onEnterPress()) {
       this.commandEvents.clearLast();
       this.service = new CommandLineService(this.commandEvents.commands);
       this.service.process();
       const action = this.sendAction();
-      this.commandEvents.clearAll();
+      this.clearCommands();
+      this.commandEvents = new CommandLineStack();
+
       return action;
     }
     return {};
@@ -56,16 +65,11 @@ export default class CommandLine {
     return this.commandEvents.peak.label.toLowerCase() === "enter";
   }
 
-  // build(currentButtonData: ControlButton) {
-  //   const previousButtonData = this.commandEvents.peak;
-  //   if (
-  //     CommandLineService.shouldBuildKeyPadVals(
-  //       currentButtonData,
-  //       previousButtonData,
-  //     )
-  //   ) {
-  //     const
+  onClearPress() {
+    return this.commandEvents.peak.label.toLowerCase() === "clear";
+  }
 
-  //   }
-  // }
+  clearCommands() {
+    this.commandEvents = new CommandLineStack();
+  }
 }
