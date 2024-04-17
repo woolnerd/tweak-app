@@ -1,7 +1,14 @@
-// eslint-disable-next-line no-shadow
+// /* eslint-disable no-shadow */
 export enum Buttons {
   DIRECT_ACTION_BUTTON = "DIRECT_ACTION_BUTTON",
   COMMAND_BUTTON = "COMMAND_BUTTON",
+}
+
+export enum ProfileTarget {
+  DIMMER = "DIMMER",
+  COLOR_TEMP = "COLOR TEMP",
+  TINT = "TINT",
+  CROSSFADE = "CROSSFADE",
 }
 
 interface BaseButton {
@@ -13,6 +20,7 @@ interface BaseButton {
 export interface DirectActionButton extends BaseButton {
   type: Buttons.DIRECT_ACTION_BUTTON;
   value: number;
+  profileTarget: ProfileTarget;
 }
 
 export interface CommandButton extends BaseButton {
