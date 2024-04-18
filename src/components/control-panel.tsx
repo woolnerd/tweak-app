@@ -4,9 +4,11 @@ import { View } from "react-native";
 import ControlPanelButton from "./control-panel-button.tsx";
 import { useCompositeFixtureStore } from "../app/store/useCompositeFixtureStore.ts";
 import controlPanelButtonData from "../db/button-data.ts";
+import ProfileAdapter from "../lib/adapters/profile-adapter.ts";
 import CommandLine from "../lib/command-line/command-line.ts";
 import { ActionObject } from "../lib/command-line/types/command-line-types.ts";
 import { ControlButton } from "../lib/types/buttons.ts";
+import ValueRouter from "../lib/value-router.ts";
 
 type ControlPanelProps = {
   setControlPanelValue: any;
@@ -17,6 +19,9 @@ export default function ControlPanel({
   const [action, setAction] = useState<ActionObject | null>(null);
   const compositeFixtures = useCompositeFixtureStore(
     (state) => state.compositeFixtures,
+  );
+  const updateCompositeFixtures = useCompositeFixtureStore(
+    (state) => state.updateCompositeFixtures,
   );
 
   const handleTouch = (data: ControlButton) => {
@@ -32,6 +37,41 @@ export default function ControlPanel({
     // checks their profiles for the the target
     // determines which address to effect.
     // so we need our ProfileAdapter to help route this.
+    if (action !== null) {
+      const { selection } = action;
+      const selectedCompositeFixtures = compositeFixtures.filter((fixture) =>
+        selection.includes(fixture.channel),
+      );
+      console.log(selectedCompositeFixtures);
+
+      const mutatedFixtures = selectedCompositeFixtures.map((fixture) => {
+        const profileAdapter = new ProfileAdapter(
+          "intensity",
+          fixture.profileChannels!,
+        );
+
+        const valueRouter = new ValueRouter(action, profileAdapter);
+
+        const channelsTuples = valueRouter.buildResult();
+
+        channelsTuples.forEach((tuple) => {
+          const channel = tuple[0];
+          const tupleToMutateIdx = fixture.values!.findIndex(
+            (fixtureTuple) => fixtureTuple[0] === channel,
+          );
+
+          if (tupleToMutateIdx === -1) {
+            // don't mutate just push tuple into channel list.
+            fixture.values!.push(tuple);
+          } else {
+            // otherwise mutate
+            fixture.values![tupleToMutateIdx] = tuple;
+          }
+        });
+        return fixture;
+      });
+      updateCompositeFixtures(mutatedFixtures);
+    }
 
     console.log(action);
   }, [action]);

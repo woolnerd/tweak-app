@@ -69,7 +69,7 @@ export default function LayoutArea({
       fetchCompositeFixtures,
       updateCompositeFixtures,
     );
-  }, [selectedSceneId, fetchCompositeFixtures]);
+  }, [selectedSceneId, fetchCompositeFixtures, updateCompositeFixtures]);
 
   return (
     <View

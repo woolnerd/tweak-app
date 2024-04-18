@@ -4,12 +4,16 @@ export default class ChannelValueCalculator {
 
   private FULL_DMX_VALUE = 256 * 256;
 
+  constructor(percentage: number) {
+    this.percentage = percentage;
+  }
+
   public calc16BitValues(): number[] {
     return [this.getCoarseValue(), this.getFineValue()];
   }
 
-  private getCoarseValue() {
-    return Math.floor((65536 * this.percentage) / 256);
+  public getCoarseValue() {
+    return Math.floor((this.FULL_DMX_VALUE * this.percentage) / 256);
   }
 
   private getFineValue() {

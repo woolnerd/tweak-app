@@ -33,6 +33,7 @@ export async function mergeCacheWithDBFixtures(
       );
 
       const dbFixtures = await fetchCallback();
+      console.log(dbFixtures.map((f) => f.channel));
 
       if (cachedFixtures instanceof Array && dbFixtures instanceof Array) {
         setCallback(
