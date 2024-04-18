@@ -2,19 +2,21 @@ import React, { useEffect, useState, useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { Fixture as FixtureComponent } from "./fixture.tsx";
+import { useCompositeFixtureStore } from "../app/store/useCompositeFixtureStore.ts";
 import { db } from "../db/client.ts";
 import ScenesToFixtureAssignments from "../models/scene-to-fixture-assignments.ts";
 import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 import { mergeCacheWithDBFixtures } from "../util/helpers.ts";
-import UniverseDataBuilder from "../lib/universe-data-builder.ts";
-import ValueUniverse, { DmxTuple } from "../util/value-universe.ts";
+
+// import UniverseDataBuilder from "../lib/universe-data-builder.ts";
+// import ValueUniverse, { DmxTuple } from "../util/value-universe.ts";
 
 type LayoutAreaProps = {
   selectedSceneId: number;
   goToOut: boolean;
 };
 
-// inArray method must have at least one value in the array.
+// Drizzle inArray method must have at least one value in the array.
 // using -1, because we should never have that id.
 const DRIZZLE_ARRAY_CHECK_VALUE = -1;
 
@@ -22,11 +24,17 @@ export default function LayoutArea({
   selectedSceneId,
   goToOut,
 }: LayoutAreaProps): React.JSX.Element {
-  const [compositeFixtures, setCompositeFixtures] = useState<
-    ParsedCompositeFixtureInfo[]
-  >([]);
+  // const [compositeFixtures, setCompositeFixtures] = useState<
+  //   ParsedCompositeFixtureInfo[]
+  // >([]);
   const [selectedFixtureIds, setSelectedFixtureIds] = useState<Set<number>>(
     new Set([DRIZZLE_ARRAY_CHECK_VALUE]),
+  );
+  const updateCompositeFixtures = useCompositeFixtureStore(
+    (state) => state.updateCompositeFixtures,
+  );
+  const compositeFixtures = useCompositeFixtureStore(
+    (state) => state.compositeFixtures,
   );
 
   const fetchCompositeFixtures = useCallback(async () => {
@@ -42,24 +50,24 @@ export default function LayoutArea({
     }
   }, [selectedSceneId, selectedFixtureIds]);
 
-  useEffect(() => {
-    if (compositeFixtures.length > 0) {
-      // const universeObjs = compositeFixtures.map((compFixture) =>
-      //   new UniverseDataBuilder(compFixture).toUniverseTuples(),
-      // );
-      // const universe = new ValueUniverse(1);
-      // universeObjs.flat().forEach((uni: DmxTuple) => {
-      //   universe.addDmxValues(uni);
-      // });
-      // console.log(universe);
-    }
-  }, [compositeFixtures]);
+  // useEffect(() => {
+  //   if (compositeFixtures.length > 0) {
+  //     const universeObjs = compositeFixtures.map((compFixture) =>
+  //       new UniverseDataBuilder(compFixture).toUniverseTuples(),
+  //     );
+  //     const universe = new ValueUniverse(1);
+  //     universeObjs.flat().forEach((uni: DmxTuple) => {
+  //       universe.addDmxValues(uni);
+  //     });
+  //     console.log(universe);
+  //   }
+  // }, [compositeFixtures]);
 
   useEffect(() => {
     mergeCacheWithDBFixtures(
       selectedSceneId,
       fetchCompositeFixtures,
-      setCompositeFixtures,
+      updateCompositeFixtures,
     );
   }, [selectedSceneId, fetchCompositeFixtures]);
 

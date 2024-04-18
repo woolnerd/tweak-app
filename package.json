@@ -47,7 +47,8 @@
     "react-native-web": "~0.19.6",
     "react-navigation": "^5.0.0",
     "react-test-renderer": "^18.2.0",
-    "tslib": "^2.6.2"
+    "tslib": "^2.6.2",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

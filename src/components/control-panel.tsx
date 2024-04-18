@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 
 import ControlPanelButton from "./control-panel-button.tsx";
+import { useCompositeFixtureStore } from "../app/store/useCompositeFixtureStore.ts";
 import controlPanelButtonData from "../db/button-data.ts";
 import CommandLine from "../lib/command-line/command-line.ts";
 import { ActionObject } from "../lib/command-line/types/command-line-types.ts";
@@ -14,6 +15,9 @@ export default function ControlPanel({
   setControlPanelValue,
 }: ControlPanelProps) {
   const [action, setAction] = useState<ActionObject | null>(null);
+  const compositeFixtures = useCompositeFixtureStore(
+    (state) => state.compositeFixtures,
+  );
 
   const handleTouch = (data: ControlButton) => {
     // setControlPanelValue(val);

@@ -13,9 +13,11 @@ import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-ass
 
 type FetchCallback = () => Promise<ParsedCompositeFixtureInfo[] | void>;
 
-type SetCallback = (
-  arr: (FixtureControlData | Awaited<FetchCallback>)[],
-) => Dispatch<SetStateAction<FixtureAssignmentResponse>>;
+// type SetCallback = (
+//   arr: (FixtureControlData | Awaited<FetchCallback>)[],
+// ) => Dispatch<SetStateAction<FixtureAssignmentResponse>>;
+
+type SetCallback = (compositeFixtures: ParsedCompositeFixtureInfo[]) => void;
 
 export async function mergeCacheWithDBFixtures(
   selectedSceneId: number,
