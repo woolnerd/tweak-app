@@ -45,7 +45,7 @@ export default class CommandLine {
     if (this.onClearPress()) {
       this.clearCommands();
       console.log("Cleared");
-      return {};
+      return { directive: "", selection: [], profileTarget: "" };
     }
 
     if (this.onEnterPress()) {
@@ -58,7 +58,7 @@ export default class CommandLine {
 
       return action;
     }
-    return {};
+    return { directive: 0, selection: [], profileTarget: "" };
   }
 
   onEnterPress() {

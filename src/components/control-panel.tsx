@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 
 import ControlPanelButton from "./control-panel-button.tsx";
@@ -6,27 +7,30 @@ import CommandLine from "../lib/command-line/command-line.ts";
 import { ActionObject } from "../lib/command-line/types/command-line-types.ts";
 import { ControlButton } from "../lib/types/buttons.ts";
 
-// send the button object to an instance of ActionRouter
-// ActionRouter handles the logic of what the button directive is.
-// If is is a DirectAction ie intensity or color level,
-// those can happen instantaneously.
-// Also, keep a stack for undoing all actions.
-
-// If the button is a CommandAction, that is sent to the CLI for parsing
 type ControlPanelProps = {
   setControlPanelValue: any;
 };
 export default function ControlPanel({
   setControlPanelValue,
 }: ControlPanelProps) {
-  // const [outputVal, setOutputVal] = useState<string | null>(null);
+  const [action, setAction] = useState<ActionObject | null>(null);
 
   const handleTouch = (data: ControlButton) => {
     // setControlPanelValue(val);
     const commandLineInstance = CommandLine.getInstance();
-    const action: ActionObject | object = commandLineInstance.process(data);
-    console.log(action);
+    const commandLineAction: ActionObject = commandLineInstance.process(data);
+    setAction(commandLineAction);
   };
+
+  useEffect(() => {
+    // error handler has ensured that our selection is valid, ie in our scene.
+    // action.selection then iterates over the fixture assignments
+    // checks their profiles for the the target
+    // determines which address to effect.
+    // so we need our ProfileAdapter to help route this.
+
+    console.log(action);
+  }, [action]);
 
   const buildPanel = () =>
     controlPanelButtonData.map((col) => (

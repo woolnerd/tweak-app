@@ -69,8 +69,6 @@ export default class CommandLineService {
   }
 
   private buildCommandArray() {
-    console.log("buildComandArr", this.concatKeyPadEntries());
-
     return this.concatKeyPadEntries().map((event) => event.label.toLowerCase());
   }
 
@@ -82,8 +80,6 @@ export default class CommandLineService {
 
   getRange() {
     const labelArray = this.buildCommandArray();
-    console.log("getRange", labelArray);
-
     const index = labelArray.indexOf("thru"); // handles one 'thru' for now
 
     if (index === -1) {
