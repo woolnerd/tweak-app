@@ -4,4 +4,5 @@ export type ActionObject = {
   selection: number[];
   directive: number;
   profileTarget: ProfileTarget;
+  complete: boolean;
 };

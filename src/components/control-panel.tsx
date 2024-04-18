@@ -37,22 +37,25 @@ export default function ControlPanel({
     // checks their profiles for the the target
     // determines which address to effect.
     // so we need our ProfileAdapter to help route this.
-    if (action !== null) {
+    if (action !== null && action.complete) {
       const { selection } = action;
+      console.log("compFixtures", compositeFixtures);
+
       const selectedCompositeFixtures = compositeFixtures.filter((fixture) =>
         selection.includes(fixture.channel),
       );
-      console.log(selectedCompositeFixtures);
+      console.log("selectedCompFix", selectedCompositeFixtures);
 
       const mutatedFixtures = selectedCompositeFixtures.map((fixture) => {
         const profileAdapter = new ProfileAdapter(
-          "intensity",
+          action.profileTarget,
           fixture.profileChannels!,
         );
 
         const valueRouter = new ValueRouter(action, profileAdapter);
 
         const channelsTuples = valueRouter.buildResult();
+        console.log("tuples", channelsTuples);
 
         channelsTuples.forEach((tuple) => {
           const channel = tuple[0];
@@ -68,12 +71,13 @@ export default function ControlPanel({
             fixture.values![tupleToMutateIdx] = tuple;
           }
         });
+
         return fixture;
       });
       updateCompositeFixtures(mutatedFixtures);
     }
 
-    console.log(action);
+    console.log("action", action);
   }, [action]);
 
   const buildPanel = () =>

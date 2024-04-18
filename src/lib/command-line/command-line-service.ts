@@ -49,6 +49,7 @@ export default class CommandLineService {
       selection: this.selection,
       directive: this.valueDirective,
       profileTarget: this.profileTarget,
+      complete: true,
     };
   }
 

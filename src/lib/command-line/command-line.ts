@@ -58,7 +58,7 @@ export default class CommandLine {
 
       return action;
     }
-    return { directive: 0, selection: [], profileTarget: "" };
+    return { directive: 0, selection: [], profileTarget: "", complete: false };
   }
 
   onEnterPress() {
