@@ -114,6 +114,10 @@ export default class CommandLineService {
   }
 
   getRangeAndAddAdditionals() {
+    if (this.oneChannelSelection()) {
+      return [parseInt(this.buildCommandArray()[0], 10)];
+    }
+
     const capturedRange = this.getRange();
     const buildingRange = capturedRange === -1 ? [] : capturedRange;
 
@@ -164,5 +168,13 @@ export default class CommandLineService {
       label: "",
       styles: { color: "" },
     };
+  }
+
+  oneChannelSelection() {
+    return (
+      this.concatKeyPadEntries().filter(
+        (entry) => entry.type === Buttons.KEYPAD_BUTTON,
+      ).length === 1
+    );
   }
 }
