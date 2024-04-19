@@ -1,21 +1,12 @@
 /* eslint-disable import/prefer-default-export */
-import { SetStateAction, Dispatch } from "react";
 
 import {
   getManualFixtureKeys,
   getAllFixturesFromSceneKeys,
 } from "./fixture-cache.ts";
-import {
-  FixtureControlData,
-  FixtureAssignmentResponse,
-} from "../components/types/fixture.ts";
 import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 
 type FetchCallback = () => Promise<ParsedCompositeFixtureInfo[] | void>;
-
-// type SetCallback = (
-//   arr: (FixtureControlData | Awaited<FetchCallback>)[],
-// ) => Dispatch<SetStateAction<FixtureAssignmentResponse>>;
 
 type SetCallback = (compositeFixtures: ParsedCompositeFixtureInfo[]) => void;
 
@@ -33,7 +24,6 @@ export async function mergeCacheWithDBFixtures(
       );
 
       const dbFixtures = await fetchCallback();
-      console.log(dbFixtures.map((f) => f.channel));
 
       if (cachedFixtures instanceof Array && dbFixtures instanceof Array) {
         setCallback(
@@ -71,12 +61,6 @@ export function handleChannelValues(
       result[profile] = value;
     }
   });
-
-  // parsedValues.forEach((value) => {
-  //   const [key, outputVal] = value;
-  //   // output.push([parsedProfileChannels[key], outputVal]);
-  //   output.push(`${Math.trunc((outputVal / 255) * 100)}%`);
-  // });
 
   return result;
 }

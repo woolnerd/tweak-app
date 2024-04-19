@@ -12,7 +12,7 @@ export default class ProfileAdapter {
     this.target = target;
   }
 
-  parse(): string[][] {
+  extractChannels(): string[][] {
     // find the channel that contains the target string
     // return it's key -- this key is the address that needs to mutated in the channels output
     // somehow determine 8bit vs 16bit

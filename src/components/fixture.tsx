@@ -82,7 +82,18 @@ export function Fixture({
     } else {
       removeManualFixture(sceneId, fixtureAssignmentId);
     }
-  }, [selectedFixtureIds, fixtureIsCached]);
+  }, [
+    selectedFixtureIds,
+    fixtureIsCached,
+    channel,
+    fixtureName,
+    profileChannels,
+    values, // here we need the correctly parsed value
+    fixtureAssignmentId,
+    sceneId,
+    startAddress,
+    endAddress,
+  ]);
 
   const handleOutput = (fixture: FixtureControlData) => {
     // toggles multiple fixtures in and out of set
@@ -123,7 +134,7 @@ export function Fixture({
 
   return (
     <View
-      key={fixtureAssignmentId}
+      key={channel}
       style={{ ...styles.fixtures, ...selectedStyle(fixtureAssignmentId) }}
       onTouchStart={() =>
         handleOutput({
@@ -151,7 +162,7 @@ const styles = StyleSheet.create({
   fixtures: {
     backgroundColor: "purple",
     width: 200,
-    height: 130,
+    height: 200,
     borderWidth: 4,
     margin: 10,
     borderColor: "gold",

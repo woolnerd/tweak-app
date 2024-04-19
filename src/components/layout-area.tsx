@@ -80,7 +80,7 @@ export default function LayoutArea({
       }}>
       {compositeFixtures?.map((fixtureProps) => (
         <FixtureComponent
-          key={fixtureProps.fixtureAssignmentId}
+          key={fixtureProps.channel + fixtureProps.fixtureAssignmentId}
           selectedFixtureIds={selectedFixtureIds}
           setSelectedFixtureIds={setSelectedFixtureIds}
           fixtureAssignmentId={fixtureProps.fixtureAssignmentId}
