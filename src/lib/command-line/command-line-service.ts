@@ -37,11 +37,6 @@ export default class CommandLineService {
 
   process() {
     this.buildAction();
-    //  examples:
-    // ["3","thru","5","@","50%"],
-    // ["Group", "2", "@", "10%"] A FixtureGroups should be a table of fixture ids;
-    // ["1", "thru", "10", "+", "20", "@", "3200"]
-    // query db for fixtureAssignments in array [1..10, 20]
   }
 
   buildAction(): void {

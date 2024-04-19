@@ -6,7 +6,7 @@ export default class ChannelValueCalculator {
 
   private readonly calcPercentOfFullDMXVal: number;
 
-  private readonly coarseValue: number;
+  public readonly coarseValue: number;
 
   private readonly fineValue: number;
 

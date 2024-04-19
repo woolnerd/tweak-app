@@ -11,7 +11,7 @@ interface CompositeFixtureInfo {
 }
 
 export interface ParsedCompositeFixtureInfo extends CompositeFixtureInfo {
-  values: number[][] | null;
+  values: number[][];
   profileChannels: Record<number, string> | null;
 }
 

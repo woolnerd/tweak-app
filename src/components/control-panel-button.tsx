@@ -1,13 +1,13 @@
 import { Pressable, Text, StyleSheet } from "react-native";
 
-import { ControlButton } from "../db/button-data.ts";
+import { ControlButton } from "../lib/types/buttons.ts";
 
 export default function ControlPanelButton({
   buttonData,
   handleTouch,
 }: {
   buttonData: ControlButton;
-  handleTouch: (str: string) => void;
+  handleTouch: (data: ControlButton) => void;
 }) {
   return (
     <Pressable

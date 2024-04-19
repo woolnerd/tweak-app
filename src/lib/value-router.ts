@@ -1,9 +1,10 @@
 import ProfileAdapter from "./adapters/profile-adapter.ts";
 import { ActionObject } from "./command-line/types/command-line-types.ts";
 import { ProfileTarget } from "./types/buttons.ts";
+import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 import ChannelValueCalculator from "../util/channel-value-calculator.ts";
 
-export default class ValueRouter {
+export default class ValueRouter<T extends { values: number[][] }> {
   profileAdapter: ProfileAdapter;
 
   actionObject: ActionObject;
@@ -14,24 +15,47 @@ export default class ValueRouter {
 
   calculator: ChannelValueCalculator;
 
+  channelTuples: number[][];
+
   constructor(actionObject: ActionObject, profileAdapter: ProfileAdapter) {
     this.actionObject = actionObject;
     this.profileAdapter = profileAdapter;
     this.channels = this.profileAdapter.extractChannels();
-    this.calculator = new ChannelValueCalculator(this.actionObject.directive);
-    this.values = this.calculator.calc16BitValues();
-  }
 
-  buildResult() {
     if (this.checkIfProfileTargetsColorTemp()) {
       this.convertColorTempToPercentage();
     }
 
+    this.calculator = new ChannelValueCalculator(this.actionObject.directive);
+    this.values = this.calculator.calc16BitValues();
+  }
+
+  mutateOrMergeFixtureChannels(fixture: T) {
+    this.channelTuples.forEach((tuple) => {
+      const channel = tuple[0];
+      const tupleToMutateIdx = fixture.values!.findIndex(
+        (fixtureTuple) => fixtureTuple[0] === channel,
+      );
+
+      if (tupleToMutateIdx === -1) {
+        // don't mutate just push tuple into channel list.
+        fixture.values!.push(tuple);
+      } else {
+        // otherwise mutate
+        fixture.values![tupleToMutateIdx] = tuple;
+      }
+    });
+  }
+
+  // outputs a tuple of [ channel, Value (btw 0-255) ]
+  buildResult() {
     if (this.channelIs16Bit()) {
-      return this.parse16BitChannels();
+      this.channelTuples = this.parse16BitChannels();
+      return this;
     }
     if (this.channelIs8Bit()) {
-      return this.parse8BitChannel();
+      this.channelTuples = this.parse8BitChannel();
+      return this;
     }
 
     throw new Error("Could not route Values");
@@ -45,7 +69,7 @@ export default class ValueRouter {
 
     const percentage =
       ((temperature - minTemperature) / (maxTemperature - minTemperature)) *
-      1000;
+      100;
     console.log("convercolotempt", Number(percentage.toFixed(2)));
 
     this.actionObject.directive = Number(percentage.toFixed(2));
@@ -60,19 +84,23 @@ export default class ValueRouter {
   }
 
   channelIs8Bit() {
-    return this.channels.length === 2;
+    return this.channels.length === 1;
   }
 
   parse16BitChannels() {
+    const coarseChannelNumber = parseInt(this.channels[0][0], 10);
+    const coarseOutputValue = this.values[0];
+    const fineChannelNumber = parseInt(this.channels[1][0], 10);
+    const fineOutputValue = this.values[1];
     return [
-      [parseInt(this.channels[0][0], 10), this.values[0]],
-      [parseInt(this.channels[1][0], 10), this.values[1]],
+      [coarseChannelNumber, coarseOutputValue],
+      [fineChannelNumber, fineOutputValue],
     ];
   }
 
   parse8BitChannel() {
-    return [
-      [parseInt(this.channels[0][0], 10), this.calculator.getCoarseValue()],
-    ];
+    const coarseChannelNumber = parseInt(this.channels[0][0], 10);
+    const coarseOutputValue = this.values[0];
+    return [[coarseChannelNumber, coarseOutputValue]];
   }
 }

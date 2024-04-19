@@ -10,6 +10,7 @@ export enum ProfileTarget {
   COLOR_TEMP = "COLOR TEMP",
   TINT = "TINT",
   CROSSFADE = "CROSSFADE",
+  EMPTY = "",
 }
 
 interface BaseButton {

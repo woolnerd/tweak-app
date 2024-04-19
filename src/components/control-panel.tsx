@@ -9,6 +9,7 @@ import CommandLine from "../lib/command-line/command-line.ts";
 import { ActionObject } from "../lib/command-line/types/command-line-types.ts";
 import { ControlButton } from "../lib/types/buttons.ts";
 import ValueRouter from "../lib/value-router.ts";
+import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 
 type ControlPanelProps = {
   setControlPanelValue: any;
@@ -25,18 +26,12 @@ export default function ControlPanel({
   );
 
   const handleTouch = (data: ControlButton) => {
-    // setControlPanelValue(val);
     const commandLineInstance = CommandLine.getInstance();
     const commandLineAction: ActionObject = commandLineInstance.process(data);
     setAction(commandLineAction);
   };
 
   useEffect(() => {
-    // error handler has ensured that our selection is valid, ie in our scene.
-    // action.selection then iterates over the fixture assignments
-    // checks their profiles for the the target
-    // determines which address to effect.
-    // so we need our ProfileAdapter to help route this.
     if (action !== null && action.complete) {
       const { selection } = action;
       console.log("compFixtures", compositeFixtures);
@@ -52,25 +47,12 @@ export default function ControlPanel({
           fixture.profileChannels!,
         );
 
-        const valueRouter = new ValueRouter(action, profileAdapter);
+        const valueRouter = new ValueRouter<ParsedCompositeFixtureInfo>(
+          action,
+          profileAdapter,
+        );
 
-        const channelsTuples = valueRouter.buildResult();
-        console.log("tuples", channelsTuples);
-
-        channelsTuples.forEach((tuple) => {
-          const channel = tuple[0];
-          const tupleToMutateIdx = fixture.values!.findIndex(
-            (fixtureTuple) => fixtureTuple[0] === channel,
-          );
-
-          if (tupleToMutateIdx === -1) {
-            // don't mutate just push tuple into channel list.
-            fixture.values!.push(tuple);
-          } else {
-            // otherwise mutate
-            fixture.values![tupleToMutateIdx] = tuple;
-          }
-        });
+        valueRouter.buildResult().mutateOrMergeFixtureChannels(fixture);
 
         return fixture;
       });
@@ -78,7 +60,8 @@ export default function ControlPanel({
     }
 
     console.log("action", action);
-  }, [action]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [action, updateCompositeFixtures]);
 
   const buildPanel = () =>
     controlPanelButtonData.map((col) => (
