@@ -12,7 +12,8 @@
     "ts:check": "tsc",
     "generate": "drizzle-kit generate:sqlite",
     "migrate": "node --loader ts-node/esm ./scripts/migrations",
-    "lint": "eslint ./src"
+    "lint": "eslint ./src",
+    "lint:fix": "eslint ./src --fix"
   },
   "dependencies": {
     "@expo/metro-runtime": "~3.1.3",
