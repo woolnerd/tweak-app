@@ -24,6 +24,10 @@ export default class ChannelValueCalculator {
     return [Math.trunc(this.coarseValue), Math.trunc(this.fineValue)];
   }
 
+  public calc8BitValues(): number[] {
+    return [Math.trunc(this.coarseValue) / 256];
+  }
+
   private boundsCheck() {
     if (this.percentage < -100) {
       throw new Error("Percentage cannot be less than -100");

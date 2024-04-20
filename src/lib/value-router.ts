@@ -1,7 +1,6 @@
 import ProfileAdapter from "./adapters/profile-adapter.ts";
 import { ActionObject } from "./command-line/types/command-line-types.ts";
 import { ProfileTarget } from "./types/buttons.ts";
-import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 import ChannelValueCalculator from "../util/channel-value-calculator.ts";
 
 export default class ValueRouter<T extends { values: number[][] }> {
@@ -27,7 +26,6 @@ export default class ValueRouter<T extends { values: number[][] }> {
     }
 
     this.calculator = new ChannelValueCalculator(this.actionObject.directive);
-    this.values = this.calculator.calc16BitValues();
   }
 
   mutateOrMergeFixtureChannels(fixture: T) {
@@ -44,16 +42,20 @@ export default class ValueRouter<T extends { values: number[][] }> {
         // otherwise mutate
         fixture.values![tupleToMutateIdx] = tuple;
       }
+      fixture.values.sort((a, b) => a[0] - b[0]);
     });
   }
 
   // outputs a tuple of [ channel, Value (btw 0-255) ]
   buildResult() {
     if (this.channelIs16Bit()) {
+      this.values = this.calculator.calc16BitValues();
       this.channelTuples = this.parse16BitChannels();
       return this;
     }
+
     if (this.channelIs8Bit()) {
+      this.values = this.calculator.calc8BitValues();
       this.channelTuples = this.parse8BitChannel();
       return this;
     }
@@ -62,7 +64,7 @@ export default class ValueRouter<T extends { values: number[][] }> {
   }
 
   convertColorTempToPercentage() {
-    const minTemperature = 2800;
+    const minTemperature = 2800; // hardcoded for now, but needs to be part of profile
     const maxTemperature = 10_000;
     const temperature = this.actionObject.directive;
     console.log("inittemp", temperature);

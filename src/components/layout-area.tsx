@@ -5,9 +5,10 @@ import { Fixture as FixtureComponent } from "./fixture.tsx";
 import { useCompositeFixtureStore } from "../app/store/useCompositeFixtureStore.ts";
 import { db } from "../db/client.ts";
 import ScenesToFixtureAssignments from "../models/scene-to-fixture-assignments.ts";
-import Profile from "@/models/profile.ts";
 import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 import { mergeCacheWithDBFixtures } from "../util/helpers.ts";
+
+import Profile from "@/models/profile.ts";
 
 // import UniverseDataBuilder from "../lib/universe-data-builder.ts";
 // import ValueUniverse, { DmxTuple } from "../util/value-universe.ts";

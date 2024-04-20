@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 import CommandLineService from "../command-line-service.ts";
 import CommandLine from "../command-line.ts";
 

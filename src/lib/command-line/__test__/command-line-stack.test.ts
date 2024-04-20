@@ -1,15 +1,13 @@
 import CommandLineErrorHandler from "../command-line-error-handler.ts";
 import CommandLineStack from "../command-line-stack.ts";
 
-jest.mock("../command-line-error-handler", () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      ensureValid: jest
-        .fn()
-        .mockImplementation((command: string) => command !== "invalid"),
-    };
-  });
-});
+jest.mock("../command-line-error-handler", () =>
+  jest.fn().mockImplementation(() => ({
+    ensureValid: jest
+      .fn()
+      .mockImplementation((command: string) => command !== "invalid"),
+  })),
+);
 
 describe("CommandLineStack", () => {
   test("test_clearAll_method", () => {
