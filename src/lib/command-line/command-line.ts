@@ -2,7 +2,7 @@ import CommandLineErrorHandler from "./command-line-error-handler.ts";
 import CommandLineService from "./command-line-service.ts";
 import CommandLineStack from "./command-line-stack.ts";
 import { ActionObject } from "./types/command-line-types.ts";
-import { ControlButton, ProfileTarget } from "../types/buttons.ts";
+import { Buttons, ControlButton, ProfileTarget } from "../types/buttons.ts";
 
 export default class CommandLine {
   // eslint-disable-next-line no-use-before-define
@@ -34,19 +34,22 @@ export default class CommandLine {
   }
 
   sendAction(): ActionObject {
-    // this could be an array of callbacks and objects to receive as args??
-    // basically procedures for the hook to call on the database
     return this.service.action;
   }
 
   process(data: ControlButton) {
-    this.commandEvents.add(data);
     const emptyAction: ActionObject = {
       directive: 0,
       selection: [],
       profileTarget: ProfileTarget.EMPTY,
       complete: false,
     };
+
+    this.commandEvents.add(data);
+
+    if (data.type === Buttons.DIRECT_ACTION_BUTTON) {
+      return this.onDirectAction();
+    }
 
     if (this.onClearPress()) {
       this.clearCommands();
@@ -55,15 +58,18 @@ export default class CommandLine {
 
     if (this.onEnterPress()) {
       this.commandEvents.clearLast();
-      this.service = new CommandLineService(this.commandEvents.commands);
-      this.service.process();
-      const action = this.sendAction();
-      this.clearCommands();
-      this.commandEvents = new CommandLineStack();
-
-      return action;
+      this.onDirectAction();
     }
     return emptyAction;
+  }
+
+  onDirectAction() {
+    this.service = new CommandLineService(this.commandEvents.commands);
+    this.service.process();
+    const action = this.sendAction();
+    this.clearCommands();
+    this.commandEvents = new CommandLineStack();
+    return action;
   }
 
   onEnterPress() {
@@ -76,5 +82,10 @@ export default class CommandLine {
 
   clearCommands() {
     this.commandEvents = new CommandLineStack();
+  }
+
+  selectionFromLayout() {
+    // if we have a fixtures selected in our layout, then we come here.
+    // we could push the fixture objects onto the stack
   }
 }
