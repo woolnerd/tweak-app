@@ -14,32 +14,39 @@ export default function useCommandLineRouter(action: ActionObject | null) {
     (state) => state.updateCompositeFixtures,
   );
 
+  function updateChannelOutput(
+    fixture: ParsedCompositeFixtureInfo,
+    actionObj: ActionObject,
+  ) {
+    const profileAdapter = new ProfileAdapter(
+      actionObj.profileTarget,
+      fixture.profileChannels!,
+    );
+
+    const valueRouter = new ValueRouter<ParsedCompositeFixtureInfo>(
+      actionObj,
+      profileAdapter,
+    );
+
+    valueRouter.buildResult().mutateOrMergeFixtureChannels(fixture);
+
+    return fixture;
+  }
+
   useEffect(() => {
     if (action !== null && action.complete) {
       const { selection } = action;
       console.log("compFixtures", compositeFixtures);
 
-      const selectedCompositeFixtures = compositeFixtures.filter((fixture) =>
-        selection.includes(fixture.channel),
+      const fixturesWithUpdatedChannelOutput = compositeFixtures.map(
+        (compFixture) => {
+          if (selection.includes(compFixture.channel)) {
+            return updateChannelOutput(compFixture, action);
+          }
+          return compFixture;
+        },
       );
-      console.log("selectedCompFix", selectedCompositeFixtures);
-
-      const mutatedFixtures = selectedCompositeFixtures.map((fixture) => {
-        const profileAdapter = new ProfileAdapter(
-          action.profileTarget,
-          fixture.profileChannels!,
-        );
-
-        const valueRouter = new ValueRouter<ParsedCompositeFixtureInfo>(
-          action,
-          profileAdapter,
-        );
-
-        valueRouter.buildResult().mutateOrMergeFixtureChannels(fixture);
-
-        return fixture;
-      });
-      updateCompositeFixtures(mutatedFixtures);
+      updateCompositeFixtures(fixturesWithUpdatedChannelOutput);
     }
 
     console.log("action", action);

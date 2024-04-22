@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   fixtures: {
     backgroundColor: "purple",
     width: 200,
-    height: 200,
+    height: 100,
     borderWidth: 4,
     margin: 10,
     borderColor: "gold",
