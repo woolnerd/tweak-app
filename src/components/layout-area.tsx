@@ -3,6 +3,7 @@ import { StyleSheet, View } from "react-native";
 
 import { Fixture as FixtureComponent } from "./fixture.tsx";
 import { useCompositeFixtureStore } from "../app/store/useCompositeFixtureStore.ts";
+import { useFixtureChannelSelectionStore } from "../app/store/useFixtureChannelSelectionStore.ts";
 import { db } from "../db/client.ts";
 import ScenesToFixtureAssignments from "../models/scene-to-fixture-assignments.ts";
 import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
@@ -20,7 +21,7 @@ type LayoutAreaProps = {
 
 // Drizzle inArray method must have at least one value in the array.
 // using -1, because we should never have that id.
-const DRIZZLE_ARRAY_CHECK_VALUE = -1;
+// const DRIZZLE_ARRAY_CHECK_VALUE = -1;
 
 export default function LayoutArea({
   selectedSceneId,
@@ -29,9 +30,10 @@ export default function LayoutArea({
   // const [compositeFixtures, setCompositeFixtures] = useState<
   //   ParsedCompositeFixtureInfo[]
   // >([]);
-  const [selectedFixtureIds, setSelectedFixtureIds] = useState<Set<number>>(
-    new Set([DRIZZLE_ARRAY_CHECK_VALUE]),
-  );
+  // const [selectedFixtureIds, setSelectedFixtureIds] = useState<Set<number>>(
+  //   new Set([DRIZZLE_ARRAY_CHECK_VALUE]),
+  // );
+
   const updateCompositeFixtures = useCompositeFixtureStore(
     (state) => state.updateCompositeFixtures,
   );
@@ -39,18 +41,22 @@ export default function LayoutArea({
     (state) => state.compositeFixtures,
   );
 
+  const fixtureChannelSelection = useFixtureChannelSelectionStore(
+    (state) => state.fixtureChannelNumbers,
+  );
+
   const fetchCompositeFixtures = useCallback(async () => {
     try {
       const compositeFixtureInfoObjs = await new ScenesToFixtureAssignments(
         db,
-      ).getCompositeFixtureInfo(selectedSceneId, selectedFixtureIds);
+      ).getCompositeFixtureInfo(selectedSceneId, fixtureChannelSelection);
 
       return compositeFixtureInfoObjs;
     } catch (e) {
       console.log(e);
       throw new Error();
     }
-  }, [selectedSceneId, selectedFixtureIds]);
+  }, [selectedSceneId, fixtureChannelSelection]);
 
   // useEffect(() => {
   //   if (compositeFixtures.length > 0) {
@@ -66,11 +72,12 @@ export default function LayoutArea({
   // }, [compositeFixtures]);
 
   useEffect(() => {
-    mergeCacheWithDBFixtures(
-      selectedSceneId,
-      fetchCompositeFixtures,
-      updateCompositeFixtures,
-    );
+    fetchCompositeFixtures().then((res) => updateCompositeFixtures(res));
+    // mergeCacheWithDBFixtures(
+    //   selectedSceneId,
+    //   fetchCompositeFixtures,
+    //   updateCompositeFixtures,
+    // );
   }, [selectedSceneId, fetchCompositeFixtures, updateCompositeFixtures]);
 
   return (
@@ -81,9 +88,9 @@ export default function LayoutArea({
       }}>
       {compositeFixtures?.map((fixtureProps) => (
         <FixtureComponent
-          key={fixtureProps.channel + fixtureProps.fixtureAssignmentId}
-          selectedFixtureIds={selectedFixtureIds}
-          setSelectedFixtureIds={setSelectedFixtureIds}
+          key={`${fixtureProps.channel} - + ${fixtureProps.fixtureAssignmentId}`}
+          // selectedFixtureIds={selectedFixtureIds}
+          // setSelectedFixtureIds={setSelectedFixtureIds}
           fixtureAssignmentId={fixtureProps.fixtureAssignmentId}
           channel={fixtureProps.channel}
           profileChannels={fixtureProps.profileChannels}
@@ -94,6 +101,7 @@ export default function LayoutArea({
           values={fixtureProps.values}
         />
       ))}
+      {console.log(compositeFixtures.map((f) => f.channel))}
     </View>
   );
 }

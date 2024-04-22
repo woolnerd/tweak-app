@@ -9,11 +9,9 @@ import { ActionObject } from "../lib/command-line/types/command-line-types.ts";
 import { ControlButton } from "../lib/types/buttons.ts";
 
 type ControlPanelProps = {
-  setControlPanelValue: any;
+  // setControlPanelValue: any;
 };
-export default function ControlPanel({
-  setControlPanelValue,
-}: ControlPanelProps) {
+export default function ControlPanel() {
   const [action, setAction] = useState<ActionObject | null>(null);
 
   const handleTouch = (data: ControlButton) => {

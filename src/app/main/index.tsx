@@ -10,14 +10,12 @@ import { Scene as SceneComponent } from "../../components/scene.tsx";
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
 import Scene from "../../models/scene.ts";
-import { ControlPanelContext } from "../contexts/control-panel.ts";
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
 
 function App() {
   const [scenes, setScenes] = useState<SelectScene[]>([]);
-  const [ctrlPanelValue, setControlPanelValue] = useState<string | null>(null);
   const [selectedSceneId, setSelectedSceneId] = useState<number>(1);
 
   const fetchScenes = async () => {
@@ -79,13 +77,11 @@ function App() {
           flex: 3,
           ...styles.container,
         }}>
-        <ControlPanelContext.Provider value={ctrlPanelValue}>
-          <LayoutArea selectedSceneId={selectedSceneId} goToOut={false} />
-        </ControlPanelContext.Provider>
+        <LayoutArea selectedSceneId={selectedSceneId} goToOut={false} />
       </View>
 
       <View style={{ flex: 1.5, flexDirection: "row", ...styles.container }}>
-        <ControlPanel setControlPanelValue={setControlPanelValue} />
+        <ControlPanel />
       </View>
     </View>
   );

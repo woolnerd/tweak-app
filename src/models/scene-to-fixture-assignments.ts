@@ -30,7 +30,7 @@ export default class ScenesToFixtureAssignments extends Base<
 
   async getCompositeFixtureInfo(
     sceneId: number,
-    selectedFixtureIds: Set<number>,
+    selectedFixtureChannels: Set<number>,
   ) {
     try {
       this.fetchedData = await this.db
@@ -59,11 +59,15 @@ export default class ScenesToFixtureAssignments extends Base<
         .leftJoin(profiles, eq(fixtureAssignments.profileId, profiles.id))
         .leftJoin(patches, eq(fixtureAssignments.patchId, patches.id))
         .where(
-          and(
-            eq(scenesToFixtureAssignments.sceneId, sceneId),
-            // exclude any of the fixtures that are cached
-            notInArray(fixtureAssignments.id, Array.from(selectedFixtureIds)),
-          ),
+          // turn this checkoff while cache is being set aside for work later
+          // and(
+          eq(scenesToFixtureAssignments.sceneId, sceneId),
+          // exclude any of the fixtures that are cached
+          // notInArray(
+          //   fixtureAssignments.channel,
+          //   Array.from(selectedFixtureChannels),
+          // ),
+          // ),
         );
 
       return this.parseStringColumnsToJSON();

@@ -29,7 +29,7 @@ export async function mergeCacheWithDBFixtures(
         setCallback(
           [...cachedFixtures, ...dbFixtures].sort(
             // sort by id, later use X,Y for draggable interface
-            (a, b) => a.fixtureAssignmentId - b.fixtureAssignmentId,
+            (a, b) => a.channel - b.channel,
           ),
         );
       } else {

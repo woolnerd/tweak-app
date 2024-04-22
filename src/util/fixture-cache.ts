@@ -3,8 +3,8 @@ import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/type
 
 import { FixtureControlData } from "../components/types/fixture.ts";
 
-function buildKey(sceneId: number, fixtureAssignmentId: number) {
-  return `sceneId:${sceneId}#fixtureAssignementId:${fixtureAssignmentId}`;
+function buildKey(sceneId: number, channel: number) {
+  return `sceneId:${sceneId}#fixtureChannel:${channel}`;
 }
 
 function keyIncludesScene(key: KeyValuePair | string, sceneId: number) {
@@ -26,14 +26,9 @@ function mapValuesToFixtures(
   });
 }
 
-export const getManualFixture = async (
-  sceneId: number,
-  fixtureAssignmentId: number,
-) => {
+export const getManualFixture = async (sceneId: number, channel: number) => {
   try {
-    const jsonValue = await AsyncStorage.getItem(
-      buildKey(sceneId, fixtureAssignmentId),
-    );
+    const jsonValue = await AsyncStorage.getItem(buildKey(sceneId, channel));
     return jsonValue !== null ? JSON.parse(jsonValue) : null;
   } catch (e) {
     console.log(e);
@@ -45,28 +40,25 @@ export const addManualFixture = async (fixture: FixtureControlData) => {
   try {
     const jsonValue = JSON.stringify(fixture);
     await AsyncStorage.setItem(
-      buildKey(fixture.sceneId, fixture.fixtureAssignmentId),
+      buildKey(fixture.sceneId, fixture.channel),
       jsonValue,
     );
   } catch (e) {
     console.log(e);
     throw new Error("Cache error");
   }
-  console.log("Added.", buildKey(fixture.sceneId, fixture.fixtureAssignmentId));
+  console.log("Added.", buildKey(fixture.sceneId, fixture.channel));
 };
 
-export const removeManualFixture = async (
-  sceneId: number,
-  fixtureAssignmentId: number,
-) => {
+export const removeManualFixture = async (sceneId: number, channel: number) => {
   try {
-    await AsyncStorage.removeItem(buildKey(sceneId, fixtureAssignmentId));
+    await AsyncStorage.removeItem(buildKey(sceneId, channel));
   } catch (e) {
     console.log(e);
     throw new Error("Cache error");
   }
 
-  console.log("removed", buildKey(sceneId, fixtureAssignmentId));
+  console.log("removed", buildKey(sceneId, channel));
 };
 
 export const getManualFixtureKeys = async () => {

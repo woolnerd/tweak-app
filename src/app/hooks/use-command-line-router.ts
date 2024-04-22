@@ -5,6 +5,7 @@ import { ActionObject } from "../../lib/command-line/types/command-line-types.ts
 import ValueRouter from "../../lib/value-router.ts";
 import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
+import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelectionStore.ts";
 
 export default function useCommandLineRouter(action: ActionObject | null) {
   const compositeFixtures = useCompositeFixtureStore(
@@ -12,6 +13,10 @@ export default function useCommandLineRouter(action: ActionObject | null) {
   );
   const updateCompositeFixtures = useCompositeFixtureStore(
     (state) => state.updateCompositeFixtures,
+  );
+
+  const fixtureChannelNumbers = useFixtureChannelSelectionStore(
+    (state) => state.fixtureChannelNumbers,
   );
 
   function updateChannelOutput(
@@ -40,7 +45,10 @@ export default function useCommandLineRouter(action: ActionObject | null) {
 
       const fixturesWithUpdatedChannelOutput = compositeFixtures.map(
         (compFixture) => {
-          if (selection.includes(compFixture.channel)) {
+          if (
+            selection.includes(compFixture.channel) ||
+            fixtureChannelNumbers.has(compFixture.channel)
+          ) {
             return updateChannelOutput(compFixture, action);
           }
           return compFixture;
