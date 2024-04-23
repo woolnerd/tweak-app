@@ -25,7 +25,7 @@ export default class ChannelValueCalculator {
   }
 
   public calc8BitValues(): number[] {
-    return [Math.trunc(this.coarseValue) / 256];
+    return [Math.trunc(this.coarseValue)];
   }
 
   private boundsCheck() {

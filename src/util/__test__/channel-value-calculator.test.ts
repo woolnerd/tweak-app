@@ -40,6 +40,15 @@ describe("ChannelValueCalculator", () => {
     });
   });
 
+  describe("8bit value methods", () => {
+    let calculator = new ChannelValueCalculator(100);
+    expect(calculator.calc8BitValues()[0]).toStrictEqual(255);
+    calculator = new ChannelValueCalculator(50);
+    expect(calculator.calc8BitValues()[0]).toStrictEqual(128);
+    calculator = new ChannelValueCalculator(30);
+    expect(calculator.calc8BitValues()[0]).toStrictEqual(76);
+  });
+
   describe("Edge Cases for Percentage Values", () => {
     it("should handle percentage being 0", () => {
       const calculator = new ChannelValueCalculator(0);
