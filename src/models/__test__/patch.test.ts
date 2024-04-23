@@ -17,7 +17,7 @@ jest.mock("@/db/client", () =>
 
 describe("Patch", () => {
   let patch: Patch;
-  let mockDb: Database = jest.mock();
+  const mockDb: Database = jest.mock();
   const MIN_START_ADDRESS = 1;
 
   beforeEach(() => {

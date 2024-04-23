@@ -19,6 +19,6 @@ export default abstract class RangedValue {
   }
 
   protected boundsCheck(value: number): boolean {
-    return value > this.lowerBound && value < this.upperBound;
+    return value >= this.lowerBound && value <= this.upperBound;
   }
 }

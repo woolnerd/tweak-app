@@ -1,32 +1,39 @@
+import { useState } from "react";
 import { View } from "react-native";
 
 import ControlPanelButton from "./control-panel-button.tsx";
-import controlPanelButtonData, {
-  ControlButton,
-  Buttons,
-} from "../db/button-data.ts";
+import useCommandLineRouter from "../app/hooks/use-command-line-router.ts";
+import { useFixtureChannelSelectionStore } from "../app/store/useFixtureChannelSelectionStore.ts";
+import controlPanelButtonData from "../db/button-data.ts";
+import CommandLine from "../lib/command-line/command-line.ts";
+import { ActionObject } from "../lib/command-line/types/command-line-types.ts";
+import { Buttons, ControlButton, ProfileTarget } from "../lib/types/buttons.ts";
 
-//send the button object to an instance of ActionRouter
-//ActionRouter handles the logic of what the button directive is.
-//If is is a DirectAction ie intensity or color level,
-//those can happen instantaneously.
-//Also, keep a stack for undoing all actions.
-
-//If the button is a CommandAction, that is sent to the CLI for parsing
 type ControlPanelProps = {
-  setControlPanelValue: any;
+  // setControlPanelValue: any;
 };
-export default function ControlPanel({
-  setControlPanelValue,
-}: ControlPanelProps) {
-  // const [outputVal, setOutputVal] = useState<string | null>(null);
+export default function ControlPanel() {
+  const [action, setAction] = useState<ActionObject | null>(null);
+  const fixtureChannelSelection = useFixtureChannelSelectionStore(
+    (state) => state.fixtureChannelNumbers,
+  );
+  const updateFixtureSelection = useFixtureChannelSelectionStore(
+    (state) => state.updateFixtureSelection,
+  );
 
   const handleTouch = (data: ControlButton) => {
-    // setControlPanelValue(val);
-    if (data.type === Buttons.DIRECT_ACTION_BUTTON) {
-      const action = new DirectAction(data);
+    const commandLineInstance = CommandLine.getInstance(
+      Array.from(fixtureChannelSelection),
+    );
+    const commandLineAction: ActionObject = commandLineInstance.process(data);
+
+    if (commandLineAction.profileTarget === ProfileTarget.EMPTY) {
+      updateFixtureSelection(new Set(commandLineAction.selection));
     }
+    setAction(commandLineAction);
   };
+
+  useCommandLineRouter(action);
 
   const buildPanel = () =>
     controlPanelButtonData.map((col) => (

@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "../": ["src/*"]
     },
     "allowSyntheticDefaultImports": true,
     "allowImportingTsExtensions": true,
@@ -15,15 +15,8 @@
     "strict": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "strictPropertyInitialization": false,
-    "module": "ESNext"
+    "strictPropertyInitialization": false
   },
   "extends": "expo/tsconfig.base",
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "src/db/seeds.ts",
-    "src/db/schema.ts",
-    "src/db/client.ts"
-  ]
+  "include": ["**/*.ts", "**/*.tsx"]
 }

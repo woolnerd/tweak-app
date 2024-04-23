@@ -1,29 +1,4 @@
-export enum Buttons {
-  DIRECT_ACTION_BUTTON = "DIRECT_ACTION_BUTTON",
-  COMMAND_BUTTON = "COMMAND_BUTTON",
-}
-
-interface BaseButton {
-  id: string;
-  label: string;
-  styles: { color: string };
-}
-
-interface DirectActionButton extends BaseButton {
-  type: Buttons.DIRECT_ACTION_BUTTON;
-  value: number;
-}
-
-interface CommandButton extends BaseButton {
-  type: Buttons.COMMAND_BUTTON;
-}
-
-export type ControlButton = CommandButton | DirectActionButton;
-
-type ButtonColumn = {
-  id: string;
-  buttons: ControlButton[];
-};
+import { ButtonColumn, Buttons, ProfileTarget } from "../lib/types/buttons.ts";
 
 const controlPanelButtonData: ButtonColumn[] = [
   {
@@ -33,92 +8,105 @@ const controlPanelButtonData: ButtonColumn[] = [
         id: "button1",
         type: Buttons.DIRECT_ACTION_BUTTON,
         label: "Full",
-        value: 1.0,
+        value: 100,
         styles: { color: "green" },
+        profileTarget: ProfileTarget.DIMMER,
       },
       {
         id: "button2",
         type: Buttons.DIRECT_ACTION_BUTTON,
         label: "90%",
-        value: 0.9,
+        value: 90,
         styles: { color: "gray" },
+        profileTarget: ProfileTarget.DIMMER,
       },
       {
         id: "button3",
         type: Buttons.DIRECT_ACTION_BUTTON,
         label: "80%",
-        value: 0.8,
+        value: 80,
         styles: { color: "gray" },
+        profileTarget: ProfileTarget.DIMMER,
       },
       {
         id: "button4",
         type: Buttons.DIRECT_ACTION_BUTTON,
         label: "75%",
-        value: 0.75,
+        value: 75,
         styles: { color: "gray" },
+        profileTarget: ProfileTarget.DIMMER,
       },
       {
         id: "button5",
         type: Buttons.DIRECT_ACTION_BUTTON,
         label: "70%",
-        value: 0.7,
+        value: 70,
         styles: { color: "gray" },
+        profileTarget: ProfileTarget.DIMMER,
       },
       {
         id: "button6",
         type: Buttons.DIRECT_ACTION_BUTTON,
         label: "60%",
-        value: 0.6,
+        value: 60,
         styles: { color: "gray" },
+        profileTarget: ProfileTarget.DIMMER,
       },
       {
         id: "button7",
         type: Buttons.DIRECT_ACTION_BUTTON,
         label: "50%",
-        value: 0.5,
+        value: 50,
         styles: { color: "gray" },
+        profileTarget: ProfileTarget.DIMMER,
       },
       {
         id: "button8",
         type: Buttons.DIRECT_ACTION_BUTTON,
         label: "40%",
-        value: 0.4,
+        value: 40,
         styles: { color: "gray" },
+        profileTarget: ProfileTarget.DIMMER,
       },
       {
         id: "button9",
         type: Buttons.DIRECT_ACTION_BUTTON,
         label: "30%",
-        value: 0.3,
+        value: 30,
         styles: { color: "gray" },
+        profileTarget: ProfileTarget.DIMMER,
       },
       {
         id: "button10",
         type: Buttons.DIRECT_ACTION_BUTTON,
         label: "25%",
-        value: 0.25,
+        value: 25,
         styles: { color: "gray" },
+        profileTarget: ProfileTarget.DIMMER,
       },
       {
         id: "button11",
         type: Buttons.DIRECT_ACTION_BUTTON,
         label: "20%",
-        value: 0.2,
+        value: 20,
         styles: { color: "gray" },
+        profileTarget: ProfileTarget.DIMMER,
       },
       {
         id: "button12",
         type: Buttons.DIRECT_ACTION_BUTTON,
         label: "10%",
-        value: 0.1,
+        value: 10,
         styles: { color: "gray" },
+        profileTarget: ProfileTarget.DIMMER,
       },
       {
         id: "button13",
         type: Buttons.DIRECT_ACTION_BUTTON,
         label: "0%",
-        value: 0.0,
+        value: 0,
         styles: { color: "red" },
+        profileTarget: ProfileTarget.DIMMER,
       },
       {
         id: "button14",
@@ -189,15 +177,17 @@ const controlPanelButtonData: ButtonColumn[] = [
         id: "button24",
         type: Buttons.DIRECT_ACTION_BUTTON,
         label: "+1",
-        value: 0.01,
+        value: 1,
         styles: { color: "gray" },
+        profileTarget: ProfileTarget.DIMMER,
       },
       {
         id: "button25",
         type: Buttons.DIRECT_ACTION_BUTTON,
         label: "-1",
-        value: -0.01,
+        value: -1,
         styles: { color: "gray" },
+        profileTarget: ProfileTarget.DIMMER,
       },
       {
         id: "button26",
@@ -207,19 +197,19 @@ const controlPanelButtonData: ButtonColumn[] = [
       },
       {
         id: "button27",
-        type: Buttons.COMMAND_BUTTON,
+        type: Buttons.KEYPAD_BUTTON,
         label: "7",
         styles: { color: "gray" },
       },
       {
         id: "button28",
-        type: Buttons.COMMAND_BUTTON,
+        type: Buttons.KEYPAD_BUTTON,
         label: "4",
         styles: { color: "gray" },
       },
       {
         id: "button29",
-        type: Buttons.COMMAND_BUTTON,
+        type: Buttons.KEYPAD_BUTTON,
         label: "1",
         styles: { color: "red" },
       },
@@ -302,25 +292,25 @@ const controlPanelButtonData: ButtonColumn[] = [
       },
       {
         id: "button42",
-        type: Buttons.COMMAND_BUTTON,
+        type: Buttons.KEYPAD_BUTTON,
         label: "8",
         styles: { color: "gray" },
       },
       {
         id: "button43",
-        type: Buttons.COMMAND_BUTTON,
+        type: Buttons.KEYPAD_BUTTON,
         label: "5",
         styles: { color: "gray" },
       },
       {
         id: "button44",
-        type: Buttons.COMMAND_BUTTON,
+        type: Buttons.KEYPAD_BUTTON,
         label: "2",
         styles: { color: "red" },
       },
       {
         id: "button45",
-        type: Buttons.COMMAND_BUTTON,
+        type: Buttons.KEYPAD_BUTTON,
         label: "0",
         styles: { color: "gray" },
       },
@@ -331,33 +321,43 @@ const controlPanelButtonData: ButtonColumn[] = [
     buttons: [
       {
         id: "button46",
-        type: Buttons.COMMAND_BUTTON,
+        type: Buttons.DIRECT_ACTION_BUTTON,
         label: "Xfade Max",
+        value: 1,
         styles: { color: "green" },
+        profileTarget: ProfileTarget.CROSSFADE,
       },
       {
         id: "button47",
-        type: Buttons.COMMAND_BUTTON,
+        type: Buttons.DIRECT_ACTION_BUTTON,
         label: "Xfade Min",
+        value: 0,
         styles: { color: "blue" },
+        profileTarget: ProfileTarget.COLOR_TEMP,
       },
       {
         id: "button48",
-        type: Buttons.COMMAND_BUTTON,
+        type: Buttons.DIRECT_ACTION_BUTTON,
         label: "+ 1/8 G",
+        value: 12.5,
         styles: { color: "blue" },
+        profileTarget: ProfileTarget.TINT,
       },
       {
         id: "button49",
-        type: Buttons.COMMAND_BUTTON,
+        type: Buttons.DIRECT_ACTION_BUTTON,
         label: "Tint Home",
+        value: 0,
         styles: { color: "blue" },
+        profileTarget: ProfileTarget.TINT,
       },
       {
         id: "button50",
-        type: Buttons.COMMAND_BUTTON,
+        type: Buttons.DIRECT_ACTION_BUTTON,
         label: "- 1/8 G",
+        value: -12.5,
         styles: { color: "gray" },
+        profileTarget: ProfileTarget.TINT,
       },
       {
         id: "button51",
@@ -379,15 +379,19 @@ const controlPanelButtonData: ButtonColumn[] = [
       },
       {
         id: "button54",
-        type: Buttons.COMMAND_BUTTON,
+        type: Buttons.DIRECT_ACTION_BUTTON,
         label: "+5",
         styles: { color: "green" },
+        value: 5,
+        profileTarget: ProfileTarget.DIMMER,
       },
       {
         id: "button55",
-        type: Buttons.COMMAND_BUTTON,
+        type: Buttons.DIRECT_ACTION_BUTTON,
         label: "-5",
+        value: -5,
         styles: { color: "gray" },
+        profileTarget: ProfileTarget.DIMMER,
       },
       {
         id: "button56",
@@ -397,25 +401,25 @@ const controlPanelButtonData: ButtonColumn[] = [
       },
       {
         id: "button57",
-        type: Buttons.COMMAND_BUTTON,
+        type: Buttons.KEYPAD_BUTTON,
         label: "9",
         styles: { color: "gray" },
       },
       {
         id: "button58",
-        type: Buttons.COMMAND_BUTTON,
+        type: Buttons.KEYPAD_BUTTON,
         label: "6",
         styles: { color: "gray" },
       },
       {
         id: "button59",
-        type: Buttons.COMMAND_BUTTON,
+        type: Buttons.KEYPAD_BUTTON,
         label: "3",
         styles: { color: "red" },
       },
       {
         id: "button60",
-        type: Buttons.COMMAND_BUTTON,
+        type: Buttons.KEYPAD_BUTTON,
         label: ".",
         styles: { color: "gray" },
       },
@@ -430,6 +434,7 @@ const controlPanelButtonData: ButtonColumn[] = [
         label: "CCT Max",
         value: 10000,
         styles: { color: "green" },
+        profileTarget: ProfileTarget.COLOR_TEMP,
       },
       {
         id: "button62",
@@ -437,6 +442,7 @@ const controlPanelButtonData: ButtonColumn[] = [
         label: "6000",
         value: 6000,
         styles: { color: "blue" },
+        profileTarget: ProfileTarget.COLOR_TEMP,
       },
       {
         id: "button63",
@@ -444,6 +450,7 @@ const controlPanelButtonData: ButtonColumn[] = [
         label: "5600",
         value: 5600,
         styles: { color: "blue" },
+        profileTarget: ProfileTarget.COLOR_TEMP,
       },
       {
         id: "button64",
@@ -451,6 +458,7 @@ const controlPanelButtonData: ButtonColumn[] = [
         label: "4200",
         value: 4200,
         styles: { color: "yellow" },
+        profileTarget: ProfileTarget.COLOR_TEMP,
       },
       {
         id: "button65",
@@ -458,6 +466,7 @@ const controlPanelButtonData: ButtonColumn[] = [
         label: "3800",
         value: 3800,
         styles: { color: "yellow" },
+        profileTarget: ProfileTarget.COLOR_TEMP,
       },
       {
         id: "button66",
@@ -465,6 +474,7 @@ const controlPanelButtonData: ButtonColumn[] = [
         label: "3200",
         value: 3200,
         styles: { color: "yellow" },
+        profileTarget: ProfileTarget.COLOR_TEMP,
       },
       {
         id: "button67",
@@ -472,6 +482,7 @@ const controlPanelButtonData: ButtonColumn[] = [
         label: "2800",
         value: 2800,
         styles: { color: "orange" },
+        profileTarget: ProfileTarget.COLOR_TEMP,
       },
       {
         id: "button68",
@@ -479,6 +490,7 @@ const controlPanelButtonData: ButtonColumn[] = [
         label: "2500",
         value: 2500,
         styles: { color: "orange" },
+        profileTarget: ProfileTarget.COLOR_TEMP,
       },
       {
         id: "button69",
@@ -486,6 +498,7 @@ const controlPanelButtonData: ButtonColumn[] = [
         label: "2200",
         value: 2200,
         styles: { color: "orange" },
+        profileTarget: ProfileTarget.COLOR_TEMP,
       },
       {
         id: "button70",
@@ -493,6 +506,7 @@ const controlPanelButtonData: ButtonColumn[] = [
         label: "2000",
         value: 2000,
         styles: { color: "orange" },
+        profileTarget: ProfileTarget.COLOR_TEMP,
       },
       {
         id: "button71",
@@ -500,6 +514,7 @@ const controlPanelButtonData: ButtonColumn[] = [
         label: "CCT Min",
         value: 1000,
         styles: { color: "gray" },
+        profileTarget: ProfileTarget.COLOR_TEMP,
       },
       {
         id: "button72",
@@ -507,6 +522,7 @@ const controlPanelButtonData: ButtonColumn[] = [
         label: "+100CCT",
         value: 100,
         styles: { color: "gray" },
+        profileTarget: ProfileTarget.COLOR_TEMP,
       },
       {
         id: "button73",
@@ -520,6 +536,7 @@ const controlPanelButtonData: ButtonColumn[] = [
         label: "-100CTT",
         value: -100,
         styles: { color: "red" },
+        profileTarget: ProfileTarget.COLOR_TEMP,
       },
       {
         id: "button75",

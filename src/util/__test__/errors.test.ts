@@ -24,7 +24,7 @@ describe("handleDatabaseError", () => {
     expect(() => handleDatabaseError("There was a problem")).toThrow(
       "Database operation failed with unknown error",
     );
-    expect(() => handleDatabaseError(new Array())).toThrow(
+    expect(() => handleDatabaseError([])).toThrow(
       "Database operation failed with unknown error",
     );
   });

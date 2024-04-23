@@ -1,51 +1,84 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, FlatList, ListRenderItem } from "react-native";
 
 import { Fixture as FixtureComponent } from "./fixture.tsx";
-import { FixtureAssignmentResponse } from "./types/fixture.ts";
+import { useCompositeFixtureStore } from "../app/store/useCompositeFixtureStore.ts";
+import { useFixtureChannelSelectionStore } from "../app/store/useFixtureChannelSelectionStore.ts";
 import { db } from "../db/client.ts";
 import ScenesToFixtureAssignments from "../models/scene-to-fixture-assignments.ts";
+import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 import { mergeCacheWithDBFixtures } from "../util/helpers.ts";
+
+import Profile from "@/models/profile.ts";
+
+// import UniverseDataBuilder from "../lib/universe-data-builder.ts";
+// import ValueUniverse, { DmxTuple } from "../util/value-universe.ts";
 
 type LayoutAreaProps = {
   selectedSceneId: number;
   goToOut: boolean;
 };
 
-// inArray method must have at least one value in the array.
+// Drizzle inArray method must have at least one value in the array.
 // using -1, because we should never have that id.
-const DRIZZLE_ARRAY_CHECK_VALUE = -1;
+// const DRIZZLE_ARRAY_CHECK_VALUE = -1;
 
 export default function LayoutArea({
   selectedSceneId,
   goToOut,
 }: LayoutAreaProps): React.JSX.Element {
-  const [fixtures, setFixtures] = useState<FixtureAssignmentResponse>([]);
-  const [selectedFixtureIds, setSelectedFixtureIds] = useState<Set<number>>(
-    new Set([DRIZZLE_ARRAY_CHECK_VALUE]),
+  // const [compositeFixtures, setCompositeFixtures] = useState<
+  //   ParsedCompositeFixtureInfo[]
+  // >([]);
+  // const [selectedFixtureIds, setSelectedFixtureIds] = useState<Set<number>>(
+  //   new Set([DRIZZLE_ARRAY_CHECK_VALUE]),
+  // );
+
+  const updateCompositeFixtures = useCompositeFixtureStore(
+    (state) => state.updateCompositeFixtures,
+  );
+  const compositeFixtures = useCompositeFixtureStore(
+    (state) => state.compositeFixtures,
   );
 
-  const fetchFixtures = useCallback(async () => {
-    try {
-      const fixturesWithAssignments = await new ScenesToFixtureAssignments(
-        db,
-      ).getFixturesAndAssignments(selectedSceneId, selectedFixtureIds);
+  const fixtureChannelSelection = useFixtureChannelSelectionStore(
+    (state) => state.fixtureChannelNumbers,
+  );
 
-      return fixturesWithAssignments;
+  const fetchCompositeFixtures = useCallback(async () => {
+    try {
+      const compositeFixtureInfoObjs = await new ScenesToFixtureAssignments(
+        db,
+      ).getCompositeFixtureInfo(selectedSceneId, fixtureChannelSelection);
+
+      return compositeFixtureInfoObjs;
     } catch (e) {
       console.log(e);
       throw new Error();
     }
-  }, [selectedSceneId, selectedFixtureIds]);
+  }, [selectedSceneId, fixtureChannelSelection]);
+
+  // useEffect(() => {
+  //   if (compositeFixtures.length > 0) {
+  //     const universeObjs = compositeFixtures.map((compFixture) =>
+  //       new UniverseDataBuilder(compFixture).toUniverseTuples(),
+  //     );
+  //     const universe = new ValueUniverse(1);
+  //     universeObjs.flat().forEach((uni: DmxTuple) => {
+  //       universe.addDmxValues(uni);
+  //     });
+  //     console.log(universe);
+  //   }
+  // }, [compositeFixtures]);
 
   useEffect(() => {
-    if (goToOut) {
-    }
-  }, [goToOut]);
-
-  useEffect(() => {
-    mergeCacheWithDBFixtures(selectedSceneId, fetchFixtures, setFixtures);
-  }, [selectedSceneId, fetchFixtures]);
+    fetchCompositeFixtures().then((res) => updateCompositeFixtures(res));
+    // mergeCacheWithDBFixtures(
+    //   selectedSceneId,
+    //   fetchCompositeFixtures,
+    //   updateCompositeFixtures,
+    // );
+  }, [selectedSceneId, fetchCompositeFixtures, updateCompositeFixtures]);
 
   return (
     <View
@@ -53,11 +86,11 @@ export default function LayoutArea({
         ...styles.container,
         alignItems: "center",
       }}>
-      {fixtures?.map((fixtureProps) => (
+      {/* {compositeFixtures?.map((fixtureProps) => (
         <FixtureComponent
-          key={fixtureProps.fixtureAssignmentId}
-          selectedFixtureIds={selectedFixtureIds}
-          setSelectedFixtureIds={setSelectedFixtureIds}
+          key={Math.random()}
+          // selectedFixtureIds={selectedFixtureIds}
+          // setSelectedFixtureIds={setSelectedFixtureIds}
           fixtureAssignmentId={fixtureProps.fixtureAssignmentId}
           channel={fixtureProps.channel}
           profileChannels={fixtureProps.profileChannels}
@@ -65,8 +98,26 @@ export default function LayoutArea({
           sceneId={fixtureProps.sceneId}
           fixtureName={fixtureProps.fixtureName}
           fixtureNotes={fixtureProps.fixtureNotes}
-        />
-      ))}
+          values={fixtureProps.values}
+        /> */}
+      <FlatList
+        data={compositeFixtures}
+        renderItem={({ item }) => (
+          <FixtureComponent
+            // selectedFixtureIds={selectedFixtureIds}
+            // setSelectedFixtureIds={setSelectedFixtureIds}
+            fixtureAssignmentId={item.fixtureAssignmentId}
+            channel={item.channel}
+            profileChannels={item.profileChannels}
+            profileName={item.profileName}
+            sceneId={item.sceneId}
+            fixtureName={item.fixtureName}
+            fixtureNotes={item.fixtureNotes}
+            values={item.values}
+          />
+        )}
+        keyExtractor={(item, idx) => item.fixtureAssignmentId.toString()}
+      />
     </View>
   );
 }
@@ -133,3 +184,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+
+// { "1": "Dimmer", "2": "Dimmer fine", "3": "Color Temp", "4": "Color Temp fine", "5": "Green/Magenta Point", "6": "Green/Magenta Point fine", "7": "Crossfade color", "8": "Crossfade color fine", "9": "Red intensity", "10": "Red intensity fine", "11": "Green intensity", "12": "Green intensity fine", "13": "Blue intensity", "14": "Blue intensity fine", "15": "White intensity", "16": "White intensity fine", "17": "Fan control", "18": "Preset", "19": "Strobe", "20": "Reserved for future use" }

@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { View, Pressable, Text, StyleSheet } from "react-native";
 
-import { FixtureControlData } from "./fixture.tsx";
+import { FixtureControlData } from "./types/fixture.ts";
 import { db } from "../db/client.ts";
 import { fixtureAssignments } from "../db/schema.ts";
 import {
@@ -16,9 +16,9 @@ export type SceneProps = {
   setSelectedSceneId: (id: number) => void;
 };
 
-export function Scene(props: SceneProps) {
+export function Scene({ name, id, setSelectedSceneId }: SceneProps) {
   const handleScenePress = () => {
-    props.setSelectedSceneId(props.id);
+    setSelectedSceneId(id);
   };
 
   const handleRecPress = async () => {
@@ -28,7 +28,7 @@ export function Scene(props: SceneProps) {
       let cachedFixtures;
 
       if (keys) {
-        cachedFixtures = await getAllFixturesFromSceneKeys(keys, props.id);
+        cachedFixtures = await getAllFixturesFromSceneKeys(keys, id);
       } else {
         throw new Error("Something went wrong");
       }
@@ -39,7 +39,7 @@ export function Scene(props: SceneProps) {
             console.log("Updated fixture assignments:");
           })
           .then((res) => {
-            clearCacheOnScene(keys, props.id);
+            clearCacheOnScene(keys, id);
           });
       } else {
         throw new Error("Could not find results in cache");
@@ -74,7 +74,7 @@ export function Scene(props: SceneProps) {
         <Text style={styles.btnText}>REC</Text>
       </Pressable>
       <Pressable style={styles.scene} onPress={handleScenePress}>
-        <Text style={styles.btnText}>{props.name}</Text>
+        <Text style={styles.btnText}>{name}</Text>
       </Pressable>
     </View>
   );

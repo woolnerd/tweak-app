@@ -1,108 +1,111 @@
-import { useState, useContext, useEffect } from "react";
+/* eslint-disable drizzle/enforce-delete-with-where */
+import { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
 import { FixtureControlData } from "./types/fixture.ts";
-import { ControlPanelContext } from "../app/contexts/control-panel.ts";
+import { useFixtureChannelSelectionStore } from "../app/store/useFixtureChannelSelectionStore.ts";
 import {
   removeManualFixture,
   addManualFixture,
 } from "../util/fixture-cache.ts";
+import { handleChannelValues, presentValueAsPercent } from "../util/helpers.ts";
+
+// type OptionalProps<T> = { [P in keyof T]?: T[P] | null };
+type ProfileKey = number;
+type Value = number;
+type ChannelTuples = [ProfileKey, Value][];
 
 export type FixtureProps = {
-  selectedFixtureIds: Set<number>;
-  setSelectedFixtureIds: (
-    fixtureIds: (currentState: Set<number>) => Set<number>,
-  ) => void;
-} & FixtureControlData;
-
-type OptionalProps<T> = { [P in keyof T]?: T[P] | null };
-type ChannelKey = number;
-type Value = number;
-type Channels = [ChannelKey, Value][];
+  // selectedFixtureIds: Set<number>;
+  // setSelectedFixtureIds: (
+  //   fixtureIds: (currentState: Set<number>) => Set<number>,
+  // ) => void;
+} & FixtureControlData & {
+    values: ChannelTuples;
+    profileChannels: { ProfileKey: string }[];
+  };
 export function Fixture({
   channel,
   fixtureName,
   profileChannels,
   values,
   fixtureAssignmentId,
-  selectedFixtureIds,
-  setSelectedFixtureIds,
+  // selectedFixtureIds,
+  // setSelectedFixtureIds,
   sceneId,
+  startAddress,
+  endAddress,
 }: FixtureProps) {
-  const ctrlPanelCtx = useContext(ControlPanelContext);
-  const [selectedValue, setSelectedValue] = useState<string | null>(
-    handleChannelValues(profileChannels, values),
-  );
+  const [selectedValue, setSelectedValue] = useState<string | null>([150]);
   const [manualHighlight, setManualHighlight] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
 
-  function handleChannelValues(
-    profileChannels: string,
-    values: string,
-  ): string | null {
-    if (!profileChannels || !values) {
-      return null;
-    }
+  const fixtureChannelNumbers = useFixtureChannelSelectionStore(
+    (state) => state.fixtureChannelNumbers,
+  );
+  const updateFixtureSelection = useFixtureChannelSelectionStore(
+    (state) => state.updateFixtureSelection,
+  );
 
-    const parsedProfileChannels: Channels = JSON.parse(profileChannels);
-    const parsedValues: number[][] = JSON.parse(values);
+  const fixtureIsCached = fixtureChannelNumbers.has(channel);
 
-    const output: string[] = [];
+  const removeFixtureFromState = (fixture: FixtureControlData): void => {
+    const dupe = new Set([...fixtureChannelNumbers]);
+    dupe.delete(fixture.channel);
+    updateFixtureSelection(dupe);
+  };
 
-    parsedValues.forEach((value) => {
-      const [key, outputVal] = value;
-      // output.push([parsedProfileChannels[key], outputVal]);
-      output.push(`${Math.trunc((outputVal / 255) * 100)}%`);
-    });
-
-    return output[0];
-  }
+  const addFixtureToState = (fixture: FixtureControlData): void => {
+    const dupe = new Set([...fixtureChannelNumbers]);
+    dupe.add(fixture.channel);
+    updateFixtureSelection(dupe);
+  };
 
   useEffect(() => {
-    if (selectedFixtureIds.has(fixtureAssignmentId)) {
-      setSelectedValue(ctrlPanelCtx);
+    if (fixtureIsCached) {
+      // setSelectedValue(ctrlPanelCtx);
       setManualHighlight(true);
       setUnsavedChanges(true);
     }
-  }, [ctrlPanelCtx]);
+  }, [fixtureIsCached]);
 
-  useEffect(() => {
-    if (selectedFixtureIds.has(fixtureAssignmentId)) {
-      addManualFixture({
-        channel,
-        fixtureName,
-        profileChannels,
-        values: JSON.stringify([[1, 200]]), // here we need the correctly parsed value
-        values: JSON.stringify([[1, 200]]), // here we need the correctly parsed value
-        fixtureAssignmentId,
-        sceneId,
-      });
-    } else {
-      removeManualFixture(sceneId, fixtureAssignmentId);
-    }
-  }, [selectedFixtureIds]);
+  // useEffect(() => {
+  //   if (fixtureIsCached) {
+  //     addManualFixture({
+  //       channel,
+  //       fixtureName,
+  //       profileChannels,
+  //       values, // here we need the correctly parsed value
+  //       fixtureAssignmentId,
+  //       sceneId,
+  //       startAddress,
+  //       endAddress,
+  //     });
+  //   } else {
+  //     removeManualFixture(sceneId, channel);
+  //   }
+  // }, [
+  //   fixtureIsCached,
+  //   channel,
+  //   fixtureName,
+  //   profileChannels,
+  //   values, // here we need the correctly parsed value
+  //   fixtureAssignmentId,
+  //   sceneId,
+  //   startAddress,
+  //   endAddress,
+  // ]);
 
   const handleOutput = (fixture: FixtureControlData) => {
     // toggles multiple fixtures in and out of set
-
-    if (selectedFixtureIds.has(fixture.fixtureAssignmentId)) {
-      setSelectedFixtureIds((curSet: Set<number>) => {
-        const dupe = new Set([...curSet]);
-        dupe.delete(fixture.fixtureAssignmentId);
-
-        return dupe;
-      });
+    if (fixtureIsCached) {
+      removeFixtureFromState(fixture);
     } else {
-      setSelectedFixtureIds((curSet: Set<number>) => {
-        const dupe = new Set([...curSet]);
-        dupe.add(fixture.fixtureAssignmentId);
-        return dupe;
-      });
+      addFixtureToState(fixture);
     }
-    console.log("ctrlpanelctx", ctrlPanelCtx);
   };
 
-  const selectedStyle = (fixtureAssignmentId: number) => {
+  const selectedStyle = (fixtureChannel: number) => {
     const styles: { color?: string; borderColor?: string } = {};
 
     if (unsavedChanges) {
@@ -110,7 +113,7 @@ export function Fixture({
       styles.color = "rgb(256, 50, 30)";
     }
 
-    if (selectedFixtureIds.has(fixtureAssignmentId)) {
+    if (fixtureIsCached) {
       styles.borderColor = "gold";
       styles.borderColor = "gold";
     } else {
@@ -120,10 +123,21 @@ export function Fixture({
     return styles;
   };
 
+  const buildOutputDetails = () => {
+    const details = handleChannelValues(profileChannels, values);
+    return Object.keys(details as object).map((profileField) => (
+      <Text
+        key={`${profileField}+${Math.random()}`}
+        style={{ ...styles.text, ...selectedStyle(channel) }}>
+        {`${profileField}: ${details ? presentValueAsPercent(details[profileField]) : ""}`}
+      </Text>
+    ));
+  };
+
   return (
     <View
-      key={fixtureAssignmentId}
-      style={{ ...styles.fixtures, ...selectedStyle(fixtureAssignmentId) }}
+      key={Math.random()}
+      style={{ ...styles.fixtures, ...selectedStyle(channel) }}
       onTouchStart={() =>
         handleOutput({
           channel,
@@ -132,13 +146,16 @@ export function Fixture({
           values,
           fixtureAssignmentId,
           sceneId,
+          startAddress,
+          endAddress,
         })
       }>
       <Text style={styles.text}>{channel}</Text>
       <Text style={styles.text}>{fixtureName}</Text>
-      <Text style={{ ...styles.text, ...selectedStyle(fixtureAssignmentId) }}>
+      {/* <Text style={{ ...styles.text, ...selectedStyle(fixtureAssignmentId) }}>
         {selectedValue}
-      </Text>
+      </Text> */}
+      {buildOutputDetails()}
     </View>
   );
 }
@@ -147,7 +164,7 @@ const styles = StyleSheet.create({
   fixtures: {
     backgroundColor: "purple",
     width: 200,
-    height: 130,
+    height: 160,
     borderWidth: 4,
     margin: 10,
     borderColor: "gold",

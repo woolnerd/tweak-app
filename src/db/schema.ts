@@ -11,6 +11,8 @@ export const fixtures = sqliteTable("fixtures", {
   name: text("name").notNull(),
   notes: text("notes"),
   manufacturerId: integer("manufacturer_id").references(() => manufacturers.id),
+  colorTempRangeLow: integer("color_temp_range_low"),
+  colorTempRangeHigh: integer("color_temp_range_high"),
 });
 
 export const fixturesRelations = relations(fixtures, ({ one, many }) => ({
@@ -69,6 +71,8 @@ export const profiles = sqliteTable("profiles", {
   channels: text("channels"),
   channelCount: integer("channel_count").notNull(),
   fixtureId: integer("fixture_id"),
+  channelPairs16Bit: text("channel_pairs_16_bit").default("[]"),
+  is16Bit: integer("is_16_bit", { mode: "boolean" }),
 });
 
 export const profilesRelations = relations(profiles, ({ one, many }) => ({

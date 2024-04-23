@@ -1,5 +1,6 @@
 import { render, waitFor } from "@testing-library/react-native";
 import React from "react";
+// import { db } from "../../db/client.ts";
 
 import ScenesToFixtureAssignments from "../../models/scene-to-fixture-assignments.ts";
 import * as fixtureUtils from "../../util/fixture-cache.ts";
@@ -7,7 +8,7 @@ import LayoutArea from "../layout-area.tsx";
 
 jest.mock("@/models/scene-to-fixture-assignments");
 jest.mock("@/util/fixture-cache");
-jest.mock("@/db/client");
+jest.mock("@/db/client.ts");
 
 describe("LayoutArea", () => {
   // Setup common props to reuse
@@ -60,7 +61,7 @@ describe("LayoutArea", () => {
     jest.clearAllMocks();
 
     // Setup our mocks
-    ScenesToFixtureAssignments.prototype.getFixturesAndAssignments = jest
+    ScenesToFixtureAssignments.prototype.getCompositeFixtureInfo = jest
       .fn()
       .mockResolvedValue(mockFixtureResponse);
     (fixtureUtils.getManualFixtureKeys as jest.Mock) = jest
