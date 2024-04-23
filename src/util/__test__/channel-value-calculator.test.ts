@@ -49,6 +49,26 @@ describe("ChannelValueCalculator", () => {
     expect(calculator.calc8BitValues()[0]).toStrictEqual(76);
   });
 
+  describe("DMX to percentage should result in integer", () => {
+    expect(ChannelValueCalculator.dmxToPercentage([[1, 255]])).toBe(100);
+
+    expect(ChannelValueCalculator.dmxToPercentage([[1, 128]])).toBe(50);
+
+    expect(
+      ChannelValueCalculator.dmxToPercentage([
+        [1, 128],
+        [2, 128],
+      ]),
+    ).toBe(25);
+
+    expect(
+      ChannelValueCalculator.dmxToPercentage([
+        [1, 255],
+        [2, 255],
+      ]),
+    ).toBe(100);
+  });
+
   describe("Edge Cases for Percentage Values", () => {
     it("should handle percentage being 0", () => {
       const calculator = new ChannelValueCalculator(0);
