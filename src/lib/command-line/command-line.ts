@@ -55,8 +55,10 @@ export default class CommandLine {
     }
 
     if (CommandLine.atSignPressed(data)) {
-      this.service = new CommandLineService(this.commandEvents.commands);
-      return this.service.buildSelectionFeedback();
+      console.log("not implemented");
+
+      // this.service = new CommandLineService(this.commandEvents.commands);
+      // return this.service.buildSelectionFeedback();
     }
 
     if (this.clearPressed(data)) {
@@ -66,6 +68,12 @@ export default class CommandLine {
 
     if (CommandLine.enterPressed(data)) {
       this.commandEvents.clearLast();
+
+      if (this.commandLineEmpty()) {
+        console.log("Command Line is Empty");
+        return emptyAction;
+      }
+
       this.actionProc();
     }
     return emptyAction;
@@ -94,6 +102,10 @@ export default class CommandLine {
 
   static atSignPressed(data: ControlButton) {
     return data.label.toLowerCase() === "@";
+  }
+
+  commandLineEmpty() {
+    return this.commandEvents.isEmpty();
   }
 
   clearCommands() {

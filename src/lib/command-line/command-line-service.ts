@@ -36,10 +36,8 @@ export default class CommandLineService {
     } else {
       this.buildSelectionArray();
     }
-    if (false) {
-      this.getValueDirective();
-      this.getProfileTarget();
-    }
+    this.getValueDirective();
+    this.getProfileTarget();
   }
 
   process() {
@@ -117,6 +115,7 @@ export default class CommandLineService {
     const directive = this.commandEvents.find(
       (event) => event.type === Buttons.DIRECT_ACTION_BUTTON,
     );
+
     if (!directive) {
       throw new Error("Directive not found");
     }

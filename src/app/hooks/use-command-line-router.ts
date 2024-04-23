@@ -20,8 +20,8 @@ export default function useCommandLineRouter(action: ActionObject | null) {
   );
 
   function updateChannelOutput(
-    fixture: ParsedCompositeFixtureInfo,
     actionObj: ActionObject,
+    fixture: ParsedCompositeFixtureInfo,
   ) {
     const profileAdapter = new ProfileAdapter(
       actionObj.profileTarget,
@@ -48,7 +48,7 @@ export default function useCommandLineRouter(action: ActionObject | null) {
             selection.includes(compFixture.channel) ||
             fixtureChannelNumbers.has(compFixture.channel)
           ) {
-            return updateChannelOutput(compFixture, action);
+            return updateChannelOutput(action, compFixture);
           }
           return compFixture;
         },

@@ -94,4 +94,47 @@ describe("ValueRouter Tests", () => {
       ]);
     });
   });
+
+  describe("parses channels appropriately", () => {
+    const profile16bit = {
+      1: "Dimmer",
+      2: "Dimmer fine",
+      3: "Color Temp",
+      4: "Color temp fine",
+    };
+    const profile8bit = {
+      1: "Dimmer",
+      2: "Color Temp",
+    };
+    const actionObject: ActionObject = {
+      selection: [1],
+      directive: 100,
+      profileTarget: ProfileTarget.DIMMER,
+      complete: true,
+    };
+    let profileAdapter = new ProfileAdapter("DIMMER", profile16bit);
+    let router = new ValueRouter(actionObject, profileAdapter);
+
+    test("Parses 16-bit channels", () => {
+      profileAdapter = new ProfileAdapter("DIMMER", profile16bit);
+      router = new ValueRouter(actionObject, profileAdapter);
+      expect(router.channelIs16Bit()).toBe(true);
+      expect(router.channelIs8Bit()).toBe(false);
+      router.buildResult();
+      expect(router.parse16BitChannels()).toStrictEqual([
+        [1, 255],
+        [2, 255],
+      ]);
+    });
+
+    test("Parses 8-bit channels", () => {
+      profileAdapter = new ProfileAdapter("DIMMER", profile8bit);
+      router = new ValueRouter(actionObject, profileAdapter);
+      expect(router.channelIs16Bit()).toBe(false);
+      expect(router.channelIs8Bit()).toBe(true);
+      router.buildResult();
+
+      expect(router.parse8BitChannel()).toStrictEqual([[1, 255]]);
+    });
+  });
 });

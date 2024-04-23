@@ -67,13 +67,10 @@ export default class ValueRouter<T extends { values: number[][] }> {
     const minTemperature = 2800; // hardcoded for now, but needs to be part of profile
     const maxTemperature = 10_000;
     const temperature = this.actionObject.directive;
-    console.log("inittemp", temperature);
 
     const percentage =
       ((temperature - minTemperature) / (maxTemperature - minTemperature)) *
       100;
-    console.log("convercolotempt", Number(percentage.toFixed(2)));
-
     this.actionObject.directive = Number(percentage.toFixed(2));
   }
 
