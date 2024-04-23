@@ -28,11 +28,18 @@ export default class CommandLineService {
 
   profileTarget: ProfileTarget;
 
-  constructor(commandEvents: ControlButton[]) {
+  constructor(commandEvents: ControlButton[], fixtureSelection: number[] = []) {
     this.commandEvents = commandEvents;
-    this.buildSelectionArray();
-    this.getValueDirective();
-    this.getProfileTarget();
+    if (fixtureSelection.length > 1) {
+      // alwayas have that -1 in there, ugh
+      this.selection = fixtureSelection;
+    } else {
+      this.buildSelectionArray();
+    }
+    if (false) {
+      this.getValueDirective();
+      this.getProfileTarget();
+    }
   }
 
   process() {
@@ -44,6 +51,15 @@ export default class CommandLineService {
       selection: this.selection,
       directive: this.valueDirective,
       profileTarget: this.profileTarget,
+      complete: true,
+    };
+  }
+
+  buildSelectionFeedback(): ActionObject {
+    return {
+      selection: this.selection,
+      directive: 0,
+      profileTarget: ProfileTarget.EMPTY,
       complete: true,
     };
   }

@@ -44,6 +44,12 @@ export async function mergeCacheWithDBFixtures(
   }
 }
 
+/**
+ *
+ * @param profileChannels {1: "Dimmer", 2: "Dimmer fine", 3: "Color Temp" ...}
+ * @param values [ [1, 255], [2, 128], [3, 50] ]
+ * @returns Mapped Profile object { "Dimmer": 255, "Dimmer fine": 128, "Color Temp": 50 }
+ */
 export function handleChannelValues(
   profileChannels: ParsedCompositeFixtureInfo["profileChannels"],
   values: ParsedCompositeFixtureInfo["values"],
@@ -54,9 +60,9 @@ export function handleChannelValues(
 
   const result = {};
 
-  values.forEach((tuple) => {
+  values.forEach((tuple, idx) => {
     const [key, value] = tuple;
-    const profile = profileChannels[key.toString()];
+    const profile = profileChannels[key];
     if (profile) {
       result[profile] = value;
     }

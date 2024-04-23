@@ -14,6 +14,8 @@ export default class CommandLine {
 
   private service: CommandLineService;
 
+  fixtureSelection: number[];
+
   constructor() {
     if (CommandLine.instance !== null) {
       throw new Error("Cannot instantiate more than one Singleton instance");
@@ -22,10 +24,11 @@ export default class CommandLine {
     this.errors = new CommandLineErrorHandler();
   }
 
-  static getInstance() {
+  static getInstance(fixtureSelection: number[] = []) {
     if (CommandLine.instance === null) {
       CommandLine.instance = new CommandLine();
     }
+    CommandLine.instance.fixtureSelection = fixtureSelection;
     return CommandLine.instance;
   }
 
@@ -40,7 +43,7 @@ export default class CommandLine {
   process(data: ControlButton) {
     const emptyAction: ActionObject = {
       directive: 0,
-      selection: [],
+      selection: this.fixtureSelection,
       profileTarget: ProfileTarget.EMPTY,
       complete: false,
     };
@@ -48,23 +51,31 @@ export default class CommandLine {
     this.commandEvents.add(data);
 
     if (data.type === Buttons.DIRECT_ACTION_BUTTON) {
-      return this.onDirectAction();
+      return this.actionProc();
     }
 
-    if (this.onClearPress()) {
-      this.clearCommands();
+    if (CommandLine.atSignPressed(data)) {
+      this.service = new CommandLineService(this.commandEvents.commands);
+      return this.service.buildSelectionFeedback();
+    }
+
+    if (this.clearPressed(data)) {
       console.log("Cleared");
+      this.clearCommands();
     }
 
-    if (this.onEnterPress()) {
+    if (CommandLine.enterPressed(data)) {
       this.commandEvents.clearLast();
-      this.onDirectAction();
+      this.actionProc();
     }
     return emptyAction;
   }
 
-  onDirectAction() {
-    this.service = new CommandLineService(this.commandEvents.commands);
+  actionProc() {
+    this.service = new CommandLineService(
+      this.commandEvents.commands,
+      this.fixtureSelection,
+    );
     this.service.process();
     const action = this.sendAction();
     this.clearCommands();
@@ -72,20 +83,20 @@ export default class CommandLine {
     return action;
   }
 
-  onEnterPress() {
-    return this.commandEvents.peak.label.toLowerCase() === "enter";
+  static enterPressed(data: ControlButton) {
+    return data.label.toLowerCase() === "enter";
   }
 
-  onClearPress() {
-    return this.commandEvents.peak.label.toLowerCase() === "clear";
+  clearPressed(data: ControlButton) {
+    this.fixtureSelection = [];
+    return data.label.toLowerCase() === "clear";
+  }
+
+  static atSignPressed(data: ControlButton) {
+    return data.label.toLowerCase() === "@";
   }
 
   clearCommands() {
     this.commandEvents = new CommandLineStack();
-  }
-
-  selectionFromLayout() {
-    // if we have a fixtures selected in our layout, then we come here.
-    // we could push the fixture objects onto the stack
   }
 }

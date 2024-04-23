@@ -41,7 +41,6 @@ export default function useCommandLineRouter(action: ActionObject | null) {
   useEffect(() => {
     if (action !== null && action.complete) {
       const { selection } = action;
-      console.log("compFixtures", compositeFixtures);
 
       const fixturesWithUpdatedChannelOutput = compositeFixtures.map(
         (compFixture) => {
