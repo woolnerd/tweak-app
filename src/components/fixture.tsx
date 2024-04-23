@@ -126,7 +126,9 @@ export function Fixture({
   const buildOutputDetails = () => {
     const details = handleChannelValues(profileChannels, values);
     return Object.keys(details as object).map((profileField) => (
-      <Text style={{ ...styles.text, ...selectedStyle(channel) }}>
+      <Text
+        key={`${profileField}+${Math.random()}`}
+        style={{ ...styles.text, ...selectedStyle(channel) }}>
         {`${profileField}: ${details ? presentValueAsPercent(details[profileField]) : ""}`}
       </Text>
     ));
@@ -134,7 +136,7 @@ export function Fixture({
 
   return (
     <View
-      key={channel}
+      key={Math.random()}
       style={{ ...styles.fixtures, ...selectedStyle(channel) }}
       onTouchStart={() =>
         handleOutput({
@@ -162,7 +164,7 @@ const styles = StyleSheet.create({
   fixtures: {
     backgroundColor: "purple",
     width: 200,
-    height: 100,
+    height: 160,
     borderWidth: 4,
     margin: 10,
     borderColor: "gold",

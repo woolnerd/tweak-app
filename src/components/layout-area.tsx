@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, FlatList, ListRenderItem } from "react-native";
 
 import { Fixture as FixtureComponent } from "./fixture.tsx";
 import { useCompositeFixtureStore } from "../app/store/useCompositeFixtureStore.ts";
@@ -86,9 +86,9 @@ export default function LayoutArea({
         ...styles.container,
         alignItems: "center",
       }}>
-      {compositeFixtures?.map((fixtureProps) => (
+      {/* {compositeFixtures?.map((fixtureProps) => (
         <FixtureComponent
-          key={`${fixtureProps.channel} - + ${fixtureProps.fixtureAssignmentId}`}
+          key={Math.random()}
           // selectedFixtureIds={selectedFixtureIds}
           // setSelectedFixtureIds={setSelectedFixtureIds}
           fixtureAssignmentId={fixtureProps.fixtureAssignmentId}
@@ -99,9 +99,25 @@ export default function LayoutArea({
           fixtureName={fixtureProps.fixtureName}
           fixtureNotes={fixtureProps.fixtureNotes}
           values={fixtureProps.values}
-        />
-      ))}
-      {console.log(compositeFixtures.map((f) => f.channel))}
+        /> */}
+      <FlatList
+        data={compositeFixtures}
+        renderItem={({ item }) => (
+          <FixtureComponent
+            // selectedFixtureIds={selectedFixtureIds}
+            // setSelectedFixtureIds={setSelectedFixtureIds}
+            fixtureAssignmentId={item.fixtureAssignmentId}
+            channel={item.channel}
+            profileChannels={item.profileChannels}
+            profileName={item.profileName}
+            sceneId={item.sceneId}
+            fixtureName={item.fixtureName}
+            fixtureNotes={item.fixtureNotes}
+            values={item.values}
+          />
+        )}
+        keyExtractor={(item, idx) => item.fixtureAssignmentId.toString()}
+      />
     </View>
   );
 }
