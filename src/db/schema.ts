@@ -71,8 +71,8 @@ export const profiles = sqliteTable("profiles", {
   channels: text("channels"),
   channelCount: integer("channel_count").notNull(),
   fixtureId: integer("fixture_id"),
-  channelPairs16Bit: text("channel_pairs_16_bit").default("[]"),
-  is16Bit: integer("is_16_bit", { mode: "boolean" }),
+  channelPairs16Bit: text("channel_pairs_16_bit").default("[]").notNull(),
+  is16Bit: integer("is_16_bit", { mode: "boolean" }).default(false).notNull(),
 });
 
 export const profilesRelations = relations(profiles, ({ one, many }) => ({

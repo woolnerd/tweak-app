@@ -114,6 +114,8 @@ export default function LayoutArea({
             fixtureName={item.fixtureName}
             fixtureNotes={item.fixtureNotes}
             values={item.values}
+            is16Bit={item.is16Bit}
+            channelPairs16Bit={item.channelPairs16Bit}
           />
         )}
         keyExtractor={(item, idx) => item.fixtureAssignmentId.toString()}

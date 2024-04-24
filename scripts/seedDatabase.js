@@ -2,7 +2,7 @@ import { db } from "../src/db/client.ts";
 import * as schema from "../src/db/schema.ts";
 import { seeds } from "../src/db/seeds.ts";
 
-const main = async () => {
+export default async function seedDatabase() {
   try {
     seeds.fixtureAssignments.forEach(async (assignment) => {
       await db.insert(schema.fixtureAssignments).values(assignment);
@@ -44,6 +44,4 @@ const main = async () => {
 
     process.exit(1);
   }
-};
-
-main();
+}

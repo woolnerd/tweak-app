@@ -9,6 +9,7 @@ import {
   addManualFixture,
 } from "../util/fixture-cache.ts";
 import { handleChannelValues, presentValueAsPercent } from "../util/helpers.ts";
+import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 
 // type OptionalProps<T> = { [P in keyof T]?: T[P] | null };
 type ProfileKey = number;
@@ -20,7 +21,7 @@ export type FixtureProps = {
   // setSelectedFixtureIds: (
   //   fixtureIds: (currentState: Set<number>) => Set<number>,
   // ) => void;
-} & FixtureControlData & {
+} & ParsedCompositeFixtureInfo & {
     values: ChannelTuples;
     profileChannels: { ProfileKey: string }[];
   };
@@ -30,6 +31,8 @@ export function Fixture({
   profileChannels,
   values,
   fixtureAssignmentId,
+  is16Bit,
+  channelPairs16Bit,
   // selectedFixtureIds,
   // setSelectedFixtureIds,
   sceneId,
@@ -124,12 +127,19 @@ export function Fixture({
   };
 
   const buildOutputDetails = () => {
-    const details = handleChannelValues(profileChannels, values);
+    const details = handleChannelValues(
+      profileChannels,
+      values,
+      channelPairs16Bit,
+      is16Bit,
+    );
+
     return Object.keys(details as object).map((profileField) => (
       <Text
         key={`${profileField}+${Math.random()}`}
         style={{ ...styles.text, ...selectedStyle(channel) }}>
         {`${profileField}: ${details ? presentValueAsPercent(details[profileField]) : ""}`}
+        {console.log(details)}
       </Text>
     ));
   };

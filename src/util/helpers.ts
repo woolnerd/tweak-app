@@ -43,6 +43,34 @@ export async function mergeCacheWithDBFixtures(
     console.log(err);
   }
 }
+export function merge16BitValues(
+  channelPairs16Bit: ParsedCompositeFixtureInfo["channelPairs16Bit"],
+  values: ParsedCompositeFixtureInfo["values"],
+) {
+  const visited = new Set<number>();
+  // values [ [1,128],[2,128] ]
+  // pairs [ [1,2], [3,4] ... ]
+  const newValues: typeof values = [];
+
+  values.forEach(([channel, dmxVal], idx) => {
+    const coarseIdx = channelPairs16Bit.findIndex(
+      ([coarse, fine]) => coarse === channel,
+    );
+
+    const is16Bit = coarseIdx !== -1;
+
+    if (is16Bit) {
+      const coarseDmxVal = dmxVal;
+      const fineDmxVal = values[coarseIdx + 1][1];
+
+      newValues.push([channel, coarseDmxVal * 256 + fineDmxVal]);
+      visited.add(values[coarseIdx + 1][0]);
+    } else if (!visited.has(channel)) {
+      newValues.push([channel, dmxVal]);
+    }
+  });
+  return newValues;
+}
 
 /**
  *
@@ -53,23 +81,51 @@ export async function mergeCacheWithDBFixtures(
 export function handleChannelValues(
   profileChannels: ParsedCompositeFixtureInfo["profileChannels"],
   values: ParsedCompositeFixtureInfo["values"],
+  channelPairs16Bit: ParsedCompositeFixtureInfo["channelPairs16Bit"],
+  is16Bit: ParsedCompositeFixtureInfo["is16Bit"],
+  mergeFunc: (
+    channelPairs: ParsedCompositeFixtureInfo["channelPairs16Bit"],
+    valuesArg: ParsedCompositeFixtureInfo["values"],
+  ) => number[][] = merge16BitValues,
 ): Record<string, number> | null {
   if (!profileChannels || !values) {
     return null;
   }
 
-  const result = {};
+  const result: Record<string, number> = {};
+
+  if (is16Bit) {
+    values = merge16BitValues(channelPairs16Bit, values);
+  }
 
   values.forEach((tuple, idx) => {
     const [key, value] = tuple;
+
     const profile = profileChannels[key];
-    if (profile) {
+
+    if (profile && value !== -1) {
       result[profile] = value;
     }
   });
 
   return result;
 }
-export function presentValueAsPercent(val: number) {
-  return `${Math.trunc((val / 255) * 100)}%`;
+function dynamicRound(num: number) {
+  const decimalPart = num - Math.floor(num);
+
+  if (decimalPart >= 0.5) {
+    return Math.ceil(num);
+  }
+  return Math.floor(num);
+}
+
+export function presentValueAsPercent(
+  val: number,
+  rounding: (n: number) => number = dynamicRound,
+) {
+  if (val > 256) {
+    return `${dynamicRound((val / 65535) * 100)}%`;
+  }
+
+  return `${dynamicRound((val / 255) * 100)}%`;
 }

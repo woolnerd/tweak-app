@@ -33,19 +33,23 @@ export default class ScenesToFixtureAssignments extends Base<
     selectedFixtureChannels: Set<number>,
   ) {
     try {
-      this.fetchedData = await this.db
+      this.fetchedData = (await this.db
         .select({
           fixtureAssignmentId: fixtureAssignments.id,
           channel: fixtureAssignments.channel,
           values: fixtureAssignments.values,
           title: fixtureAssignments.title,
           profileChannels: profiles.channels,
+          channelPairs16Bit: profiles.channelPairs16Bit,
+          is16Bit: profiles.is16Bit,
           profileName: profiles.name,
           fixtureName: fixtures.name,
           fixtureNotes: fixtures.notes,
           sceneId: scenesToFixtureAssignments.sceneId,
           addressStart: patches.startAddress,
           addressEnd: patches.endAddress,
+          colorTempLow: fixtures.colorTempRangeLow,
+          colorTempHigh: fixtures.colorTempRangeHigh,
         })
         .from(fixtureAssignments)
         .leftJoin(fixtures, eq(fixtures.id, fixtureAssignments.fixtureId))
@@ -68,7 +72,7 @@ export default class ScenesToFixtureAssignments extends Base<
           //   Array.from(selectedFixtureChannels),
           // ),
           // ),
-        );
+        )) as UnparsedCompositeFixtureInfo[];
 
       return this.parseStringColumnsToJSON();
     } catch (err) {
@@ -86,6 +90,7 @@ export default class ScenesToFixtureAssignments extends Base<
         profileChannels: assignmentObj.profileChannels
           ? JSON.parse(assignmentObj.profileChannels)
           : null,
+        channelPairs16Bit: JSON.parse(assignmentObj.channelPairs16Bit),
       }),
     );
   }

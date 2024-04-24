@@ -8,14 +8,19 @@ interface CompositeFixtureInfo {
   sceneId: number | null;
   addressStart: number | null;
   addressEnd: number | null;
+  colorTempLow: number | null;
+  colorTempHigh: number | null;
+  is16Bit: boolean;
 }
 
 export interface ParsedCompositeFixtureInfo extends CompositeFixtureInfo {
   values: number[][];
   profileChannels: Record<number, string> | null;
+  channelPairs16Bit: number[][];
 }
 
 export interface UnparsedCompositeFixtureInfo extends CompositeFixtureInfo {
   values: string | null;
   profileChannels: string | null;
+  channelPairs16Bit: string;
 }

@@ -4,7 +4,7 @@ import journal from './meta/_journal.json';
 import m0000 from './0000_bored_phil_sheldon.sql';
 import m0001 from './0001_watery_gwen_stacy.sql';
 import m0002 from './0002_fuzzy_morlun.sql';
-import m0003 from './0003_flimsy_wild_child.sql';
+import m0003 from './0003_brainy_the_executioner.sql';
 
   export default {
     journal,
