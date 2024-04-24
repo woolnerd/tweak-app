@@ -10,7 +10,7 @@ interface CompositeFixtureInfo {
   addressEnd: number | null;
   colorTempLow: number | null;
   colorTempHigh: number | null;
-  is16Bit: boolean | null;
+  is16Bit: boolean;
 }
 
 export interface ParsedCompositeFixtureInfo extends CompositeFixtureInfo {
@@ -22,5 +22,5 @@ export interface ParsedCompositeFixtureInfo extends CompositeFixtureInfo {
 export interface UnparsedCompositeFixtureInfo extends CompositeFixtureInfo {
   values: string | null;
   profileChannels: string | null;
-  channelPairs16Bit: string | null;
+  channelPairs16Bit: string;
 }

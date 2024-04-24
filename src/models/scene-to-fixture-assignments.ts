@@ -33,7 +33,7 @@ export default class ScenesToFixtureAssignments extends Base<
     selectedFixtureChannels: Set<number>,
   ) {
     try {
-      this.fetchedData = await this.db
+      this.fetchedData = (await this.db
         .select({
           fixtureAssignmentId: fixtureAssignments.id,
           channel: fixtureAssignments.channel,
@@ -72,7 +72,7 @@ export default class ScenesToFixtureAssignments extends Base<
           //   Array.from(selectedFixtureChannels),
           // ),
           // ),
-        );
+        )) as UnparsedCompositeFixtureInfo[];
 
       return this.parseStringColumnsToJSON();
     } catch (err) {
@@ -90,9 +90,7 @@ export default class ScenesToFixtureAssignments extends Base<
         profileChannels: assignmentObj.profileChannels
           ? JSON.parse(assignmentObj.profileChannels)
           : null,
-        channelPairs16Bit: assignmentObj
-          ? JSON.parse(assignmentObj.channelPairs16Bit)
-          : [],
+        channelPairs16Bit: JSON.parse(assignmentObj.channelPairs16Bit),
       }),
     );
   }

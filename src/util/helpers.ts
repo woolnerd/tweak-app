@@ -43,6 +43,29 @@ export async function mergeCacheWithDBFixtures(
     console.log(err);
   }
 }
+export function merge16BitValues(
+  channelPairs16Bit: ParsedCompositeFixtureInfo["channelPairs16Bit"],
+  values: ParsedCompositeFixtureInfo["values"],
+) {
+  // [ [1,128],[2,128] ]
+  // [ [1,2], [3,4] ... ]
+  const newValues: typeof values = [];
+  values.forEach(([channel, dmxVal], idx) => {
+    const coarseIdx = channelPairs16Bit.findIndex(
+      ([coarse, fine]) => coarse === channel,
+    );
+
+    if (coarseIdx !== -1) {
+      const coarseDmxVal = values[coarseIdx][1];
+      const fineDmxVal = values[coarseIdx + 1][1];
+      newValues.push([channel, coarseDmxVal * fineDmxVal]);
+      values[coarseIdx + 1][1] = -1;
+    } else if (dmxVal !== -1) {
+      newValues.push([channel, dmxVal]);
+    }
+  });
+  return newValues;
+}
 
 /**
  *
@@ -53,17 +76,29 @@ export async function mergeCacheWithDBFixtures(
 export function handleChannelValues(
   profileChannels: ParsedCompositeFixtureInfo["profileChannels"],
   values: ParsedCompositeFixtureInfo["values"],
+  channelPairs16Bit: ParsedCompositeFixtureInfo["channelPairs16Bit"],
+  is16Bit: ParsedCompositeFixtureInfo["is16Bit"],
+  mergeFunc: (
+    channelPairs: ParsedCompositeFixtureInfo["channelPairs16Bit"],
+    valuesArg: ParsedCompositeFixtureInfo["values"],
+  ) => number[][] = merge16BitValues,
 ): Record<string, number> | null {
   if (!profileChannels || !values) {
     return null;
   }
 
-  const result = {};
+  const result: Record<string, number> = {};
+
+  if (is16Bit) {
+    values = merge16BitValues(channelPairs16Bit, values);
+  }
 
   values.forEach((tuple, idx) => {
     const [key, value] = tuple;
+
     const profile = profileChannels[key];
-    if (profile) {
+
+    if (profile && value !== -1) {
       result[profile] = value;
     }
   });
@@ -71,5 +106,10 @@ export function handleChannelValues(
   return result;
 }
 export function presentValueAsPercent(val: number) {
-  return `${Math.trunc((val / 255) * 100)}%`;
+  let func = Math.trunc;
+  if (val > 256) {
+    val /= 256;
+    func = Math.round;
+  }
+  return `${func((val / 255) * 100)}%`;
 }
