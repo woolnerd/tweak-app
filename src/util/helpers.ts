@@ -110,11 +110,22 @@ export function handleChannelValues(
 
   return result;
 }
-export function presentValueAsPercent(val: number) {
-  // let func = Math.trunc;
+function dynamicRound(num: number) {
+  const decimalPart = num - Math.floor(num);
+
+  if (decimalPart >= 0.5) {
+    return Math.ceil(num);
+  }
+  return Math.floor(num);
+}
+
+export function presentValueAsPercent(
+  val: number,
+  rounding: (n: number) => number = dynamicRound,
+) {
   if (val > 256) {
-    return `${Math.round((val / 65535) * 100)}%`;
+    return `${dynamicRound((val / 65535) * 100)}%`;
   }
 
-  return `${Math.trunc((val / 255) * 100)}%`;
+  return `${dynamicRound((val / 255) * 100)}%`;
 }
