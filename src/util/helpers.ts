@@ -47,20 +47,25 @@ export function merge16BitValues(
   channelPairs16Bit: ParsedCompositeFixtureInfo["channelPairs16Bit"],
   values: ParsedCompositeFixtureInfo["values"],
 ) {
-  // [ [1,128],[2,128] ]
-  // [ [1,2], [3,4] ... ]
+  const visited = new Set<number>();
+  // values [ [1,128],[2,128] ]
+  // pairs [ [1,2], [3,4] ... ]
   const newValues: typeof values = [];
+
   values.forEach(([channel, dmxVal], idx) => {
     const coarseIdx = channelPairs16Bit.findIndex(
       ([coarse, fine]) => coarse === channel,
     );
 
-    if (coarseIdx !== -1) {
-      const coarseDmxVal = values[coarseIdx][1];
+    const is16Bit = coarseIdx !== -1;
+
+    if (is16Bit) {
+      const coarseDmxVal = dmxVal;
       const fineDmxVal = values[coarseIdx + 1][1];
-      newValues.push([channel, coarseDmxVal * fineDmxVal]);
-      values[coarseIdx + 1][1] = -1;
-    } else if (dmxVal !== -1) {
+
+      newValues.push([channel, coarseDmxVal * 256 + fineDmxVal]);
+      visited.add(values[coarseIdx + 1][0]);
+    } else if (!visited.has(channel)) {
       newValues.push([channel, dmxVal]);
     }
   });
@@ -106,10 +111,10 @@ export function handleChannelValues(
   return result;
 }
 export function presentValueAsPercent(val: number) {
-  let func = Math.trunc;
+  // let func = Math.trunc;
   if (val > 256) {
-    val /= 256;
-    func = Math.round;
+    return `${Math.round((val / 65535) * 100)}%`;
   }
-  return `${func((val / 255) * 100)}%`;
+
+  return `${Math.trunc((val / 255) * 100)}%`;
 }

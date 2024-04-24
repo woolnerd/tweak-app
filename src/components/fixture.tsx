@@ -139,6 +139,7 @@ export function Fixture({
         key={`${profileField}+${Math.random()}`}
         style={{ ...styles.text, ...selectedStyle(channel) }}>
         {`${profileField}: ${details ? presentValueAsPercent(details[profileField]) : ""}`}
+        {console.log(details)}
       </Text>
     ));
   };
