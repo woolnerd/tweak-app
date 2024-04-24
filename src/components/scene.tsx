@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { View, Pressable, Text, StyleSheet } from "react-native";
 
 import { FixtureControlData } from "./types/fixture.ts";
+import { useManualFixtureStore } from "../app/store/useManualFixtureStore.ts";
 import { db } from "../db/client.ts";
 import { fixtureAssignments } from "../db/schema.ts";
 import {
@@ -17,8 +18,18 @@ export type SceneProps = {
 };
 
 export function Scene({ name, id, setSelectedSceneId }: SceneProps) {
+  const manualFixtures = useManualFixtureStore((state) => state.manualFixtures);
+  const updateManualFixtures = useManualFixtureStore(
+    (state) => state.updateManualFixtures,
+  );
+
   const handleScenePress = () => {
     setSelectedSceneId(id);
+  };
+
+  const handleRecPress2 = () => {
+    console.log(manualFixtures);
+    updateManualFixtures([]);
   };
 
   const handleRecPress = async () => {
@@ -70,7 +81,7 @@ export function Scene({ name, id, setSelectedSceneId }: SceneProps) {
 
   return (
     <View style={{ flex: 2, flexDirection: "row", ...styles.sceneCtrl }}>
-      <Pressable style={styles.rec} onPress={handleRecPress}>
+      <Pressable style={styles.rec} onPress={handleRecPress2}>
         <Text style={styles.btnText}>REC</Text>
       </Pressable>
       <Pressable style={styles.scene} onPress={handleScenePress}>

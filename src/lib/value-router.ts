@@ -1,9 +1,10 @@
 import ProfileAdapter from "./adapters/profile-adapter.ts";
 import { ActionObject } from "./command-line/types/command-line-types.ts";
 import { ProfileTarget } from "./types/buttons.ts";
+import { ManualFixtureState } from "../components/types/fixture.ts";
 import ChannelValueCalculator from "../util/channel-value-calculator.ts";
 
-export default class ValueRouter<T extends { values: number[][] }> {
+export default class ValueRouter<T extends ManualFixtureState> {
   profileAdapter: ProfileAdapter;
 
   actionObject: ActionObject;
@@ -28,7 +29,7 @@ export default class ValueRouter<T extends { values: number[][] }> {
     this.calculator = new ChannelValueCalculator(this.actionObject.directive);
   }
 
-  mutateOrMergeFixtureChannels(fixture: T) {
+  mutateOrMergeFixtureChannels(fixture: T): ManualFixtureState {
     this.channelTuples.forEach((tuple) => {
       const channel = tuple[0];
       const tupleToMutateIdx = fixture.values!.findIndex(
@@ -44,6 +45,12 @@ export default class ValueRouter<T extends { values: number[][] }> {
       }
       fixture.values.sort((a, b) => a[0] - b[0]);
     });
+    return {
+      fixtureAssignmentId: fixture.fixtureAssignmentId,
+      channel: fixture.channel,
+      values: fixture.values,
+      sceneId: fixture.sceneId,
+    };
   }
 
   // outputs a tuple of [ channel, Value (btw 0-255) ]
@@ -51,12 +58,17 @@ export default class ValueRouter<T extends { values: number[][] }> {
     if (this.channelIs16Bit()) {
       this.values = this.calculator.calc16BitValues();
       this.channelTuples = this.parse16BitChannels();
+      console.log("values", this.values);
+      console.log("channelTUpels", this.channelTuples);
+
       return this;
     }
 
     if (this.channelIs8Bit()) {
       this.values = this.calculator.calc8BitValues();
       this.channelTuples = this.parse8BitChannel();
+      console.log("values", this.values);
+      console.log("channelTUpels", this.channelTuples);
       return this;
     }
 
