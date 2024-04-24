@@ -79,8 +79,11 @@ describe("Merge 16bit values", () => {
     test("presentValueAsPrecent returns the properly formatted string with % ", () => {
       expect(presentValueAsPercent(65535)).toBe("100%");
       expect(presentValueAsPercent(65025)).toBe("99%");
+      expect(presentValueAsPercent(49151)).toBe("75%");
       expect(presentValueAsPercent(48905)).toBe("75%");
       expect(presentValueAsPercent(45875)).toBe("70%");
+      expect(presentValueAsPercent(6554)).toBe("10%");
+      expect(presentValueAsPercent(257)).toBe("0%");
       expect(presentValueAsPercent(255)).toBe("100%");
       expect(presentValueAsPercent(128)).toBe("50%");
     });

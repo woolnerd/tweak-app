@@ -134,15 +134,23 @@ export function Fixture({
       is16Bit,
     );
 
-    return Object.keys(details as object).map((profileField) => (
-      <Text
-        key={`${profileField}+${Math.random()}`}
-        style={{ ...styles.text, ...selectedStyle(channel) }}>
-        {`${profileField}: ${details ? presentValueAsPercent(details[profileField]) : ""}`}
-        {console.log(details)}
-      </Text>
-    ));
+    if (!details) return null;
+
+    return Object.keys(details as object).map((profileField) =>
+      outputDetail(profileField, details),
+    );
   };
+
+  const outputDetail = (
+    profileField: string,
+    details: Record<string, number>,
+  ) => (
+    <Text
+      key={`${profileField}+${Math.random()}`}
+      style={{ ...styles.text, ...selectedStyle(channel) }}>
+      {`${profileField}: ${details ? presentValueAsPercent(details[profileField]) : ""}`}
+    </Text>
+  );
 
   return (
     <View
@@ -162,9 +170,6 @@ export function Fixture({
       }>
       <Text style={styles.text}>{channel}</Text>
       <Text style={styles.text}>{fixtureName}</Text>
-      {/* <Text style={{ ...styles.text, ...selectedStyle(fixtureAssignmentId) }}>
-        {selectedValue}
-      </Text> */}
       {buildOutputDetails()}
     </View>
   );
