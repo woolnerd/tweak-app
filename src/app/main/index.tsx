@@ -10,6 +10,9 @@ import { Scene as SceneComponent } from "../../components/scene.tsx";
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
 import Scene from "../../models/scene.ts";
+import runMigrataions from "scripts/migrations.js";
+import seedDatabase from "scripts/seedDatabase.js";
+import * as FileSystem from "expo-file-system";
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
@@ -22,12 +25,16 @@ function App() {
     const response = await new Scene(db).getAllOrdered();
     return !response ? [] : response;
   };
+  // console.log(FileSystem.documentDirectory);
 
   useEffect(() => {
     fetchScenes().then((response) => setScenes(response));
   }, []);
 
-  const handleGoToOut = () => {};
+  const handleGoToOut = () => {
+    // runMigrataions();
+    // seedDatabase();
+  };
 
   return (
     <View

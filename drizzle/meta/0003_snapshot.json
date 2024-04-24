@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "904829b0-21aa-4b59-b750-9589bb11839a",
+  "id": "39c48631-4e0e-4b3f-a174-a3d589680299",
   "prevId": "da7bf360-4603-4c07-9af9-829093b6798d",
   "tables": {
     "fixtureAssignments": {
@@ -272,7 +272,7 @@
           "name": "channel_pairs_16_bit",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false,
           "default": "'[]'"
         },
@@ -280,8 +280,9 @@
           "name": "is_16_bit",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
         }
       },
       "indexes": {},

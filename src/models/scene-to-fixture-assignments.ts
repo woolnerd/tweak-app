@@ -40,12 +40,16 @@ export default class ScenesToFixtureAssignments extends Base<
           values: fixtureAssignments.values,
           title: fixtureAssignments.title,
           profileChannels: profiles.channels,
+          channelPairs16Bit: profiles.channelPairs16Bit,
+          is16Bit: profiles.is16Bit,
           profileName: profiles.name,
           fixtureName: fixtures.name,
           fixtureNotes: fixtures.notes,
           sceneId: scenesToFixtureAssignments.sceneId,
           addressStart: patches.startAddress,
           addressEnd: patches.endAddress,
+          colorTempLow: fixtures.colorTempRangeLow,
+          colorTempHigh: fixtures.colorTempRangeHigh,
         })
         .from(fixtureAssignments)
         .leftJoin(fixtures, eq(fixtures.id, fixtureAssignments.fixtureId))
@@ -86,6 +90,9 @@ export default class ScenesToFixtureAssignments extends Base<
         profileChannels: assignmentObj.profileChannels
           ? JSON.parse(assignmentObj.profileChannels)
           : null,
+        channelPairs16Bit: assignmentObj
+          ? JSON.parse(assignmentObj.channelPairs16Bit)
+          : [],
       }),
     );
   }
