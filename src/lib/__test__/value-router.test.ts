@@ -1,3 +1,4 @@
+import { ManualFixtureState } from "../../components/types/fixture.ts";
 import ProfileAdapter from "../adapters/profile-adapter.ts";
 import { ActionObject } from "../command-line/types/command-line-types.ts";
 import { ProfileTarget } from "../types/buttons.ts";
@@ -64,11 +65,13 @@ describe("ValueRouter Tests", () => {
     test("mutate behavior", () => {
       router.channelTuples = [[1, 255]];
 
-      const fixture = {
+      const fixture: ManualFixtureState = {
         values: [
           [1, 0],
           [2, 0],
         ],
+        fixtureAssignmentId: 1,
+        channel: 1,
       };
       router.mutateOrMergeFixtureChannels(fixture);
 
@@ -84,6 +87,8 @@ describe("ValueRouter Tests", () => {
           [2, 255],
           [3, 0],
         ],
+        fixtureAssignmentId: 1,
+        channel: 1,
       };
       router.mutateOrMergeFixtureChannels(fixture);
 

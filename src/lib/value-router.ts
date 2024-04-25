@@ -49,7 +49,6 @@ export default class ValueRouter<T extends ManualFixtureState> {
       fixtureAssignmentId: fixture.fixtureAssignmentId,
       channel: fixture.channel,
       values: fixture.values,
-      sceneId: fixture.sceneId,
     };
   }
 
@@ -58,8 +57,6 @@ export default class ValueRouter<T extends ManualFixtureState> {
     if (this.channelIs16Bit()) {
       this.values = this.calculator.calc16BitValues();
       this.channelTuples = this.parse16BitChannels();
-      console.log("values", this.values);
-      console.log("channelTUpels", this.channelTuples);
 
       return this;
     }
@@ -67,8 +64,7 @@ export default class ValueRouter<T extends ManualFixtureState> {
     if (this.channelIs8Bit()) {
       this.values = this.calculator.calc8BitValues();
       this.channelTuples = this.parse8BitChannel();
-      console.log("values", this.values);
-      console.log("channelTUpels", this.channelTuples);
+
       return this;
     }
 

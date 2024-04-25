@@ -26,11 +26,24 @@ export default function useCommandLineRouter(action: ActionObject | null) {
     (state) => state.updateManualFixtures,
   );
 
-  const addToManualFixtureState = (stateObj: ManualFixtureState) => {
-    const preventDuplicates = manualFixtures.filter(
-      (fixture) => fixture.fixtureAssignmentId !== stateObj.fixtureAssignmentId,
+  const findById = (
+    assignmentObj: { fixtureAssignmentId: number },
+    objs: { fixtureAssignmentId: number }[],
+  ) =>
+    objs.find(
+      (obj) => obj.fixtureAssignmentId === assignmentObj.fixtureAssignmentId,
     );
-    updateManualFixtures([...preventDuplicates, stateObj]);
+
+  const mergeManualFixtureStates = (nextState: ManualFixtureState[]) => {
+    // check if state contains state object
+    // if so use latest channel info
+    const prevState = [...manualFixtures];
+
+    const filteredPrevState = prevState.filter(
+      (prevStateObj) => !findById(prevStateObj, nextState),
+    );
+
+    updateManualFixtures([...filteredPrevState, ...nextState]);
   };
 
   function updateChannelOutput(
@@ -59,6 +72,7 @@ export default function useCommandLineRouter(action: ActionObject | null) {
   useEffect(() => {
     if (action !== null && action.complete) {
       const { selection } = action;
+      const manualObjs: ManualFixtureState[] = [];
 
       const fixturesWithUpdatedChannelOutput = compositeFixtures.map(
         (compFixture) => {
@@ -70,16 +84,20 @@ export default function useCommandLineRouter(action: ActionObject | null) {
               action,
               compFixture,
             );
-            addToManualFixtureState(manualFixtureStateObj);
+
+            manualObjs.push(manualFixtureStateObj);
             return mutatedFixture as ParsedCompositeFixtureInfo;
           }
           return compFixture;
         },
       );
+
       updateCompositeFixtures(fixturesWithUpdatedChannelOutput);
+      mergeManualFixtureStates(manualObjs);
     }
 
     console.log("action", action);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [action, updateCompositeFixtures]);
 }
