@@ -10,6 +10,9 @@ import {
   getAllFixturesFromSceneKeys,
   getManualFixtureKeys,
 } from "../util/fixture-cache.ts";
+import ScenesToFixtureAssignments from "../models/scene-to-fixture-assignments.ts";
+import { useCompositeFixtureStore } from "../app/store/useCompositeFixtureStore.ts";
+import { useFixtureChannelSelectionStore } from "../app/store/useFixtureChannelSelectionStore.ts";
 
 export type SceneProps = {
   name: string;
@@ -23,12 +26,29 @@ export function Scene({ name, id, setSelectedSceneId }: SceneProps) {
     (state) => state.updateManualFixtures,
   );
 
+  const updateCompositeFixtures = useCompositeFixtureStore(
+    (state) => state.updateCompositeFixtures,
+  );
+
+  const updateFixtureSelection = useFixtureChannelSelectionStore(
+    (state) => state.updateFixtureSelection,
+  );
+
   const handleScenePress = () => {
     setSelectedSceneId(id);
   };
 
   const handleRecPress2 = () => {
-    console.log(manualFixtures);
+    updateDb(manualFixtures);
+    //   .then((res) => {
+    //   new ScenesToFixtureAssignments(db)
+    //     .getCompositeFixtureInfo(id, new Set())
+    //     .then((res1) => {
+    //       console.log(res1);
+    //       // updateCompositeFixtures(res1);
+    //     });
+    // });
+    updateFixtureSelection(new Set());
     updateManualFixtures([]);
   };
 
@@ -60,20 +80,29 @@ export function Scene({ name, id, setSelectedSceneId }: SceneProps) {
     }
   };
 
-  const updateDb = async (cache: FixtureControlData[]) => {
+  const updateDb = async <
+    T extends { values: number[][]; fixtureAssignmentId: number },
+  >(
+    manualFixtureState: T[],
+  ) => {
+    const valueObj = (fixture: T) => ({
+      values: JSON.stringify(fixture.values),
+    });
+    let result: T[];
     try {
-      await db
-        .transaction(async (tx) => {
-          cache.forEach(async (fixture: FixtureControlData) => {
-            await tx
+      await db.transaction(async (tx) => {
+        result = await Promise.all(
+          manualFixtureState.map((fixture: T) =>
+            tx
               .update(fixtureAssignments)
-              .set({ values: fixture.values })
+              .set(valueObj(fixture))
               .where(eq(fixtureAssignments.id, fixture.fixtureAssignmentId))
-              .returning();
-          });
-        })
-        .then((res) => console.log("completed", res))
-        .catch((err) => console.log(err));
+              .returning(),
+          ),
+        );
+      });
+
+      return result;
     } catch (e) {
       console.log(e);
     }

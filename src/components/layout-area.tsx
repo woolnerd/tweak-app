@@ -80,32 +80,20 @@ export default function LayoutArea({
     // );
   }, [selectedSceneId, fetchCompositeFixtures, updateCompositeFixtures]);
 
+  // useEffect(() => {
+  //   updateCompositeFixtures(compositeFixtures);
+  // }, [compositeFixtures]);
+
   return (
     <View
       style={{
         ...styles.container,
         alignItems: "center",
       }}>
-      {/* {compositeFixtures?.map((fixtureProps) => (
-        <FixtureComponent
-          key={Math.random()}
-          // selectedFixtureIds={selectedFixtureIds}
-          // setSelectedFixtureIds={setSelectedFixtureIds}
-          fixtureAssignmentId={fixtureProps.fixtureAssignmentId}
-          channel={fixtureProps.channel}
-          profileChannels={fixtureProps.profileChannels}
-          profileName={fixtureProps.profileName}
-          sceneId={fixtureProps.sceneId}
-          fixtureName={fixtureProps.fixtureName}
-          fixtureNotes={fixtureProps.fixtureNotes}
-          values={fixtureProps.values}
-        /> */}
       <FlatList
         data={compositeFixtures}
         renderItem={({ item }) => (
           <FixtureComponent
-            // selectedFixtureIds={selectedFixtureIds}
-            // setSelectedFixtureIds={setSelectedFixtureIds}
             fixtureAssignmentId={item.fixtureAssignmentId}
             channel={item.channel}
             profileChannels={item.profileChannels}
@@ -186,5 +174,3 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
-
-// { "1": "Dimmer", "2": "Dimmer fine", "3": "Color Temp", "4": "Color Temp fine", "5": "Green/Magenta Point", "6": "Green/Magenta Point fine", "7": "Crossfade color", "8": "Crossfade color fine", "9": "Red intensity", "10": "Red intensity fine", "11": "Green intensity", "12": "Green intensity fine", "13": "Blue intensity", "14": "Blue intensity fine", "15": "White intensity", "16": "White intensity fine", "17": "Fan control", "18": "Preset", "19": "Strobe", "20": "Reserved for future use" }
