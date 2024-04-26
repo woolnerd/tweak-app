@@ -30,6 +30,7 @@ export default class ValueRouter<T extends ManualFixtureState> {
   }
 
   mutateOrMergeFixtureChannels(fixture: T): ManualFixtureState {
+    const manualChannels: number[] = [];
     this.channelTuples.forEach((tuple) => {
       const channel = tuple[0];
       const tupleToMutateIdx = fixture.values!.findIndex(
@@ -43,12 +44,14 @@ export default class ValueRouter<T extends ManualFixtureState> {
         // otherwise mutate
         fixture.values![tupleToMutateIdx] = tuple;
       }
+      manualChannels.push(tuple[0]);
       fixture.values.sort((a, b) => a[0] - b[0]);
     });
     return {
       fixtureAssignmentId: fixture.fixtureAssignmentId,
       channel: fixture.channel,
       values: fixture.values,
+      manualChannels,
     };
   }
 

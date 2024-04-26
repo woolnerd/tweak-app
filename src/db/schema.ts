@@ -9,7 +9,7 @@ import {
 export const fixtures = sqliteTable("fixtures", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
-  notes: text("notes"),
+  notes: text("notes").notNull(),
   manufacturerId: integer("manufacturer_id").references(() => manufacturers.id),
   colorTempRangeLow: integer("color_temp_range_low"),
   colorTempRangeHigh: integer("color_temp_range_high"),

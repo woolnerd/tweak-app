@@ -31,4 +31,5 @@ export type ManualFixtureState = {
   fixtureAssignmentId: number;
   channel: number;
   values: number[][];
+  manualChannels: number[];
 };

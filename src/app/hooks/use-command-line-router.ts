@@ -50,7 +50,7 @@ export default function useCommandLineRouter(action: ActionObject | null) {
       fixture.profileChannels!,
     );
 
-    const valueRouter = new ValueRouter<ParsedCompositeFixtureInfo>(
+    const valueRouter = new ValueRouter<ManualFixtureState>(
       actionObj,
       profileAdapter,
     );
@@ -60,6 +60,7 @@ export default function useCommandLineRouter(action: ActionObject | null) {
       .mutateOrMergeFixtureChannels(fixture);
 
     const mutatedFixture = fixture;
+    console.log("stateOb", manualFixtureStateObj);
 
     return [manualFixtureStateObj, mutatedFixture];
   }
@@ -95,4 +96,8 @@ export default function useCommandLineRouter(action: ActionObject | null) {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [action, updateCompositeFixturesStore]);
+
+  useEffect(() => {
+    console.log("manualFixtures", manualFixtures);
+  }, [manualFixtures]);
 }
