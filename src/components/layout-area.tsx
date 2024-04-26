@@ -80,10 +80,6 @@ export default function LayoutArea({
     // );
   }, [selectedSceneId, fetchCompositeFixtures, updateCompositeFixturesStore]);
 
-  // useEffect(() => {
-  //   updateCompositeFixturesStore(compositeFixturesStore);
-  // }, [compositeFixturesStore]);
-
   return (
     <View
       style={{

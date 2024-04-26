@@ -4,12 +4,12 @@ import { View, Text, StyleSheet } from "react-native";
 
 import { FixtureControlData } from "./types/fixture.ts";
 import { useFixtureChannelSelectionStore } from "../app/store/useFixtureChannelSelectionStore.ts";
-import {
-  removeManualFixture,
-  addManualFixture,
-} from "../util/fixture-cache.ts";
-import { handleChannelValues, presentValueAsPercent } from "../util/helpers.ts";
+// import {
+//   removeManualFixture,
+//   addManualFixture,
+// } from "../util/fixture-cache.ts";
 import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
+import { handleChannelValues, presentValueAsPercent } from "../util/helpers.ts";
 
 // type OptionalProps<T> = { [P in keyof T]?: T[P] | null };
 type ProfileKey = number;
@@ -39,8 +39,8 @@ export function Fixture({
   startAddress,
   endAddress,
 }: FixtureProps) {
-  const [selectedValue, setSelectedValue] = useState<string | null>([150]);
-  const [manualHighlight, setManualHighlight] = useState(false);
+  // const [selectedValue, setSelectedValue] = useState<string | null>([150]);
+  // const [manualHighlight, setManualHighlight] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
 
   const fixtureChannelSelectionStore = useFixtureChannelSelectionStore(
@@ -65,11 +65,8 @@ export function Fixture({
   };
 
   useEffect(() => {
-    if (fixtureIsCached) {
-      // setSelectedValue(ctrlPanelCtx);
-      setManualHighlight(true);
-      setUnsavedChanges(true);
-    }
+    // setManualHighlight(true);
+    fixtureIsCached ? setUnsavedChanges(true) : setUnsavedChanges(false);
   }, [fixtureIsCached]);
 
   // useEffect(() => {

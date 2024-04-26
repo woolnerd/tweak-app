@@ -9,9 +9,15 @@ export type SceneProps = {
   name: string;
   id: number;
   setSelectedSceneId: (id: number) => void;
+  selectedSceneId: number;
 };
 
-export function Scene({ name, id, setSelectedSceneId }: SceneProps) {
+export function Scene({
+  name,
+  id,
+  setSelectedSceneId,
+  selectedSceneId,
+}: SceneProps) {
   const manualFixtures = useManualFixtureStore((state) => state.manualFixtures);
 
   const updateManualFixtures = useManualFixtureStore(
@@ -22,17 +28,25 @@ export function Scene({ name, id, setSelectedSceneId }: SceneProps) {
     (state) => state.updateFixtureChannelSelectionStore,
   );
 
-  const handleScenePress = () => setSelectedSceneId(id);
+  const handleScenePress = () => {
+    setSelectedSceneId(id);
+    updateFixtureChannelSelectionStore(new Set([]));
+  };
 
-  const handleRecPress2 = () => {
+  const handleRecPress = () => {
     updateFixureAssignmentDb(manualFixtures);
+    console.log(manualFixtures);
+
     updateFixtureChannelSelectionStore(new Set());
     updateManualFixtures([]);
   };
 
   return (
     <View style={{ flex: 2, flexDirection: "row", ...styles.sceneCtrl }}>
-      <Pressable style={styles.rec} onPress={handleRecPress2}>
+      <Pressable
+        style={styles.rec}
+        onPress={handleRecPress}
+        disabled={selectedSceneId !== id}>
         <Text style={styles.btnText}>REC</Text>
       </Pressable>
       <Pressable style={styles.scene} onPress={handleScenePress}>

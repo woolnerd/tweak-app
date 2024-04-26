@@ -62,6 +62,7 @@ function App() {
               id={scene.id}
               name={scene.name}
               setSelectedSceneId={setSelectedSceneId}
+              selectedSceneId={selectedSceneId}
             />
           ))}
 
