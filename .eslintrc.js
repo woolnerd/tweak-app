@@ -26,6 +26,10 @@ module.exports = {
     ],
     "react/react-in-jsx-scope": "off",
     "no-console": "off",
+    "no-unused-expressions": [
+      "warn",
+      { allowShortCircuit: true, allowTernary: true },
+    ],
   },
   plugins: ["drizzle"],
 };

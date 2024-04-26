@@ -4,12 +4,12 @@ import { View, Text, StyleSheet } from "react-native";
 
 import { FixtureControlData } from "./types/fixture.ts";
 import { useFixtureChannelSelectionStore } from "../app/store/useFixtureChannelSelectionStore.ts";
-import {
-  removeManualFixture,
-  addManualFixture,
-} from "../util/fixture-cache.ts";
-import { handleChannelValues, presentValueAsPercent } from "../util/helpers.ts";
+// import {
+//   removeManualFixture,
+//   addManualFixture,
+// } from "../util/fixture-cache.ts";
 import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
+import { handleChannelValues, presentValueAsPercent } from "../util/helpers.ts";
 
 // type OptionalProps<T> = { [P in keyof T]?: T[P] | null };
 type ProfileKey = number;
@@ -39,37 +39,30 @@ export function Fixture({
   startAddress,
   endAddress,
 }: FixtureProps) {
-  const [selectedValue, setSelectedValue] = useState<string | null>([150]);
-  const [manualHighlight, setManualHighlight] = useState(false);
+  // const [selectedValue, setSelectedValue] = useState<string | null>([150]);
+  // const [manualHighlight, setManualHighlight] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
 
-  const fixtureChannelNumbers = useFixtureChannelSelectionStore(
-    (state) => state.fixtureChannelNumbers,
-  );
-  const updateFixtureSelection = useFixtureChannelSelectionStore(
-    (state) => state.updateFixtureSelection,
-  );
+  const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
+    useFixtureChannelSelectionStore((state) => state);
 
-  const fixtureIsCached = fixtureChannelNumbers.has(channel);
+  const fixtureIsCached = fixtureChannelSelectionStore.has(channel);
 
   const removeFixtureFromState = (fixture: FixtureControlData): void => {
-    const dupe = new Set([...fixtureChannelNumbers]);
+    const dupe = new Set([...fixtureChannelSelectionStore]);
     dupe.delete(fixture.channel);
-    updateFixtureSelection(dupe);
+    updateFixtureChannelSelectionStore(dupe);
   };
 
   const addFixtureToState = (fixture: FixtureControlData): void => {
-    const dupe = new Set([...fixtureChannelNumbers]);
+    const dupe = new Set([...fixtureChannelSelectionStore]);
     dupe.add(fixture.channel);
-    updateFixtureSelection(dupe);
+    updateFixtureChannelSelectionStore(dupe);
   };
 
   useEffect(() => {
-    if (fixtureIsCached) {
-      // setSelectedValue(ctrlPanelCtx);
-      setManualHighlight(true);
-      setUnsavedChanges(true);
-    }
+    // setManualHighlight(true);
+    fixtureIsCached ? setUnsavedChanges(true) : setUnsavedChanges(false);
   }, [fixtureIsCached]);
 
   // useEffect(() => {
@@ -112,16 +105,16 @@ export function Fixture({
     const styles: { color?: string; borderColor?: string } = {};
 
     if (unsavedChanges) {
-      styles.color = "rgb(256, 50, 30)";
-      styles.color = "rgb(256, 50, 30)";
+      // styles.color = "rgb(256, 50, 30)";
+      // styles.color = "rgb(256, 50, 30)";
     }
 
     if (fixtureIsCached) {
       styles.borderColor = "gold";
-      styles.borderColor = "gold";
+      // styles.borderColor = "gold";
     } else {
       styles.borderColor = "rgb(100, 256, 100)";
-      styles.borderColor = "rgb(100, 256, 100)";
+      // styles.borderColor = "rgb(100, 256, 100)";
     }
     return styles;
   };

@@ -6,7 +6,7 @@ import { StyleSheet, View, Text, Pressable } from "react-native";
 
 import ControlPanel from "../../components/control-panel.tsx";
 import LayoutArea from "../../components/layout-area.tsx";
-import { Scene as SceneComponent } from "../../components/scene.tsx";
+import { Scene as SceneComponent } from "../../components/scene/scene.tsx";
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
 import Scene from "../../models/scene.ts";
@@ -62,6 +62,7 @@ function App() {
               id={scene.id}
               name={scene.name}
               setSelectedSceneId={setSelectedSceneId}
+              selectedSceneId={selectedSceneId}
             />
           ))}
 

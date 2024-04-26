@@ -26,3 +26,9 @@ export type FixtureAssignmentResponse = {
   startAddress: number;
   endAddress: number;
 }[];
+
+export type ManualFixtureState = {
+  fixtureAssignmentId: number;
+  channel: number;
+  values: number[][];
+};

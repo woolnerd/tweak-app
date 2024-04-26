@@ -27,22 +27,18 @@ export default function LayoutArea({
   selectedSceneId,
   goToOut,
 }: LayoutAreaProps): React.JSX.Element {
-  // const [compositeFixtures, setCompositeFixtures] = useState<
+  // const [compositeFixturesStore, setCompositeFixtures] = useState<
   //   ParsedCompositeFixtureInfo[]
   // >([]);
   // const [selectedFixtureIds, setSelectedFixtureIds] = useState<Set<number>>(
   //   new Set([DRIZZLE_ARRAY_CHECK_VALUE]),
   // );
 
-  const updateCompositeFixtures = useCompositeFixtureStore(
-    (state) => state.updateCompositeFixtures,
-  );
-  const compositeFixtures = useCompositeFixtureStore(
-    (state) => state.compositeFixtures,
-  );
+  const { compositeFixturesStore, updateCompositeFixturesStore } =
+    useCompositeFixtureStore((state) => state);
 
   const fixtureChannelSelection = useFixtureChannelSelectionStore(
-    (state) => state.fixtureChannelNumbers,
+    (state) => state.fixtureChannelSelectionStore,
   );
 
   const fetchCompositeFixtures = useCallback(async () => {
@@ -72,13 +68,13 @@ export default function LayoutArea({
   // }, [compositeFixtures]);
 
   useEffect(() => {
-    fetchCompositeFixtures().then((res) => updateCompositeFixtures(res));
+    fetchCompositeFixtures().then((res) => updateCompositeFixturesStore(res));
     // mergeCacheWithDBFixtures(
     //   selectedSceneId,
     //   fetchCompositeFixtures,
-    //   updateCompositeFixtures,
+    //   updateCompositeFixturesStore,
     // );
-  }, [selectedSceneId, fetchCompositeFixtures, updateCompositeFixtures]);
+  }, [selectedSceneId, fetchCompositeFixtures, updateCompositeFixturesStore]);
 
   return (
     <View
@@ -86,26 +82,10 @@ export default function LayoutArea({
         ...styles.container,
         alignItems: "center",
       }}>
-      {/* {compositeFixtures?.map((fixtureProps) => (
-        <FixtureComponent
-          key={Math.random()}
-          // selectedFixtureIds={selectedFixtureIds}
-          // setSelectedFixtureIds={setSelectedFixtureIds}
-          fixtureAssignmentId={fixtureProps.fixtureAssignmentId}
-          channel={fixtureProps.channel}
-          profileChannels={fixtureProps.profileChannels}
-          profileName={fixtureProps.profileName}
-          sceneId={fixtureProps.sceneId}
-          fixtureName={fixtureProps.fixtureName}
-          fixtureNotes={fixtureProps.fixtureNotes}
-          values={fixtureProps.values}
-        /> */}
       <FlatList
-        data={compositeFixtures}
+        data={compositeFixturesStore}
         renderItem={({ item }) => (
           <FixtureComponent
-            // selectedFixtureIds={selectedFixtureIds}
-            // setSelectedFixtureIds={setSelectedFixtureIds}
             fixtureAssignmentId={item.fixtureAssignmentId}
             channel={item.channel}
             profileChannels={item.profileChannels}
@@ -186,5 +166,3 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
-
-// { "1": "Dimmer", "2": "Dimmer fine", "3": "Color Temp", "4": "Color Temp fine", "5": "Green/Magenta Point", "6": "Green/Magenta Point fine", "7": "Crossfade color", "8": "Crossfade color fine", "9": "Red intensity", "10": "Red intensity fine", "11": "Green intensity", "12": "Green intensity fine", "13": "Blue intensity", "14": "Blue intensity fine", "15": "White intensity", "16": "White intensity fine", "17": "Fan control", "18": "Preset", "19": "Strobe", "20": "Reserved for future use" }
