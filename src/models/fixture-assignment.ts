@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import Base from "./base.ts";
+import { ManualFixtureState } from "../components/types/fixture.ts";
 import { fixtureAssignments } from "../db/schema.ts";
 import { QueryKeys } from "../db/types/database.ts";
 import { SelectFixtureAssignment, TableNames } from "../db/types/tables.ts";
