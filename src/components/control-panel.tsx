@@ -14,16 +14,12 @@ type ControlPanelProps = {
 };
 export default function ControlPanel() {
   const [action, setAction] = useState<ActionObject | null>(null);
-  const fixtureChannelSelection = useFixtureChannelSelectionStore(
-    (state) => state.fixtureChannelSelectionStore,
-  );
-  const updateFixtureChannelSelectionStore = useFixtureChannelSelectionStore(
-    (state) => state.updateFixtureChannelSelectionStore,
-  );
+  const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
+    useFixtureChannelSelectionStore((state) => state);
 
   const handleTouch = (data: ControlButton) => {
     const commandLineInstance = CommandLine.getInstance(
-      Array.from(fixtureChannelSelection),
+      Array.from(fixtureChannelSelectionStore),
     );
     const commandLineAction: ActionObject = commandLineInstance.process(data);
 

@@ -34,12 +34,8 @@ export default function LayoutArea({
   //   new Set([DRIZZLE_ARRAY_CHECK_VALUE]),
   // );
 
-  const updateCompositeFixturesStore = useCompositeFixtureStore(
-    (state) => state.updateCompositeFixturesStore,
-  );
-  const compositeFixturesStore = useCompositeFixtureStore(
-    (state) => state.compositeFixturesStore,
-  );
+  const { compositeFixturesStore, updateCompositeFixturesStore } =
+    useCompositeFixtureStore((state) => state);
 
   const fixtureChannelSelection = useFixtureChannelSelectionStore(
     (state) => state.fixtureChannelSelectionStore,

@@ -18,10 +18,8 @@ export function Scene({
   setSelectedSceneId,
   selectedSceneId,
 }: SceneProps) {
-  const manualFixtures = useManualFixtureStore((state) => state.manualFixtures);
-
-  const updateManualFixtures = useManualFixtureStore(
-    (state) => state.updateManualFixtures,
+  const { manualFixtures, updateManualFixtures } = useManualFixtureStore(
+    (state) => state,
   );
 
   const updateFixtureChannelSelectionStore = useFixtureChannelSelectionStore(

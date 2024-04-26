@@ -5,7 +5,6 @@ import { ManualFixtureState } from "../components/types/fixture.ts";
 import { fixtureAssignments } from "../db/schema.ts";
 import { QueryKeys } from "../db/types/database.ts";
 import { SelectFixtureAssignment, TableNames } from "../db/types/tables.ts";
-import { ManualFixtureState } from "../components/types/fixture.ts";
 
 export default class FixtureAssignment extends Base<
   typeof fixtureAssignments,

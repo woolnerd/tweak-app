@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 
+import { ManualFixtureState } from "../../components/types/fixture.ts";
 import ProfileAdapter from "../../lib/adapters/profile-adapter.ts";
 import { ActionObject } from "../../lib/command-line/types/command-line-types.ts";
 import ValueRouter from "../../lib/value-router.ts";
@@ -7,23 +8,17 @@ import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelectionStore.ts";
 import { useManualFixtureStore } from "../store/useManualFixtureStore.ts";
-import { ManualFixtureState } from "../../components/types/fixture.ts";
 
 export default function useCommandLineRouter(action: ActionObject | null) {
-  const compositeFixturesStore = useCompositeFixtureStore(
-    (state) => state.compositeFixturesStore,
-  );
-  const updateCompositeFixturesStore = useCompositeFixtureStore(
-    (state) => state.updateCompositeFixturesStore,
-  );
+  const { compositeFixturesStore, updateCompositeFixturesStore } =
+    useCompositeFixtureStore((state) => state);
 
   const fixtureChannelSelectionStore = useFixtureChannelSelectionStore(
     (state) => state.fixtureChannelSelectionStore,
   );
 
-  const manualFixtures = useManualFixtureStore((state) => state.manualFixtures);
-  const updateManualFixtures = useManualFixtureStore(
-    (state) => state.updateManualFixtures,
+  const { manualFixtures, updateManualFixtures } = useManualFixtureStore(
+    (state) => state,
   );
 
   const findById = (

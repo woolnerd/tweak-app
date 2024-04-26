@@ -43,12 +43,8 @@ export function Fixture({
   // const [manualHighlight, setManualHighlight] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
 
-  const fixtureChannelSelectionStore = useFixtureChannelSelectionStore(
-    (state) => state.fixtureChannelSelectionStore,
-  );
-  const updateFixtureChannelSelectionStore = useFixtureChannelSelectionStore(
-    (state) => state.updateFixtureChannelSelectionStore,
-  );
+  const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
+    useFixtureChannelSelectionStore((state) => state);
 
   const fixtureIsCached = fixtureChannelSelectionStore.has(channel);
 
@@ -109,16 +105,16 @@ export function Fixture({
     const styles: { color?: string; borderColor?: string } = {};
 
     if (unsavedChanges) {
-      styles.color = "rgb(256, 50, 30)";
-      styles.color = "rgb(256, 50, 30)";
+      // styles.color = "rgb(256, 50, 30)";
+      // styles.color = "rgb(256, 50, 30)";
     }
 
     if (fixtureIsCached) {
       styles.borderColor = "gold";
-      styles.borderColor = "gold";
+      // styles.borderColor = "gold";
     } else {
       styles.borderColor = "rgb(100, 256, 100)";
-      styles.borderColor = "rgb(100, 256, 100)";
+      // styles.borderColor = "rgb(100, 256, 100)";
     }
     return styles;
   };
