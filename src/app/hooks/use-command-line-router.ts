@@ -10,15 +10,15 @@ import { useManualFixtureStore } from "../store/useManualFixtureStore.ts";
 import { ManualFixtureState } from "../../components/types/fixture.ts";
 
 export default function useCommandLineRouter(action: ActionObject | null) {
-  const compositeFixtures = useCompositeFixtureStore(
-    (state) => state.compositeFixtures,
+  const compositeFixturesStore = useCompositeFixtureStore(
+    (state) => state.compositeFixturesStore,
   );
-  const updateCompositeFixtures = useCompositeFixtureStore(
-    (state) => state.updateCompositeFixtures,
+  const updateCompositeFixturesStore = useCompositeFixtureStore(
+    (state) => state.updateCompositeFixturesStore,
   );
 
-  const fixtureChannelNumbers = useFixtureChannelSelectionStore(
-    (state) => state.fixtureChannelNumbers,
+  const fixtureChannelSelectionStore = useFixtureChannelSelectionStore(
+    (state) => state.fixtureChannelSelectionStore,
   );
 
   const manualFixtures = useManualFixtureStore((state) => state.manualFixtures);
@@ -74,11 +74,11 @@ export default function useCommandLineRouter(action: ActionObject | null) {
       const { selection } = action;
       const manualObjs: ManualFixtureState[] = [];
 
-      const fixturesWithUpdatedChannelOutput = compositeFixtures.map(
+      const fixturesWithUpdatedChannelOutput = compositeFixturesStore.map(
         (compFixture) => {
           if (
             selection.includes(compFixture.channel) ||
-            fixtureChannelNumbers.has(compFixture.channel)
+            fixtureChannelSelectionStore.has(compFixture.channel)
           ) {
             const [manualFixtureStateObj, mutatedFixture] = updateChannelOutput(
               action,
@@ -92,12 +92,12 @@ export default function useCommandLineRouter(action: ActionObject | null) {
         },
       );
 
-      updateCompositeFixtures(fixturesWithUpdatedChannelOutput);
+      updateCompositeFixturesStore(fixturesWithUpdatedChannelOutput);
       mergeManualFixtureStates(manualObjs);
     }
 
     console.log("action", action);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [action, updateCompositeFixtures]);
+  }, [action, updateCompositeFixturesStore]);
 }

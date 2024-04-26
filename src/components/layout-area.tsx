@@ -27,22 +27,22 @@ export default function LayoutArea({
   selectedSceneId,
   goToOut,
 }: LayoutAreaProps): React.JSX.Element {
-  // const [compositeFixtures, setCompositeFixtures] = useState<
+  // const [compositeFixturesStore, setCompositeFixtures] = useState<
   //   ParsedCompositeFixtureInfo[]
   // >([]);
   // const [selectedFixtureIds, setSelectedFixtureIds] = useState<Set<number>>(
   //   new Set([DRIZZLE_ARRAY_CHECK_VALUE]),
   // );
 
-  const updateCompositeFixtures = useCompositeFixtureStore(
-    (state) => state.updateCompositeFixtures,
+  const updateCompositeFixturesStore = useCompositeFixtureStore(
+    (state) => state.updateCompositeFixturesStore,
   );
-  const compositeFixtures = useCompositeFixtureStore(
-    (state) => state.compositeFixtures,
+  const compositeFixturesStore = useCompositeFixtureStore(
+    (state) => state.compositeFixturesStore,
   );
 
   const fixtureChannelSelection = useFixtureChannelSelectionStore(
-    (state) => state.fixtureChannelNumbers,
+    (state) => state.fixtureChannelSelectionStore,
   );
 
   const fetchCompositeFixtures = useCallback(async () => {
@@ -72,17 +72,17 @@ export default function LayoutArea({
   // }, [compositeFixtures]);
 
   useEffect(() => {
-    fetchCompositeFixtures().then((res) => updateCompositeFixtures(res));
+    fetchCompositeFixtures().then((res) => updateCompositeFixturesStore(res));
     // mergeCacheWithDBFixtures(
     //   selectedSceneId,
     //   fetchCompositeFixtures,
-    //   updateCompositeFixtures,
+    //   updateCompositeFixturesStore,
     // );
-  }, [selectedSceneId, fetchCompositeFixtures, updateCompositeFixtures]);
+  }, [selectedSceneId, fetchCompositeFixtures, updateCompositeFixturesStore]);
 
   // useEffect(() => {
-  //   updateCompositeFixtures(compositeFixtures);
-  // }, [compositeFixtures]);
+  //   updateCompositeFixturesStore(compositeFixturesStore);
+  // }, [compositeFixturesStore]);
 
   return (
     <View
@@ -91,7 +91,7 @@ export default function LayoutArea({
         alignItems: "center",
       }}>
       <FlatList
-        data={compositeFixtures}
+        data={compositeFixturesStore}
         renderItem={({ item }) => (
           <FixtureComponent
             fixtureAssignmentId={item.fixtureAssignmentId}

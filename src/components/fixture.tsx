@@ -43,25 +43,25 @@ export function Fixture({
   const [manualHighlight, setManualHighlight] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
 
-  const fixtureChannelNumbers = useFixtureChannelSelectionStore(
-    (state) => state.fixtureChannelNumbers,
+  const fixtureChannelSelectionStore = useFixtureChannelSelectionStore(
+    (state) => state.fixtureChannelSelectionStore,
   );
-  const updateFixtureSelection = useFixtureChannelSelectionStore(
-    (state) => state.updateFixtureSelection,
+  const updateFixtureChannelSelectionStore = useFixtureChannelSelectionStore(
+    (state) => state.updateFixtureChannelSelectionStore,
   );
 
-  const fixtureIsCached = fixtureChannelNumbers.has(channel);
+  const fixtureIsCached = fixtureChannelSelectionStore.has(channel);
 
   const removeFixtureFromState = (fixture: FixtureControlData): void => {
-    const dupe = new Set([...fixtureChannelNumbers]);
+    const dupe = new Set([...fixtureChannelSelectionStore]);
     dupe.delete(fixture.channel);
-    updateFixtureSelection(dupe);
+    updateFixtureChannelSelectionStore(dupe);
   };
 
   const addFixtureToState = (fixture: FixtureControlData): void => {
-    const dupe = new Set([...fixtureChannelNumbers]);
+    const dupe = new Set([...fixtureChannelSelectionStore]);
     dupe.add(fixture.channel);
-    updateFixtureSelection(dupe);
+    updateFixtureChannelSelectionStore(dupe);
   };
 
   useEffect(() => {
