@@ -10,6 +10,7 @@ import { useFixtureChannelSelectionStore } from "../app/store/useFixtureChannelS
 // } from "../util/fixture-cache.ts";
 import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 import { handleChannelValues, presentValueAsPercent } from "../util/helpers.ts";
+import { useManualFixtureStore } from "../app/store/useManualFixtureStore.ts";
 
 // type OptionalProps<T> = { [P in keyof T]?: T[P] | null };
 type ProfileKey = number;
@@ -45,6 +46,8 @@ export function Fixture({
 
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
     useFixtureChannelSelectionStore((state) => state);
+
+  const manualFixtures = useManualFixtureStore((state) => state.manualFixtures);
 
   const fixtureIsCached = fixtureChannelSelectionStore.has(channel);
 
@@ -101,54 +104,65 @@ export function Fixture({
     }
   };
 
-  const selectedStyle = (fixtureChannel: number) => {
+  const isManualFixtureChannel = (testChannel: number) =>
+    !!manualFixtures
+      .find((fix) => fix.channel === channel)
+      ?.manualChannels?.includes(testChannel);
+
+  const selectedStyle = (isManual: boolean) => {
     const styles: { color?: string; borderColor?: string } = {};
 
-    if (unsavedChanges) {
-      // styles.color = "rgb(256, 50, 30)";
-      // styles.color = "rgb(256, 50, 30)";
+    if (isManual) {
+      styles.color = "rgb(256, 50, 30)";
     }
 
     if (fixtureIsCached) {
       styles.borderColor = "gold";
-      // styles.borderColor = "gold";
     } else {
       styles.borderColor = "rgb(100, 256, 100)";
-      // styles.borderColor = "rgb(100, 256, 100)";
     }
     return styles;
   };
 
   const buildOutputDetails = () => {
-    const details = handleChannelValues(
+    const { result: details, manualStyleChannels } = handleChannelValues(
       profileChannels,
       values,
       channelPairs16Bit,
       is16Bit,
+      isManualFixtureChannel,
     );
 
+    console.log("details", details);
+
     if (!details) return null;
+    console.log(manualStyleChannels);
 
     return Object.keys(details as object).map((profileField) =>
-      outputDetail(profileField, details),
+      outputDetail(profileField, details, manualStyleChannels),
     );
   };
 
   const outputDetail = (
     profileField: string,
     details: Record<string, number>,
+    styleOptions: Record<string, boolean>,
   ) => (
     <Text
       key={`${profileField}+${Math.random()}`}
-      style={{ ...styles.text, ...selectedStyle(channel) }}>
-      {`${profileField}: ${details ? presentValueAsPercent(details[profileField]) : ""}`}
+      style={{
+        ...styles.text,
+        ...selectedStyle(styleOptions[profileField]),
+      }}>
+      {`${profileField}:
+      ${details ? presentValueAsPercent(details[profileField]) : ""}`}
     </Text>
   );
 
   return (
     <View
       key={Math.random()}
-      style={{ ...styles.fixtures, ...selectedStyle(channel) }}
+      style={{ ...styles.fixtures, ...selectedStyle(false) }}
       onTouchStart={() =>
         handleOutput({
           channel,
