@@ -43,31 +43,50 @@ export async function mergeCacheWithDBFixtures(
     console.log(err);
   }
 }
+
+function choose8bitOrBuildValueTupleFor16bit(
+  resultValueArray: number[][],
+  tupleArray: number[][],
+  compute16bitVal: (coarseVal: number, fineVal: number) => number,
+  channel: number,
+  dmxVal: number,
+  valuesArray: number[][],
+) {
+  const coarseIdx = tupleArray.findIndex(([coarse, _]) => coarse === channel);
+  const isCoarse16BitChannel = coarseIdx !== -1;
+
+  if (isCoarse16BitChannel) {
+    const coarseDmxVal = dmxVal;
+    const fineDmxVal = valuesArray[coarseIdx + 1][1];
+
+    resultValueArray.push([channel, compute16bitVal(coarseDmxVal, fineDmxVal)]);
+  }
+
+  const fineIdx = tupleArray.findIndex(([_, fine]) => fine === channel);
+  const isFine16BitChannel = fineIdx !== -1;
+
+  if (!isCoarse16BitChannel && !isFine16BitChannel) {
+    resultValueArray.push([channel, dmxVal]);
+  }
+}
 export function merge16BitValues(
   channelPairs16Bit: ParsedCompositeFixtureInfo["channelPairs16Bit"],
   values: ParsedCompositeFixtureInfo["values"],
 ) {
-  const visited = new Set<number>();
-  // values [ [1,128],[2,128] ]
-  // pairs [ [1,2], [3,4] ... ]
+  const compute16bitVal = (coarseVal: number, fineVal: number) =>
+    coarseVal * 256 + fineVal;
+
   const newValues: typeof values = [];
 
-  values.forEach(([channel, dmxVal], idx) => {
-    const coarseIdx = channelPairs16Bit.findIndex(
-      ([coarse, fine]) => coarse === channel,
+  values.forEach(([channel, dmxVal]) => {
+    choose8bitOrBuildValueTupleFor16bit(
+      newValues,
+      channelPairs16Bit,
+      compute16bitVal,
+      channel,
+      dmxVal,
+      values,
     );
-
-    const is16Bit = coarseIdx !== -1;
-
-    if (is16Bit) {
-      const coarseDmxVal = dmxVal;
-      const fineDmxVal = values[coarseIdx + 1][1];
-
-      newValues.push([channel, coarseDmxVal * 256 + fineDmxVal]);
-      visited.add(values[coarseIdx + 1][0]);
-    } else if (!visited.has(channel)) {
-      newValues.push([channel, dmxVal]);
-    }
   });
   return newValues;
 }
