@@ -50,7 +50,7 @@ export default function LayoutArea({
       console.log(e);
       throw new Error();
     }
-  }, [selectedSceneId, fixtureChannelSelection]);
+  }, [selectedSceneId]);
 
   // useEffect(() => {
   //   if (compositeFixtures.length > 0) {

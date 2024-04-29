@@ -8,9 +8,9 @@ import { useFixtureChannelSelectionStore } from "../app/store/useFixtureChannelS
 //   removeManualFixture,
 //   addManualFixture,
 // } from "../util/fixture-cache.ts";
+import { useManualFixtureStore } from "../app/store/useManualFixtureStore.ts";
 import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 import { handleChannelValues, presentValueAsPercent } from "../util/helpers.ts";
-import { useManualFixtureStore } from "../app/store/useManualFixtureStore.ts";
 
 // type OptionalProps<T> = { [P in keyof T]?: T[P] | null };
 type ProfileKey = number;
@@ -49,7 +49,7 @@ export function Fixture({
 
   const manualFixtures = useManualFixtureStore((state) => state.manualFixtures);
 
-  const fixtureIsCached = fixtureChannelSelectionStore.has(channel);
+  const fixtureInManualState = fixtureChannelSelectionStore.has(channel);
 
   const removeFixtureFromState = (fixture: FixtureControlData): void => {
     const dupe = new Set([...fixtureChannelSelectionStore]);
@@ -65,8 +65,8 @@ export function Fixture({
 
   useEffect(() => {
     // setManualHighlight(true);
-    fixtureIsCached ? setUnsavedChanges(true) : setUnsavedChanges(false);
-  }, [fixtureIsCached]);
+    fixtureInManualState ? setUnsavedChanges(true) : setUnsavedChanges(false);
+  }, [fixtureInManualState]);
 
   // useEffect(() => {
   //   if (fixtureIsCached) {
@@ -97,7 +97,7 @@ export function Fixture({
 
   const handleOutput = (fixture: FixtureControlData) => {
     // toggles multiple fixtures in and out of set
-    if (fixtureIsCached) {
+    if (fixtureInManualState) {
       removeFixtureFromState(fixture);
     } else {
       addFixtureToState(fixture);
@@ -116,7 +116,7 @@ export function Fixture({
       styles.color = "rgb(256, 50, 30)";
     }
 
-    if (fixtureIsCached) {
+    if (fixtureInManualState) {
       styles.borderColor = "gold";
     } else {
       styles.borderColor = "rgb(100, 256, 100)";

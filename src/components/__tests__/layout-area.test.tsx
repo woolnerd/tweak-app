@@ -1,14 +1,13 @@
+/* eslint-disable import/first */
 import { render, waitFor } from "@testing-library/react-native";
 import React from "react";
-// import { db } from "../../db/client.ts";
+
+jest.mock("../../util/fixture-cache");
+jest.mock("../../db/client.ts");
 
 import ScenesToFixtureAssignments from "../../models/scene-to-fixture-assignments.ts";
 import * as fixtureUtils from "../../util/fixture-cache.ts";
 import LayoutArea from "../layout-area.tsx";
-
-jest.mock("@/models/scene-to-fixture-assignments");
-jest.mock("@/util/fixture-cache");
-jest.mock("@/db/client.ts");
 
 describe("LayoutArea", () => {
   // Setup common props to reuse
