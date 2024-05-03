@@ -32,7 +32,7 @@ export function Scene({
   };
 
   const handleRecPress = () => {
-    updateFixureAssignmentDb(manualFixtures);
+    updateFixureAssignmentDb(Object.values(manualFixtures));
 
     updateFixtureChannelSelectionStore(new Set());
     updateManualFixtures([]);

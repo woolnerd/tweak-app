@@ -63,8 +63,8 @@ export function Fixture({
     updateFixtureChannelSelectionStore(dupe);
   };
 
+  // does this do anything right now?
   useEffect(() => {
-    // setManualHighlight(true);
     fixtureInManualState ? setUnsavedChanges(true) : setUnsavedChanges(false);
   }, [fixtureInManualState]);
 
@@ -106,9 +106,6 @@ export function Fixture({
 
   const isManualFixtureChannel = (testChannel: number) =>
     testChannel in manualFixtures;
-  // !!manualFixtures
-  //   .find((fix) => fix.channel === channel)
-  //   ?.manualChannels?.includes(testChannel);
 
   const selectedStyle = (isManual: boolean) => {
     const styles: { color?: string; borderColor?: string } = {};
@@ -159,7 +156,7 @@ export function Fixture({
 
   return (
     <View
-      key={Math.random()}
+      key={fixtureAssignmentId}
       style={{ ...styles.fixtures, ...selectedStyle(false) }}
       onTouchStart={() =>
         handleOutput({

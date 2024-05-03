@@ -50,7 +50,12 @@ export default class ValueRouter<T extends ManualFixtureObj> {
     const manualFixtureObj =
       fixture.channel in manualFixtures
         ? manualFixtures[fixture.channel]
-        : fixture;
+        : {
+            values: fixture.values,
+            channel: fixture.channel,
+            fixtureAssignmentId: fixture.fixtureAssignmentId,
+            manualChannels: [],
+          };
 
     const channelList = this.channelTuples.map((tuple) => tuple[0]);
 
@@ -62,22 +67,23 @@ export default class ValueRouter<T extends ManualFixtureObj> {
   }
 
   mutateOrMergeOutputValues(manualFixtureObj: ManualFixtureObj) {
+    if (Object.keys(manualFixtureObj).length === 0) return;
     this.channelTuples.forEach((tuple) => {
       const channel = tuple[0];
-      const tupleToMutateIdx = manualFixtureObj.values!.findIndex(
+      const tupleToMutateIdx = manualFixtureObj.values.findIndex(
         (fixtureTuple) => fixtureTuple[0] === channel,
       );
 
       if (tupleToMutateIdx === -1) {
         // don't mutate just push tuple into channel list.
-        manualFixtureObj.values!.push(tuple);
+        manualFixtureObj.values.push(tuple);
       } else {
         // otherwise mutate
-        manualFixtureObj.values![tupleToMutateIdx] = tuple;
+        manualFixtureObj.values[tupleToMutateIdx] = tuple;
       }
     });
 
-    manualFixtureObj.values.sort((a, b) => a[0] - b[0]);
+    manualFixtureObj?.values?.sort((a, b) => a[0] - b[0]);
   }
 
   // outputs a tuple of [ channel, Value (btw 0-255) ]
