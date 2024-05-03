@@ -105,9 +105,10 @@ export function Fixture({
   };
 
   const isManualFixtureChannel = (testChannel: number) =>
-    !!manualFixtures
-      .find((fix) => fix.channel === channel)
-      ?.manualChannels?.includes(testChannel);
+    testChannel in manualFixtures;
+  // !!manualFixtures
+  //   .find((fix) => fix.channel === channel)
+  //   ?.manualChannels?.includes(testChannel);
 
   const selectedStyle = (isManual: boolean) => {
     const styles: { color?: string; borderColor?: string } = {};
@@ -133,10 +134,7 @@ export function Fixture({
       isManualFixtureChannel,
     );
 
-    console.log("details", details);
-
     if (!details) return null;
-    console.log(manualStyleChannels);
 
     return Object.keys(details as object).map((profileField) =>
       outputDetail(profileField, details, manualStyleChannels),
