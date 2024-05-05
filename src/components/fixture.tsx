@@ -107,7 +107,7 @@ export function Fixture({
   };
 
   const isManualFixtureChannel = (testChannel: number) =>
-    testChannel in manualFixturesStore;
+    manualFixturesStore[channel]?.manualChannels?.includes(testChannel);
 
   const selectedStyle = (isManual: boolean) => {
     const styles: { color?: string; borderColor?: string } = {};

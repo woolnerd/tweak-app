@@ -94,7 +94,7 @@ export default function useCommandLineRouter(action: ActionObject | null) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [action, updateCompositeFixturesStore]);
 
-  useEffect(() => {
-    console.log("manualFixturesStore", manualFixturesStore);
-  }, [manualFixturesStore]);
+  // useEffect(() => {
+  //   console.log("manualFixturesStore", manualFixturesStore);
+  // }, [manualFixturesStore]);
 }

@@ -95,10 +95,6 @@ export default function LayoutArea({
     );
   }, [manualFixturesStore]);
 
-  useEffect(() => {
-    console.log({ compositeFixturesStore });
-  }, [compositeFixturesStore]);
-
   return (
     <View
       style={{
