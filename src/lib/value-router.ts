@@ -35,9 +35,12 @@ export default class ValueRouter<T extends ManualFixtureObj> {
 
   createManualFixtureObj(
     fixture: T,
-    manualFixtures: ManualFixtureState,
+    manualFixturesStore: ManualFixtureState,
   ): ManualFixtureState {
-    const manualFixtureObj = this.setUpManualFixture(fixture, manualFixtures);
+    const manualFixtureObj = this.setUpManualFixture(
+      fixture,
+      manualFixturesStore,
+    );
 
     this.mutateOrMergeOutputValues(manualFixtureObj);
 
@@ -46,10 +49,10 @@ export default class ValueRouter<T extends ManualFixtureObj> {
     };
   }
 
-  setUpManualFixture(fixture: T, manualFixtures: ManualFixtureState) {
+  setUpManualFixture(fixture: T, manualFixturesStore: ManualFixtureState) {
     const manualFixtureObj =
-      fixture.channel in manualFixtures
-        ? manualFixtures[fixture.channel]
+      fixture.channel in manualFixturesStore
+        ? manualFixturesStore[fixture.channel]
         : {
             values: fixture.values,
             channel: fixture.channel,

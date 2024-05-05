@@ -47,7 +47,9 @@ export function Fixture({
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
     useFixtureChannelSelectionStore((state) => state);
 
-  const manualFixtures = useManualFixtureStore((state) => state.manualFixtures);
+  const manualFixturesStore = useManualFixtureStore(
+    (state) => state.manualFixturesStore,
+  );
 
   const fixtureInManualState = fixtureChannelSelectionStore.has(channel);
 
@@ -105,7 +107,7 @@ export function Fixture({
   };
 
   const isManualFixtureChannel = (testChannel: number) =>
-    testChannel in manualFixtures;
+    testChannel in manualFixturesStore;
 
   const selectedStyle = (isManual: boolean) => {
     const styles: { color?: string; borderColor?: string } = {};

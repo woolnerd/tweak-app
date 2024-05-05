@@ -20,9 +20,8 @@ export default function useCommandLineRouter(action: ActionObject | null) {
     (state) => state.fixtureChannelSelectionStore,
   );
 
-  const { manualFixtures, updateManualFixtures } = useManualFixtureStore(
-    (state) => state,
-  );
+  const { manualFixturesStore, updateManualFixturesStore } =
+    useManualFixtureStore((state) => state);
 
   // const findById = (
   //   assignmentObj: { fixtureAssignmentId: number },
@@ -33,7 +32,7 @@ export default function useCommandLineRouter(action: ActionObject | null) {
   //   );
 
   // const mergeManualFixtureStates = (nextState: ManualFixtureState) => {
-  //   const prevState = manualFixtures;
+  //   const prevState = manualFixturesStore;
 
   // const updatedState = nextState.reduce(
   //   (updatedStateAcc: ManualFixtureState, nextStateObj) => {
@@ -43,7 +42,7 @@ export default function useCommandLineRouter(action: ActionObject | null) {
   //   prevState,
   // );
 
-  // updateManualFixtures({ ...prevState, ...nextState });
+  // updateManualFixturesStore({ ...prevState, ...nextState });
   // };
 
   function updateChannelOutput(
@@ -62,7 +61,7 @@ export default function useCommandLineRouter(action: ActionObject | null) {
 
     return valueRouter
       .buildResult()
-      .createManualFixtureObj(fixture, manualFixtures);
+      .createManualFixtureObj(fixture, manualFixturesStore);
   }
 
   useEffect(() => {
@@ -84,7 +83,10 @@ export default function useCommandLineRouter(action: ActionObject | null) {
           {},
         );
 
-      updateManualFixtures({ ...manualFixtures, ...nextManualFixtureState });
+      updateManualFixturesStore({
+        ...manualFixturesStore,
+        ...nextManualFixtureState,
+      });
     }
 
     console.log("action", action);
@@ -93,6 +95,6 @@ export default function useCommandLineRouter(action: ActionObject | null) {
   }, [action, updateCompositeFixturesStore]);
 
   useEffect(() => {
-    console.log("manualFixtures", manualFixtures);
-  }, [manualFixtures]);
+    console.log("manualFixturesStore", manualFixturesStore);
+  }, [manualFixturesStore]);
 }

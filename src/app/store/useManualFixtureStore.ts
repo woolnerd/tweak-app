@@ -2,15 +2,15 @@ import { create } from "zustand";
 
 import { ManualFixtureState } from "../../components/types/fixture.ts";
 
-type State = { manualFixtures: ManualFixtureState };
+type State = { manualFixturesStore: ManualFixtureState };
 
 type Action = {
-  updateManualFixtures: (manualFixtureStore: ManualFixtureState) => void;
+  updateManualFixturesStore: (manualFixtureStore: ManualFixtureState) => void;
 };
 
 // eslint-disable-next-line import/prefer-default-export
 export const useManualFixtureStore = create<State & Action>((set) => ({
-  manualFixtures: {},
-  updateManualFixtures: (manualFixtures: ManualFixtureState) =>
-    set(() => ({ manualFixtures })),
+  manualFixturesStore: {},
+  updateManualFixturesStore: (manualFixturesStore: ManualFixtureState) =>
+    set(() => ({ manualFixturesStore })),
 }));

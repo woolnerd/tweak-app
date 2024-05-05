@@ -43,9 +43,8 @@ export default function LayoutArea({
     (state) => state.fixtureChannelSelectionStore,
   );
 
-  const { manualFixtures, updateManualFixtures } = useManualFixtureStore(
-    (state) => state,
-  );
+  const { manualFixturesStore, updateManualFixturesStore } =
+    useManualFixtureStore((state) => state);
 
   const fetchCompositeFixtures = useCallback(async () => {
     try {
@@ -85,16 +84,16 @@ export default function LayoutArea({
   useEffect(() => {
     updateCompositeFixturesStore(
       compositeFixturesStore.map((compFixtureStateObj) => {
-        if (compFixtureStateObj.channel in manualFixtures) {
+        if (compFixtureStateObj.channel in manualFixturesStore) {
           return {
             ...compFixtureStateObj,
-            ...manualFixtures[compFixtureStateObj.channel],
+            ...manualFixturesStore[compFixtureStateObj.channel],
           };
         }
         return compFixtureStateObj;
       }),
     );
-  }, [manualFixtures]);
+  }, [manualFixturesStore]);
 
   useEffect(() => {
     console.log({ compositeFixturesStore });
