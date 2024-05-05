@@ -84,17 +84,21 @@ export default function LayoutArea({
 
   useEffect(() => {
     updateCompositeFixturesStore(
-      compositeFixturesStore
-        .filter(
-          (compFixtureStateObj) =>
-            compFixtureStateObj.channel in manualFixtures,
-        )
-        .map((compFixtureInManualState) => ({
-          ...compFixtureInManualState,
-          ...manualFixtures[compFixtureInManualState.channel],
-        })),
+      compositeFixturesStore.map((compFixtureStateObj) => {
+        if (compFixtureStateObj.channel in manualFixtures) {
+          return {
+            ...compFixtureStateObj,
+            ...manualFixtures[compFixtureStateObj.channel],
+          };
+        }
+        return compFixtureStateObj;
+      }),
     );
   }, [manualFixtures]);
+
+  useEffect(() => {
+    console.log({ compositeFixturesStore });
+  }, [compositeFixturesStore]);
 
   return (
     <View
