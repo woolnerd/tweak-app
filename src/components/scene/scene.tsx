@@ -18,9 +18,8 @@ export function Scene({
   setSelectedSceneId,
   selectedSceneId,
 }: SceneProps) {
-  const { manualFixtures, updateManualFixtures } = useManualFixtureStore(
-    (state) => state,
-  );
+  const { manualFixturesStore, updateManualFixturesStore } =
+    useManualFixtureStore((state) => state);
 
   const updateFixtureChannelSelectionStore = useFixtureChannelSelectionStore(
     (state) => state.updateFixtureChannelSelectionStore,
@@ -32,11 +31,10 @@ export function Scene({
   };
 
   const handleRecPress = () => {
-    updateFixureAssignmentDb(manualFixtures);
-    console.log(manualFixtures);
+    updateFixureAssignmentDb(Object.values(manualFixturesStore));
 
     updateFixtureChannelSelectionStore(new Set());
-    updateManualFixtures([]);
+    updateManualFixturesStore([]);
   };
 
   return (

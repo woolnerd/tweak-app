@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 
-import { ManualFixtureState } from "../../components/types/fixture.ts";
+import {
+  ManualFixtureObj,
+  ManualFixtureState,
+} from "../../components/types/fixture.ts";
 import ProfileAdapter from "../../lib/adapters/profile-adapter.ts";
 import { ActionObject } from "../../lib/command-line/types/command-line-types.ts";
 import ValueRouter from "../../lib/value-router.ts";
@@ -17,29 +20,30 @@ export default function useCommandLineRouter(action: ActionObject | null) {
     (state) => state.fixtureChannelSelectionStore,
   );
 
-  const { manualFixtures, updateManualFixtures } = useManualFixtureStore(
-    (state) => state,
-  );
+  const { manualFixturesStore, updateManualFixturesStore } =
+    useManualFixtureStore((state) => state);
 
-  const findById = (
-    assignmentObj: { fixtureAssignmentId: number },
-    objs: { fixtureAssignmentId: number }[],
-  ) =>
-    objs.find(
-      (obj) => obj.fixtureAssignmentId === assignmentObj.fixtureAssignmentId,
-    );
+  // const findById = (
+  //   assignmentObj: { fixtureAssignmentId: number },
+  //   objs: { fixtureAssignmentId: number }[],
+  // ) =>
+  //   objs.find(
+  //     (obj) => obj.fixtureAssignmentId === assignmentObj.fixtureAssignmentId,
+  //   );
 
-  const mergeManualFixtureStates = (nextState: ManualFixtureState[]) => {
-    // check if state contains state object
-    // if so use latest channel info
-    const prevState = [...manualFixtures];
+  // const mergeManualFixtureStates = (nextState: ManualFixtureState) => {
+  //   const prevState = manualFixturesStore;
 
-    const filteredPrevState = prevState.filter(
-      (prevStateObj) => !findById(prevStateObj, nextState),
-    );
+  // const updatedState = nextState.reduce(
+  //   (updatedStateAcc: ManualFixtureState, nextStateObj) => {
+  //     updatedStateAcc[nextStateObj.channel] = nextStateObj;
+  //     return updatedStateAcc;
+  //   },
+  //   prevState,
+  // );
 
-    updateManualFixtures([...filteredPrevState, ...nextState]);
-  };
+  // updateManualFixturesStore({ ...prevState, ...nextState });
+  // };
 
   function updateChannelOutput(
     actionObj: ActionObject,
@@ -50,46 +54,39 @@ export default function useCommandLineRouter(action: ActionObject | null) {
       fixture.profileChannels!,
     );
 
-    const valueRouter = new ValueRouter<ManualFixtureState>(
+    const valueRouter = new ValueRouter<ManualFixtureObj>(
       actionObj,
       profileAdapter,
     );
 
-    const manualFixtureStateObj = valueRouter
+    return valueRouter
       .buildResult()
-      .mutateOrMergeFixtureChannels(fixture);
-
-    const mutatedFixture = fixture;
-    console.log("stateOb", manualFixtureStateObj);
-
-    return [manualFixtureStateObj, mutatedFixture];
+      .createManualFixtureObj(fixture, manualFixturesStore);
   }
 
   useEffect(() => {
     if (action !== null && action.complete) {
       const { selection } = action;
-      const manualObjs: ManualFixtureState[] = [];
 
-      const fixturesWithUpdatedChannelOutput = compositeFixturesStore.map(
-        (compFixture) => {
-          if (
+      // pass the manualfixturestate to the updateFunc, returns the update manualState
+      const nextManualFixtureState = compositeFixturesStore
+        .filter(
+          (compFixture) =>
             selection.includes(compFixture.channel) ||
-            fixtureChannelSelectionStore.has(compFixture.channel)
-          ) {
-            const [manualFixtureStateObj, mutatedFixture] = updateChannelOutput(
-              action,
-              compFixture,
-            );
+            fixtureChannelSelectionStore.has(compFixture.channel),
+        )
+        .reduce(
+          (stateObjAcc: ManualFixtureState, filteredCompFixtures) => ({
+            ...stateObjAcc,
+            ...updateChannelOutput(action, filteredCompFixtures),
+          }),
+          {},
+        );
 
-            manualObjs.push(manualFixtureStateObj);
-            return mutatedFixture as ParsedCompositeFixtureInfo;
-          }
-          return compFixture;
-        },
-      );
-
-      updateCompositeFixturesStore(fixturesWithUpdatedChannelOutput);
-      mergeManualFixtureStates(manualObjs);
+      updateManualFixturesStore({
+        ...manualFixturesStore,
+        ...nextManualFixtureState,
+      });
     }
 
     console.log("action", action);
@@ -97,7 +94,7 @@ export default function useCommandLineRouter(action: ActionObject | null) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [action, updateCompositeFixturesStore]);
 
-  useEffect(() => {
-    console.log("manualFixtures", manualFixtures);
-  }, [manualFixtures]);
+  // useEffect(() => {
+  //   console.log("manualFixturesStore", manualFixturesStore);
+  // }, [manualFixturesStore]);
 }

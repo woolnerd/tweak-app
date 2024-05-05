@@ -65,34 +65,38 @@ describe("ValueRouter Tests", () => {
     test("mutate behavior", () => {
       router.channelTuples = [[1, 255]];
 
-      const fixture: ManualFixtureState = {
-        values: [
-          [1, 0],
-          [2, 0],
-        ],
-        fixtureAssignmentId: 1,
-        channel: 1,
+      const manualFixtureStateObj: ManualFixtureState = {
+        1: {
+          values: [
+            [1, 0],
+            [2, 0],
+          ],
+          fixtureAssignmentId: 1,
+          channel: 1,
+          manualChannels: [1, 2],
+        },
       };
-      router.mutateOrMergeFixtureChannels(fixture);
+      router.createManualFixtureObj(manualFixtureStateObj);
 
-      expect(fixture.values).toEqual([
+      expect(manualFixtureStateObj[1].values).toEqual([
         [1, 255],
         [2, 0],
       ]);
     });
     test("merge behavior", () => {
       router.channelTuples = [[1, 255]];
-      const fixture = {
+      const manualFixtureStateObj = {
         values: [
           [2, 255],
           [3, 0],
         ],
         fixtureAssignmentId: 1,
         channel: 1,
+        manualChannels: [2, 3],
       };
-      router.mutateOrMergeFixtureChannels(fixture);
+      router.createManualFixtureObj(manualFixtureStateObj);
 
-      expect(fixture.values).toEqual([
+      expect(manualFixtureStateObj.values).toEqual([
         [1, 255],
         [2, 255],
         [3, 0],

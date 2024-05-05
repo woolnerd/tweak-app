@@ -6,6 +6,8 @@ import { useCompositeFixtureStore } from "../app/store/useCompositeFixtureStore.
 import { useFixtureChannelSelectionStore } from "../app/store/useFixtureChannelSelectionStore.ts";
 import { db } from "../db/client.ts";
 import ScenesToFixtureAssignments from "../models/scene-to-fixture-assignments.ts";
+import { useManualFixtureStore } from "../app/store/useManualFixtureStore.ts";
+import { ManualFixtureObj } from "./types/fixture.ts";
 // import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 // import { mergeCacheWithDBFixtures } from "../util/helpers.ts";
 
@@ -31,6 +33,8 @@ export default function LayoutArea({
   // const [selectedFixtureIds, setSelectedFixtureIds] = useState<Set<number>>(
   //   new Set([DRIZZLE_ARRAY_CHECK_VALUE]),
   // );
+  // const [mergeManualAndCompositeFixtures, setMergeManualAndCompositeFixtures] =
+  //   useState([]);
 
   const { compositeFixturesStore, updateCompositeFixturesStore } =
     useCompositeFixtureStore((state) => state);
@@ -38,6 +42,9 @@ export default function LayoutArea({
   const fixtureChannelSelection = useFixtureChannelSelectionStore(
     (state) => state.fixtureChannelSelectionStore,
   );
+
+  const { manualFixturesStore, updateManualFixturesStore } =
+    useManualFixtureStore((state) => state);
 
   const fetchCompositeFixtures = useCallback(async () => {
     try {
@@ -73,6 +80,20 @@ export default function LayoutArea({
     //   updateCompositeFixturesStore,
     // );
   }, [selectedSceneId, fetchCompositeFixtures, updateCompositeFixturesStore]);
+
+  useEffect(() => {
+    updateCompositeFixturesStore(
+      compositeFixturesStore.map((compFixtureStateObj) => {
+        if (compFixtureStateObj.channel in manualFixturesStore) {
+          return {
+            ...compFixtureStateObj,
+            ...manualFixturesStore[compFixtureStateObj.channel],
+          };
+        }
+        return compFixtureStateObj;
+      }),
+    );
+  }, [manualFixturesStore]);
 
   return (
     <View

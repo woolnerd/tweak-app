@@ -47,7 +47,9 @@ export function Fixture({
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
     useFixtureChannelSelectionStore((state) => state);
 
-  const manualFixtures = useManualFixtureStore((state) => state.manualFixtures);
+  const manualFixturesStore = useManualFixtureStore(
+    (state) => state.manualFixturesStore,
+  );
 
   const fixtureInManualState = fixtureChannelSelectionStore.has(channel);
 
@@ -63,8 +65,8 @@ export function Fixture({
     updateFixtureChannelSelectionStore(dupe);
   };
 
+  // does this do anything right now?
   useEffect(() => {
-    // setManualHighlight(true);
     fixtureInManualState ? setUnsavedChanges(true) : setUnsavedChanges(false);
   }, [fixtureInManualState]);
 
@@ -105,9 +107,7 @@ export function Fixture({
   };
 
   const isManualFixtureChannel = (testChannel: number) =>
-    !!manualFixtures
-      .find((fix) => fix.channel === channel)
-      ?.manualChannels?.includes(testChannel);
+    manualFixturesStore[channel]?.manualChannels?.includes(testChannel);
 
   const selectedStyle = (isManual: boolean) => {
     const styles: { color?: string; borderColor?: string } = {};
@@ -133,10 +133,7 @@ export function Fixture({
       isManualFixtureChannel,
     );
 
-    console.log("details", details);
-
     if (!details) return null;
-    console.log(manualStyleChannels);
 
     return Object.keys(details as object).map((profileField) =>
       outputDetail(profileField, details, manualStyleChannels),
@@ -161,7 +158,7 @@ export function Fixture({
 
   return (
     <View
-      key={Math.random()}
+      key={fixtureAssignmentId}
       style={{ ...styles.fixtures, ...selectedStyle(false) }}
       onTouchStart={() =>
         handleOutput({

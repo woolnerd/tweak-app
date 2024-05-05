@@ -85,7 +85,6 @@ export default class CommandLineService {
   private buildSelectionArray() {
     // ["Chan", "1", "thru", "10", "+", "20", "@", "3200"];
     this.selection = this.getRangeAndAddAdditionals();
-    console.log(this.selection);
   }
 
   getRange() {
