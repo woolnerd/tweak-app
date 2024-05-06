@@ -1,4 +1,5 @@
 import { ManualFixtureState } from "../../components/types/fixture.ts";
+import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
 import ProfileAdapter from "../adapters/profile-adapter.ts";
 import { ActionObject } from "../command-line/types/command-line-types.ts";
 import { ProfileTarget } from "../types/buttons.ts";
@@ -62,8 +63,41 @@ describe("ValueRouter Tests", () => {
     };
     const profileAdapter = new ProfileAdapter("DIMMER", profile);
     const router = new ValueRouter(actionObject, profileAdapter);
+
+    test("setUpManualFixture", () => {
+      const router = new ValueRouter(actionObject, profileAdapter);
+      const fixture: ParsedCompositeFixtureInfo = {
+        values: [[1, 255]],
+        channelPairs16Bit: [[1, 2]],
+        fixtureAssignmentId: 1,
+        channel: 1,
+      };
+      const manualFixtureStateObj: ManualFixtureState = {
+        1: {
+          values: [
+            [1, 0],
+            [2, 0],
+          ],
+          fixtureAssignmentId: 1,
+          channel: 1,
+          manualChannels: [1, 2],
+        },
+      };
+
+      // eslint-disable-next-line dot-notation
+      router["setUpManualFixture"](fixture, manualFixtureStateObj);
+    });
+
+    test("mutateOrMergeOutputValues", () => {});
     test("mutate behavior", () => {
       router.channelTuples = [[1, 255]];
+
+      const fixture: ParsedCompositeFixtureInfo = {
+        values: [[1, 255]],
+        channelPairs16Bit: [[1, 2]],
+        fixtureAssignmentId: 1,
+        channel: 1,
+      };
 
       const manualFixtureStateObj: ManualFixtureState = {
         1: {
@@ -76,7 +110,7 @@ describe("ValueRouter Tests", () => {
           manualChannels: [1, 2],
         },
       };
-      router.createManualFixtureObj(manualFixtureStateObj);
+      router.createManualFixtureObj(fixture, manualFixtureStateObj);
 
       expect(manualFixtureStateObj[1].values).toEqual([
         [1, 255],
@@ -85,6 +119,13 @@ describe("ValueRouter Tests", () => {
     });
     test("merge behavior", () => {
       router.channelTuples = [[1, 255]];
+
+      const fixture: ParsedCompositeFixtureInfo = {
+        values: [[1, 255]],
+        channelPairs16Bit: [[1, 2]],
+        fixtureAssignmentId: 1,
+        channel: 1,
+      };
       const manualFixtureStateObj = {
         values: [
           [2, 255],
@@ -94,7 +135,7 @@ describe("ValueRouter Tests", () => {
         channel: 1,
         manualChannels: [2, 3],
       };
-      router.createManualFixtureObj(manualFixtureStateObj);
+      router.createManualFixtureObj(fixture, manualFixtureStateObj);
 
       expect(manualFixtureStateObj.values).toEqual([
         [1, 255],

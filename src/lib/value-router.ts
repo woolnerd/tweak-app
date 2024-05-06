@@ -6,7 +6,6 @@ import {
   ManualFixtureState,
 } from "../components/types/fixture.ts";
 import ChannelValueCalculator from "../util/channel-value-calculator.ts";
-import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 
 export default class ValueRouter<T extends ManualFixtureObj> {
   profileAdapter: ProfileAdapter;
@@ -49,7 +48,10 @@ export default class ValueRouter<T extends ManualFixtureObj> {
     };
   }
 
-  setUpManualFixture(fixture: T, manualFixturesStore: ManualFixtureState) {
+  private setUpManualFixture(
+    fixture: T,
+    manualFixturesStore: ManualFixtureState,
+  ) {
     const manualFixtureObj =
       fixture.channel in manualFixturesStore
         ? manualFixturesStore[fixture.channel]
@@ -69,7 +71,7 @@ export default class ValueRouter<T extends ManualFixtureObj> {
     return manualFixtureObj;
   }
 
-  mutateOrMergeOutputValues(manualFixtureObj: ManualFixtureObj) {
+  private mutateOrMergeOutputValues(manualFixtureObj: ManualFixtureObj) {
     if (Object.keys(manualFixtureObj).length === 0) return;
     this.channelTuples.forEach((tuple) => {
       const channel = tuple[0];
