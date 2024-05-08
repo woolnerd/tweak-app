@@ -1,140 +1,85 @@
+import * as utils from "./value-router-utils.ts";
 import { ManualFixtureState } from "../../components/types/fixture.ts";
-import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
 import ProfileAdapter from "../adapters/profile-adapter.ts";
 import { ActionObject } from "../command-line/types/command-line-types.ts";
 import { ProfileTarget } from "../types/buttons.ts";
 import ValueRouter from "../value-router.ts";
 
-const profile = { 1: "DIMMER" };
-const fixture: ParsedCompositeFixtureInfo = {
-  values: [
-    [4, 255],
-    [5, 255],
-  ],
-  channelPairs16Bit: [
-    [1, 2],
-    [4, 5],
-  ],
-  fixtureAssignmentId: 1,
-  channel: 1,
-  profileChannels: profile,
-  profileName: "test",
-  sceneId: 1,
-  addressStart: 1,
-  addressEnd: 10,
-  title: "test",
-  fixtureName: "fixture1",
-  fixtureNotes: "test notes",
-  colorTempHigh: 10000,
-  colorTempLow: 2800,
-  is16Bit: true,
-};
-
-const profileColorTemp = {
-  1: "DIMMER",
-  2: "DIMMER fine",
-  3: "COLOR TEMP",
-  4: "COLOR TEMP fine",
-};
-
-const fixtureColorTemp: ParsedCompositeFixtureInfo = {
-  values: [
-    [3, 255],
-    [4, 255],
-  ],
-  channelPairs16Bit: [
-    [1, 2],
-    [3, 4],
-  ],
-  fixtureAssignmentId: 1,
-  channel: 1,
-  profileChannels: profile,
-  profileName: "test",
-  sceneId: 1,
-  addressStart: 1,
-  addressEnd: 10,
-  title: "test",
-  fixtureName: "fixture1",
-  fixtureNotes: "test notes",
-  colorTempHigh: 10000,
-  colorTempLow: 2800,
-  is16Bit: true,
-};
-
-const manualFixtureStateObj: ManualFixtureState = {
-  1: {
-    values: [
-      [1, 0],
-      [2, 0],
-    ],
-    fixtureAssignmentId: 1,
-    channel: 1,
-    manualChannels: [1, 2],
-  },
-};
+const {
+  profileColorTemp,
+  manualFixtureStateObj,
+  makeActionObj,
+  profile8bit,
+  profile16bit,
+  actionObjectDimmer,
+} = utils;
 
 describe("ValueRouter Tests", () => {
+  const { profile, fixture, fixtureColorTemp } = utils;
   test("value router initialization", () => {
     const profileAdapter = new ProfileAdapter("DIMMER", profile);
-    const actionObject: ActionObject = {
+    const actionObjectDimmer50: ActionObject = {
       selection: [1],
       directive: 50,
       profileTarget: ProfileTarget.DIMMER,
       complete: false,
     };
-    const valueRouter = new ValueRouter(actionObject, profileAdapter, fixture);
+    const valueRouter = new ValueRouter(
+      actionObjectDimmer50,
+      profileAdapter,
+      fixture,
+    );
     expect(valueRouter.profileAdapter).toBe(profileAdapter);
-    expect(valueRouter.actionObject).toBe(actionObject);
+    expect(valueRouter.actionObject).toStrictEqual(actionObjectDimmer50);
     expect(valueRouter.channels).toEqual([["1", "DIMMER"]]);
   });
 
   test("build result error handling", () => {
     const profileAdapter = new ProfileAdapter("DIMMER", profile);
-    const actionObject: ActionObject = {
+    const actionObjectDimmer100: ActionObject = {
       selection: [1],
       directive: 100,
       profileTarget: ProfileTarget.DIMMER,
       complete: false,
     };
-    const valueRouter = new ValueRouter(actionObject, profileAdapter, fixture);
+    const valueRouter = new ValueRouter(
+      actionObjectDimmer100,
+      profileAdapter,
+      fixture,
+    );
     valueRouter.channels = []; // Force an unsupported channel configuration
 
     expect(() => valueRouter.buildResult()).toThrow("Could not route Values");
   });
 
   describe("Constructor and Color Temperature Conversion", () => {
-    test("constructor initialization and color temp conversion", () => {
-      const actionObject: ActionObject = {
-        selection: [1],
-        directive: 5000,
-        profileTarget: ProfileTarget.COLOR_TEMP,
-        complete: true,
-      };
+    const actionObjectColor5000 = makeActionObj(5000);
+    test("constructor initialization and color temp conversion, without mutating actionObject", () => {
       const profileAdapter = new ProfileAdapter("COLOR TEMP", profileColorTemp);
-      const router = new ValueRouter(actionObject, profileAdapter, fixture);
+      const router = new ValueRouter(
+        actionObjectColor5000,
+        profileAdapter,
+        fixture,
+      );
 
       expect(router.channels).toEqual([
         ["3", "COLOR TEMP"],
         ["4", "COLOR TEMP fine"],
       ]);
-      expect(actionObject.directive).toBe(30.56);
+      expect(router.actionObject.directive).toBe(30.56);
+      expect(actionObjectColor5000.directive).toBe(5000);
     });
   });
 
   describe("Mutate or Merge Fixture Channels", () => {
-    const actionObject: ActionObject = {
-      selection: [1],
-      directive: 10000,
-      profileTarget: ProfileTarget.COLOR_TEMP,
-      complete: true,
-    };
+    const actionObjectColor10000 = makeActionObj(10000);
 
     const profileAdapterColorTemp = new ProfileAdapter(
       "COLOR TEMP",
       profileColorTemp,
     );
     let router = new ValueRouter(
-      actionObject,
+      actionObjectColor10000,
       profileAdapterColorTemp,
       fixtureColorTemp,
     );
@@ -151,7 +96,7 @@ describe("ValueRouter Tests", () => {
         },
       };
       router = new ValueRouter(
-        actionObject,
+        actionObjectColor10000,
         profileAdapterColorTemp,
         fixtureColorTemp,
       );
@@ -204,14 +149,8 @@ describe("ValueRouter Tests", () => {
     });
 
     test("mutateOrMergeOutputValues with merge", () => {
-      const actionObject10000: ActionObject = {
-        selection: [1],
-        directive: 10000,
-        profileTarget: ProfileTarget.COLOR_TEMP,
-        complete: true,
-      };
       router = new ValueRouter(
-        actionObject10000,
+        actionObjectColor10000,
         profileAdapterColorTemp,
         fixture,
       );
@@ -233,14 +172,8 @@ describe("ValueRouter Tests", () => {
     });
 
     test("if color temp is below fixture min color temp, jump to fixture min temp", () => {
-      const actionObject2000: ActionObject = {
-        selection: [1],
-        directive: 2000,
-        profileTarget: ProfileTarget.COLOR_TEMP,
-        complete: true,
-      };
       const profileAdapter = new ProfileAdapter("COLOR TEMP", profileColorTemp);
-      router = new ValueRouter(actionObject2000, profileAdapter, fixture);
+      router = new ValueRouter(makeActionObj(2000), profileAdapter, fixture);
       const routerBuildResult = router.buildResult();
 
       // eslint-disable-next-line dot-notation
@@ -258,14 +191,8 @@ describe("ValueRouter Tests", () => {
     });
 
     test("if color temp is above fixture max color temp, jump to fixture max temp", () => {
-      const actionObject19000: ActionObject = {
-        selection: [1],
-        directive: 19000,
-        profileTarget: ProfileTarget.COLOR_TEMP,
-        complete: true,
-      };
       const profileAdapter = new ProfileAdapter("COLOR TEMP", profileColorTemp);
-      router = new ValueRouter(actionObject19000, profileAdapter, fixture);
+      router = new ValueRouter(makeActionObj(19000), profileAdapter, fixture);
 
       const routerBuildResult = router.buildResult();
 
@@ -285,29 +212,7 @@ describe("ValueRouter Tests", () => {
   });
 
   describe("parses channels appropriately", () => {
-    const profile16bit = {
-      1: "Dimmer",
-      2: "Dimmer fine",
-      3: "Color Temp",
-      4: "Color temp fine",
-    };
-    const profile8bit = {
-      1: "Dimmer",
-      2: "Color Temp",
-    };
-    const actionObjectDimmer: ActionObject = {
-      selection: [1],
-      directive: 100,
-      profileTarget: ProfileTarget.DIMMER,
-      complete: true,
-    };
-    const actionObjectColorTemp: ActionObject = {
-      selection: [1],
-      directive: 10000,
-      profileTarget: ProfileTarget.COLOR_TEMP,
-      complete: true,
-    };
-
+    const actionObjectColorTemp = makeActionObj(10000);
     test("Parses 16-bit channels", () => {
       const profileAdapterDimmer = new ProfileAdapter("DIMMER", profile16bit);
       let router = new ValueRouter(

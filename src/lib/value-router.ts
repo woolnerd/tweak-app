@@ -28,9 +28,9 @@ export default class ValueRouter {
     profileAdapter: ProfileAdapter,
     fixture: ParsedCompositeFixtureInfo,
   ) {
-    this.actionObject = actionObject;
+    this.actionObject = { ...actionObject };
     this.profileAdapter = profileAdapter;
-    this.fixture = fixture;
+    this.fixture = { ...fixture };
     this.channels = this.profileAdapter.extractChannels();
 
     if (this.checkIfProfileTargetsColorTemp()) {
