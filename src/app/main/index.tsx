@@ -3,6 +3,7 @@ import { drizzle } from "drizzle-orm/expo-sqlite";
 import { openDatabaseSync } from "expo-sqlite/next";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
+import ErrorBoundary from "react-native-error-boundary";
 
 import ControlPanel from "../../components/control-panel.tsx";
 import LayoutArea from "../../components/layout-area.tsx";
@@ -37,61 +38,65 @@ function App() {
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: "row",
-        height: "80%",
-        margin: "auto",
-        backgroundColor: "black",
-        padding: 20,
-        borderWidth: 4,
-        borderColor: "yellow",
-      }}>
-      <View style={{ flex: 1, ...styles.container }}>
-        <View>
-          <View style={{ flex: 1, borderColor: "yellow", height: 100 }} />
-
-          <Pressable style={styles.bigButtons} onPress={handleGoToOut}>
-            <Text style={{ ...styles.btnText, fontSize: 18 }}>Go to Out</Text>
-          </Pressable>
-
-          {scenes?.map((scene, i) => (
-            <SceneComponent
-              key={scene.id}
-              id={scene.id}
-              name={scene.name}
-              setSelectedSceneId={setSelectedSceneId}
-              selectedSceneId={selectedSceneId}
-            />
-          ))}
-
-          <Pressable
-            style={styles.bigButtons}
-            onPress={() => console.log("Simple Pressable pressed")}>
-            <Text style={{ ...styles.btnText, fontSize: 18 }}>Label</Text>
-          </Pressable>
-
-          <Pressable
-            style={styles.bigButtons}
-            onPress={() => AsyncStorage.clear()}>
-            <Text style={{ ...styles.btnText, fontSize: 18 }}>Clear Cache</Text>
-          </Pressable>
-        </View>
-      </View>
-
+    <ErrorBoundary>
       <View
         style={{
-          flex: 3,
-          ...styles.container,
+          flex: 1,
+          flexDirection: "row",
+          height: "80%",
+          margin: "auto",
+          backgroundColor: "black",
+          padding: 20,
+          borderWidth: 4,
+          borderColor: "yellow",
         }}>
-        <LayoutArea selectedSceneId={selectedSceneId} goToOut={false} />
-      </View>
+        <View style={{ flex: 1, ...styles.container }}>
+          <View>
+            <View style={{ flex: 1, borderColor: "yellow", height: 100 }} />
 
-      <View style={{ flex: 1.5, flexDirection: "row", ...styles.container }}>
-        <ControlPanel />
+            <Pressable style={styles.bigButtons} onPress={handleGoToOut}>
+              <Text style={{ ...styles.btnText, fontSize: 18 }}>Go to Out</Text>
+            </Pressable>
+
+            {scenes?.map((scene, i) => (
+              <SceneComponent
+                key={scene.id}
+                id={scene.id}
+                name={scene.name}
+                setSelectedSceneId={setSelectedSceneId}
+                selectedSceneId={selectedSceneId}
+              />
+            ))}
+
+            <Pressable
+              style={styles.bigButtons}
+              onPress={() => console.log("Simple Pressable pressed")}>
+              <Text style={{ ...styles.btnText, fontSize: 18 }}>Label</Text>
+            </Pressable>
+
+            <Pressable
+              style={styles.bigButtons}
+              onPress={() => AsyncStorage.clear()}>
+              <Text style={{ ...styles.btnText, fontSize: 18 }}>
+                Clear Cache
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+
+        <View
+          style={{
+            flex: 3,
+            ...styles.container,
+          }}>
+          <LayoutArea selectedSceneId={selectedSceneId} goToOut={false} />
+        </View>
+
+        <View style={{ flex: 1.5, flexDirection: "row", ...styles.container }}>
+          <ControlPanel />
+        </View>
       </View>
-    </View>
+    </ErrorBoundary>
   );
 }
 
