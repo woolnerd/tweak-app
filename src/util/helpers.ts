@@ -163,13 +163,26 @@ function dynamicRound(num: number) {
   return Math.floor(num);
 }
 
-export function presentValueAsPercent(
+export function convertDmxValueToPercent(
   val: number,
   rounding: (n: number) => number = dynamicRound,
 ) {
   if (val > 256) {
-    return `${dynamicRound((val / 65535) * 100)}%`;
+    return rounding((val / 65535) * 100);
   }
 
-  return `${dynamicRound((val / 255) * 100)}%`;
+  return rounding((val / 255) * 100);
+}
+
+export function percentageToColorTemperature(
+  percentage: number,
+  lowTemp: number,
+  highTemp: number,
+) {
+  percentage = Math.min(Math.max(percentage, 0), 100);
+
+  const colorTempRange = highTemp - lowTemp;
+  const colorTemp = lowTemp + colorTempRange * (percentage / 100); // not rounding
+
+  return colorTemp;
 }

@@ -1,7 +1,8 @@
 import {
   merge16BitValues,
   handleChannelValues,
-  presentValueAsPercent,
+  convertDmxValueToPercent,
+  percentageToColorTemperature,
 } from "../helpers.ts";
 
 describe("Merge 16bit values", () => {
@@ -39,7 +40,6 @@ describe("Merge 16bit values", () => {
         2: "Dimmer fine",
       };
 
-      // current output values, we don't know what the latest values are from this
       const values1 = [
         [1, 255],
         [2, 255],
@@ -67,7 +67,6 @@ describe("Merge 16bit values", () => {
         4: "Color Temp fine",
       };
 
-      // current output values, we don't know what the latest values are from this
       const values2 = [
         [1, 255],
         [2, 255],
@@ -118,17 +117,26 @@ describe("Merge 16bit values", () => {
     });
   });
 
-  describe("Calculating percentage for display", () => {
-    test("presentValueAsPrecent returns the properly formatted string with % ", () => {
-      expect(presentValueAsPercent(65535)).toBe("100%");
-      expect(presentValueAsPercent(65025)).toBe("99%");
-      expect(presentValueAsPercent(49151)).toBe("75%");
-      expect(presentValueAsPercent(48905)).toBe("75%");
-      expect(presentValueAsPercent(45875)).toBe("70%");
-      expect(presentValueAsPercent(6554)).toBe("10%");
-      expect(presentValueAsPercent(257)).toBe("0%");
-      expect(presentValueAsPercent(255)).toBe("100%");
-      expect(presentValueAsPercent(128)).toBe("50%");
+  describe("Convert DMX Value to Percent", () => {
+    test("presentValueAsPrecent returns the correct integer", () => {
+      expect(convertDmxValueToPercent(65535)).toBe(100);
+      expect(convertDmxValueToPercent(65025)).toBe(99);
+      expect(convertDmxValueToPercent(49151)).toBe(75);
+      expect(convertDmxValueToPercent(48905)).toBe(75);
+      expect(convertDmxValueToPercent(45875)).toBe(70);
+      expect(convertDmxValueToPercent(6554)).toBe(10);
+      expect(convertDmxValueToPercent(257)).toBe(0);
+      expect(convertDmxValueToPercent(255)).toBe(100);
+      expect(convertDmxValueToPercent(128)).toBe(50);
+    });
+  });
+
+  describe("Percentage to color temperature", () => {
+    test("converts percentage to color temperature", () => {
+      expect(percentageToColorTemperature(100, 2800, 10000)).toBe(10000);
+      expect(percentageToColorTemperature(76, 2800, 10000)).toBe(8272);
+      expect(percentageToColorTemperature(50, 2800, 10000)).toBe(6400);
+      expect(percentageToColorTemperature(0, 2800, 10000)).toBe(2800);
     });
   });
 });
