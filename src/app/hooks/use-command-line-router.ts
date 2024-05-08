@@ -1,9 +1,6 @@
 import { useEffect } from "react";
 
-import {
-  ManualFixtureObj,
-  ManualFixtureState,
-} from "../../components/types/fixture.ts";
+import { ManualFixtureState } from "../../components/types/fixture.ts";
 import ProfileAdapter from "../../lib/adapters/profile-adapter.ts";
 import { ActionObject } from "../../lib/command-line/types/command-line-types.ts";
 import ValueRouter from "../../lib/value-router.ts";
@@ -23,28 +20,6 @@ export default function useCommandLineRouter(action: ActionObject | null) {
   const { manualFixturesStore, updateManualFixturesStore } =
     useManualFixtureStore((state) => state);
 
-  // const findById = (
-  //   assignmentObj: { fixtureAssignmentId: number },
-  //   objs: { fixtureAssignmentId: number }[],
-  // ) =>
-  //   objs.find(
-  //     (obj) => obj.fixtureAssignmentId === assignmentObj.fixtureAssignmentId,
-  //   );
-
-  // const mergeManualFixtureStates = (nextState: ManualFixtureState) => {
-  //   const prevState = manualFixturesStore;
-
-  // const updatedState = nextState.reduce(
-  //   (updatedStateAcc: ManualFixtureState, nextStateObj) => {
-  //     updatedStateAcc[nextStateObj.channel] = nextStateObj;
-  //     return updatedStateAcc;
-  //   },
-  //   prevState,
-  // );
-
-  // updateManualFixturesStore({ ...prevState, ...nextState });
-  // };
-
   function updateChannelOutput(
     actionObj: ActionObject,
     fixture: ParsedCompositeFixtureInfo,
@@ -54,14 +29,11 @@ export default function useCommandLineRouter(action: ActionObject | null) {
       fixture.profileChannels!,
     );
 
-    const valueRouter = new ValueRouter<ManualFixtureObj>(
-      actionObj,
-      profileAdapter,
-    );
+    const valueRouter = new ValueRouter(actionObj, profileAdapter, fixture);
 
     return valueRouter
       .buildResult()
-      .createManualFixtureObj(fixture, manualFixturesStore);
+      .createManualFixtureObj(manualFixturesStore);
   }
 
   useEffect(() => {
@@ -93,8 +65,4 @@ export default function useCommandLineRouter(action: ActionObject | null) {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [action, updateCompositeFixturesStore]);
-
-  // useEffect(() => {
-  //   console.log("manualFixturesStore", manualFixturesStore);
-  // }, [manualFixturesStore]);
 }
