@@ -5,9 +5,10 @@ import {
   ManualFixtureObj,
   ManualFixtureState,
 } from "../components/types/fixture.ts";
+import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 import ChannelValueCalculator from "../util/channel-value-calculator.ts";
 
-export default class ValueRouter<T extends ManualFixtureObj> {
+export default class ValueRouter {
   profileAdapter: ProfileAdapter;
 
   actionObject: ActionObject;
@@ -20,45 +21,45 @@ export default class ValueRouter<T extends ManualFixtureObj> {
 
   channelTuples: number[][];
 
-  constructor(actionObject: ActionObject, profileAdapter: ProfileAdapter) {
+  fixture: ParsedCompositeFixtureInfo;
+
+  constructor(
+    actionObject: ActionObject,
+    profileAdapter: ProfileAdapter,
+    fixture: ParsedCompositeFixtureInfo,
+  ) {
     this.actionObject = actionObject;
     this.profileAdapter = profileAdapter;
+    this.fixture = fixture;
     this.channels = this.profileAdapter.extractChannels();
 
     if (this.checkIfProfileTargetsColorTemp()) {
-      this.convertColorTempToPercentage();
+      this.convertColorTempToPercentage(fixture);
     }
 
     this.calculator = new ChannelValueCalculator(this.actionObject.directive);
   }
 
   createManualFixtureObj(
-    fixture: T,
     manualFixturesStore: ManualFixtureState,
   ): ManualFixtureState {
-    const manualFixtureObj = this.setUpManualFixture(
-      fixture,
-      manualFixturesStore,
-    );
+    const manualFixtureObj = this.setUpManualFixture(manualFixturesStore);
 
     this.mutateOrMergeOutputValues(manualFixtureObj);
 
     return {
-      [fixture.channel]: manualFixtureObj,
+      [this.fixture.channel]: manualFixtureObj,
     };
   }
 
-  private setUpManualFixture(
-    fixture: T,
-    manualFixturesStore: ManualFixtureState,
-  ) {
+  private setUpManualFixture(manualFixturesStore: ManualFixtureState) {
     const manualFixtureObj =
-      fixture.channel in manualFixturesStore
-        ? manualFixturesStore[fixture.channel]
+      this.fixture.channel in manualFixturesStore
+        ? manualFixturesStore[this.fixture.channel]
         : {
-            values: fixture.values,
-            channel: fixture.channel,
-            fixtureAssignmentId: fixture.fixtureAssignmentId,
+            values: this.fixture.values,
+            channel: this.fixture.channel,
+            fixtureAssignmentId: this.fixture.fixtureAssignmentId,
             manualChannels: [],
           };
 
@@ -110,10 +111,21 @@ export default class ValueRouter<T extends ManualFixtureObj> {
     throw new Error("Could not route Values");
   }
 
-  convertColorTempToPercentage() {
-    const minTemperature = 2800; // hardcoded for now, but needs to be part of profile
-    const maxTemperature = 10_000;
-    const temperature = this.actionObject.directive;
+  convertColorTempToPercentage(fixture: ParsedCompositeFixtureInfo) {
+    if (!this.fixture?.colorTempLow || !this.fixture?.colorTempHigh) {
+      throw new Error("Fixture must have color temp channels");
+    }
+    const minTemperature = this.fixture.colorTempLow;
+    const maxTemperature = this.fixture.colorTempHigh;
+    let temperature;
+    // bump temp to max or min if value is past max or min
+    if (this.actionObject.directive <= minTemperature) {
+      temperature = minTemperature;
+    } else if (this.actionObject.directive >= maxTemperature) {
+      temperature = maxTemperature;
+    } else {
+      temperature = this.actionObject.directive;
+    }
 
     const percentage =
       ((temperature - minTemperature) / (maxTemperature - minTemperature)) *
