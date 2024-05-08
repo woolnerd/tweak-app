@@ -10,7 +10,11 @@ import { useFixtureChannelSelectionStore } from "../app/store/useFixtureChannelS
 // } from "../util/fixture-cache.ts";
 import { useManualFixtureStore } from "../app/store/useManualFixtureStore.ts";
 import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
-import { handleChannelValues, presentValueAsPercent } from "../util/helpers.ts";
+import {
+  handleChannelValues,
+  convertDmxValueToPercent,
+  percentageToColorTemperature,
+} from "../util/helpers.ts";
 
 // type OptionalProps<T> = { [P in keyof T]?: T[P] | null };
 type ProfileKey = number;
@@ -39,6 +43,8 @@ export function Fixture({
   sceneId,
   startAddress,
   endAddress,
+  colorTempLow,
+  colorTempHigh,
 }: FixtureProps) {
   // const [selectedValue, setSelectedValue] = useState<string | null>([150]);
   // const [manualHighlight, setManualHighlight] = useState(false);
@@ -98,7 +104,6 @@ export function Fixture({
   // ]);
 
   const handleOutput = (fixture: FixtureControlData) => {
-    // toggles multiple fixtures in and out of set
     if (fixtureInManualState) {
       removeFixtureFromState(fixture);
     } else {
@@ -107,7 +112,7 @@ export function Fixture({
   };
 
   const isManualFixtureChannel = (testChannel: number) =>
-    manualFixturesStore[channel]?.manualChannels?.includes(testChannel);
+    !!manualFixturesStore[channel]?.manualChannels?.includes(testChannel);
 
   const selectedStyle = (isManual: boolean) => {
     const styles: { color?: string; borderColor?: string } = {};
@@ -152,9 +157,27 @@ export function Fixture({
         ...selectedStyle(styleOptions[profileField]),
       }}>
       {`${profileField}:
-      ${details ? presentValueAsPercent(details[profileField]) : ""}`}
+      ${details ? handleDifferentProfileFields(profileField, details) : ""}`}
     </Text>
   );
+
+  const handleDifferentProfileFields = (
+    profileField: string,
+    details: Record<string, number>,
+  ) => {
+    if (
+      profileField.toLowerCase().includes("temp") &&
+      colorTempHigh &&
+      colorTempLow
+    ) {
+      return percentageToColorTemperature(
+        convertDmxValueToPercent(details[profileField]),
+        colorTempLow,
+        colorTempHigh,
+      );
+    }
+    return `${convertDmxValueToPercent(details[profileField])}%`;
+  };
 
   return (
     <View

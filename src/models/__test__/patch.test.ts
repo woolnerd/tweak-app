@@ -6,7 +6,7 @@ import {
 } from "../__mocks__/patch.ts";
 import Patch from "../patch.ts";
 
-jest.mock("@/db/client", () =>
+jest.mock("../../db/client", () =>
   jest.fn().mockReturnValue({
     db: {
       insert: jest.fn(),

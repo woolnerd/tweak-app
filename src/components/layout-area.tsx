@@ -1,13 +1,12 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { StyleSheet, View, FlatList, ListRenderItem } from "react-native";
+import { StyleSheet, View, FlatList } from "react-native";
 
 import { Fixture as FixtureComponent } from "./fixture.tsx";
 import { useCompositeFixtureStore } from "../app/store/useCompositeFixtureStore.ts";
 import { useFixtureChannelSelectionStore } from "../app/store/useFixtureChannelSelectionStore.ts";
+import { useManualFixtureStore } from "../app/store/useManualFixtureStore.ts";
 import { db } from "../db/client.ts";
 import ScenesToFixtureAssignments from "../models/scene-to-fixture-assignments.ts";
-import { useManualFixtureStore } from "../app/store/useManualFixtureStore.ts";
-import { ManualFixtureObj } from "./types/fixture.ts";
 // import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 // import { mergeCacheWithDBFixtures } from "../util/helpers.ts";
 
@@ -115,6 +114,8 @@ export default function LayoutArea({
             values={item.values}
             is16Bit={item.is16Bit}
             channelPairs16Bit={item.channelPairs16Bit}
+            colorTempHigh={item.colorTempHigh}
+            colorTempLow={item.colorTempLow}
           />
         )}
         keyExtractor={(item, idx) => item.fixtureAssignmentId.toString()}

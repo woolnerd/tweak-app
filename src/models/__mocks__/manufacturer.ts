@@ -1,5 +1,5 @@
-import { Database } from "@/db/types/database.ts";
-import { TableNames } from "@/db/types/tables.ts";
+import { Database } from "../../db/types/database.ts";
+import { TableNames } from "../../db/types/tables.ts";
 
 export const mockInsertDb: Database = {
   insert: jest.fn().mockReturnThis(),
