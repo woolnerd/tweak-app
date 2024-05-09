@@ -1,15 +1,13 @@
 import React, { useEffect, useCallback } from "react";
 import { StyleSheet, View, FlatList } from "react-native";
 
-import { Fixture as FixtureComponent } from "../Fixture/Fixture.tsx";
+import { db } from "../../../db/client.ts";
+import ScenesToFixtureAssignments from "../../../models/scene-to-fixture-assignments.ts";
+import useUniverseOutput from "../../hooks/useUniverseOutput.ts";
 import { useCompositeFixtureStore } from "../../store/useCompositeFixtureStore.ts";
 import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
 import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
-import { useOutputValuesStore } from "../../store/useOutputValuesStore.ts";
-import { db } from "../../../db/client.ts";
-import UniverseDataBuilder from "../../../lib/universe-data-builder.ts";
-import ScenesToFixtureAssignments from "../../../models/scene-to-fixture-assignments.ts";
-import ValueUniverse, { DmxTuple } from "../../../util/value-universe.ts";
+import { Fixture as FixtureComponent } from "../Fixture/Fixture.tsx";
 
 type LayoutAreaProps = {
   selectedSceneId: number;
@@ -29,8 +27,6 @@ export default function LayoutArea({
 
   const { manualFixturesStore } = useManualFixtureStore((state) => state);
 
-  const { updateOutputValuesStore } = useOutputValuesStore((state) => state);
-
   const fetchCompositeFixtures = useCallback(async () => {
     try {
       const compositeFixtureInfoObjs = await new ScenesToFixtureAssignments(
@@ -45,27 +41,7 @@ export default function LayoutArea({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSceneId]);
 
-  useEffect(() => {
-    if (compositeFixturesStore.length > 0) {
-      const universeObjs = compositeFixturesStore.map((compFixture) => {
-        if (compFixture.channel in manualFixturesStore) {
-          compFixture.values = manualFixturesStore[compFixture.channel].values;
-        }
-        return new UniverseDataBuilder(compFixture).toUniverseTuples();
-      });
-
-      const universe = new ValueUniverse(1);
-      universeObjs.flat().forEach((uni: DmxTuple) => {
-        universe.addDmxValues(uni);
-      });
-
-      console.log(universe.getDmxValues);
-      console.log({ manualFixturesStore });
-
-      updateOutputValuesStore(universe.getDmxValues);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [compositeFixturesStore, manualFixturesStore]);
+  useUniverseOutput();
 
   useEffect(() => {
     fetchCompositeFixtures().then((res) => updateCompositeFixturesStore(res));

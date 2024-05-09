@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { View } from "react-native";
 
-import ControlPanelButton from "../ControlPanelButton/ControlPanelButton.tsx";
-import useCommandLineRouter from "../../hooks/useCommandLineRouter.ts";
-import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
 import controlPanelButtonData from "../../../db/button-data.ts";
 import CommandLine from "../../../lib/command-line/command-line.ts";
 import { ActionObject } from "../../../lib/command-line/types/command-line-types.ts";
@@ -12,6 +9,9 @@ import {
   ControlButton,
   ProfileTarget,
 } from "../../../lib/types/buttons.ts";
+import useCommandLineRouter from "../../hooks/useCommandLineRouter.ts";
+import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
+import ControlPanelButton from "../ControlPanelButton/ControlPanelButton.tsx";
 
 type ControlPanelProps = {
   // setControlPanelValue: any;

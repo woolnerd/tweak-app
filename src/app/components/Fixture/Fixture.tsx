@@ -3,18 +3,18 @@ import { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
 import { FixtureControlData } from "./types/Fixture.ts";
-import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
-// import {
-//   removeManualFixture,
-//   addManualFixture,
-// } from "../util/fixture-cache.ts";
-import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
 import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import {
   handleChannelValues,
   convertDmxValueToPercent,
   percentageToColorTemperature,
 } from "../../../util/helpers.ts";
+import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
+// import {
+//   removeManualFixture,
+//   addManualFixture,
+// } from "../util/fixture-cache.ts";
+import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
 
 // type OptionalProps<T> = { [P in keyof T]?: T[P] | null };
 type ProfileKey = number;

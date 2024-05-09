@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 
-import { ManualFixtureState } from "../components/Fixture/types/Fixture.ts";
 import ProfileAdapter from "../../lib/adapters/profile-adapter.ts";
 import { ActionObject } from "../../lib/command-line/types/command-line-types.ts";
 import ValueRouter from "../../lib/value-router.ts";
 import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
+import { ManualFixtureState } from "../components/Fixture/types/Fixture.ts";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelectionStore.ts";
 import { useManualFixtureStore } from "../store/useManualFixtureStore.ts";

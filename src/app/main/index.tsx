@@ -1,20 +1,19 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { drizzle } from "drizzle-orm/expo-sqlite";
+import * as FileSystem from "expo-file-system";
 import { openDatabaseSync } from "expo-sqlite/next";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import ErrorBoundary from "react-native-error-boundary";
+import runMigrataions from "scripts/migrations.js";
+import seedDatabase from "scripts/seedDatabase.js";
 
-import ControlPanel from "../components/ControlPanel/ControlPanel.tsx";
-import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
-import { Scene as SceneComponent } from "../components/Scene/Scene.tsx";
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
 import Scene from "../../models/scene.ts";
-
-import runMigrataions from "scripts/migrations.js";
-import seedDatabase from "scripts/seedDatabase.js";
-import * as FileSystem from "expo-file-system";
+import ControlPanel from "../components/ControlPanel/ControlPanel.tsx";
+import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
+import { Scene as SceneComponent } from "../components/Scene/Scene.tsx";
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
