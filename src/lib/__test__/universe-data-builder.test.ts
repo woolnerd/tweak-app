@@ -61,6 +61,18 @@ describe("UniverseDataBuilder", () => {
   });
 
   describe("buildDataOutput", () => {
-    test("it should create an object with proper amount of universes", () => {});
+    test("it should create an object with proper amount of universes", () => {
+      const data = {
+        addressStart: 1,
+        values: [
+          [1, 100],
+          [2, 150],
+        ],
+        profileChannels: null,
+        channelPairs16Bit: [],
+      };
+      const builder = new UniverseDataBuilder(data);
+      const result = builder.toUniverseTuples();
+    });
   });
 });

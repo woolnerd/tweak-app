@@ -20,12 +20,14 @@ export default function useUniverseOutput() {
         return new UniverseDataBuilder(compFixture).toUniverseTuples();
       });
 
+      //
+      // pass universeObjs to a method that instantiates an object
       const universe = new ValueUniverse(1);
       universeObjs.flat().forEach((uni: DmxTuple) => {
         universe.addDmxValues(uni);
       });
 
-      console.log(universe.getDmxValues);
+      console.log({ universe });
       console.log({ universeObjs });
 
       updateOutputValuesStore(universe.getDmxValues);
