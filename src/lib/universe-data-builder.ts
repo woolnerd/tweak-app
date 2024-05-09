@@ -3,8 +3,11 @@ import ChannelNumber from "../util/channel-number.ts";
 import DmxValue from "../util/dmx-value.ts";
 
 type UniverseDataObject = Record<number, number[]>;
+type UniverseDataObjectCollection = Record<number, number[][]>;
 
 export default class UniverseDataBuilder {
+  UNIVERSE_SIZE: number = 511;
+
   private data: ParsedCompositeFixtureInfo;
 
   constructor(data: ParsedCompositeFixtureInfo) {
@@ -33,20 +36,65 @@ export default class UniverseDataBuilder {
     return uniObj;
   }
 
-  toUniverseTuples() {
+  buildUniverses() {
     if (!this.data.addressStart || !this.data.values) {
       throw new Error("Starting addresss cannot be null");
     }
 
-    return this.data.values?.map((tuple) => {
-      const channelValue = UniverseDataBuilder.offsetByOneAndZeroIndex(
-        tuple[0] + this.data.addressStart!,
-      );
-      const channel = new ChannelNumber(channelValue);
-      const dmxValue = new DmxValue(tuple[1]);
+    return this.data.values?.reduce(
+      (universes: UniverseDataObjectCollection, [orignalAddress, dmxVal]) => {
+        if (!this.data.addressStart) {
+          throw new Error("Addres start cannot be falsy");
+        }
+        const channelValue = UniverseDataBuilder.offsetByOneAndZeroIndex(
+          orignalAddress + this.data.addressStart,
+        );
 
-      return [channel.value, dmxValue.value];
-    });
+        const universeNum = this.deriveUniverseFromAddress(
+          this.data.addressStart,
+        );
+
+        const channel = new ChannelNumber(
+          this.clampAddressToUniverseSize(channelValue),
+        );
+        const dmxValue = new DmxValue(dmxVal);
+
+        if (universeNum in universes) {
+          universes[universeNum].push([channel.value, dmxValue.value]);
+        } else {
+          universes[universeNum] = [[channel.value, dmxValue.value]];
+        }
+        return universes;
+      },
+      {},
+    );
+  }
+
+  deriveUniverseFromAddress(startAddress: number) {
+    return Math.ceil(startAddress / this.UNIVERSE_SIZE);
+  }
+
+  clampAddressToUniverseSize(startAddress: number) {
+    return startAddress % this.UNIVERSE_SIZE;
+  }
+
+  static mergeUniverseData(arrayOfUniObjs: UniverseDataObjectCollection[]) {
+    return arrayOfUniObjs.reduce(
+      (
+        universeAccum: UniverseDataObjectCollection,
+        universe: UniverseDataObjectCollection,
+      ) => {
+        const uniNum = Number(Object.keys(universe)[0]);
+
+        if (uniNum in universeAccum) {
+          universeAccum[uniNum].push(...universe[uniNum]);
+        } else {
+          universeAccum[uniNum] = universe[uniNum];
+        }
+        return universeAccum;
+      },
+      {},
+    );
   }
 
   static zeroIndex(value: number) {

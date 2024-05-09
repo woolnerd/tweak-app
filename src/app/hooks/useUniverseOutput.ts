@@ -17,20 +17,13 @@ export default function useUniverseOutput() {
         if (compFixture.channel in manualFixturesStore) {
           compFixture.values = manualFixturesStore[compFixture.channel].values;
         }
-        return new UniverseDataBuilder(compFixture).toUniverseTuples();
+        return new UniverseDataBuilder(compFixture).buildUniverses();
       });
 
-      //
-      // pass universeObjs to a method that instantiates an object
-      const universe = new ValueUniverse(1);
-      universeObjs.flat().forEach((uni: DmxTuple) => {
-        universe.addDmxValues(uni);
-      });
+      const outputUniverses =
+        UniverseDataBuilder.mergeUniverseData(universeObjs);
 
-      console.log({ universe });
-      console.log({ universeObjs });
-
-      updateOutputValuesStore(universe.getDmxValues);
+      updateOutputValuesStore(outputUniverses);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [compositeFixturesStore, manualFixturesStore]);

@@ -2,12 +2,12 @@
 import { render, waitFor } from "@testing-library/react-native";
 import React from "react";
 
-jest.mock("../../util/fixture-cache");
-jest.mock("../../db/client.ts");
-jest.mock("../../app/store/useCompositeFixtureStore.ts");
-jest.mock("../../app/store/useFixtureChannelSelectionStore.ts");
-jest.mock("../../app/store/useManualFixtureStore.ts");
-jest.mock("../../models/scene-to-fixture-assignments");
+jest.mock("../../../util/fixture-cache.ts");
+jest.mock("../../../db/client.ts");
+jest.mock("../../store/useCompositeFixtureStore.ts");
+jest.mock("../../store/useFixtureChannelSelectionStore.ts");
+jest.mock("../../store/useManualFixtureStore.ts");
+jest.mock("../../../models/scene-to-fixture-assignments");
 
 import ScenesToFixtureAssignments from "../../../models/scene-to-fixture-assignments.ts";
 import { useCompositeFixtureStore } from "../../store/useCompositeFixtureStore.ts";
@@ -35,6 +35,8 @@ describe("LayoutArea", () => {
       fixtureName: "Fixture 1",
       fixtureNotes: "no notes",
       sceneId: 1,
+      addressStart: 21,
+      addressEnd: 24,
     },
     {
       fixtureAssignmentId: 2,

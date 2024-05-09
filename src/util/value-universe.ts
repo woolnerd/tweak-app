@@ -23,4 +23,6 @@ export default class ValueUniverse extends Universe<DmxTuple> {
 
     return display;
   }
+
+  public buildDataOutput() {}
 }

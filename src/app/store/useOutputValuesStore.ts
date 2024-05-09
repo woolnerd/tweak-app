@@ -1,16 +1,18 @@
 import { create } from "zustand";
 
-import { DmxTuple } from "../../util/value-universe.ts";
+import { UniverseDataObjectCollection } from "../../lib/universe-data-builder.ts";
 
-type State = { outputValuesStore: DmxTuple[] };
+type State = { outputValuesStore: UniverseDataObjectCollection };
 
 type Action = {
-  updateOutputValuesStore: (outputValuesStore: DmxTuple[]) => void;
+  updateOutputValuesStore: (
+    outputValuesStore: UniverseDataObjectCollection,
+  ) => void;
 };
 
 // eslint-disable-next-line import/prefer-default-export
 export const useOutputValuesStore = create<State & Action>((set) => ({
-  outputValuesStore: [],
-  updateOutputValuesStore: (outputValuesStore: DmxTuple[]) =>
+  outputValuesStore: {},
+  updateOutputValuesStore: (outputValuesStore: UniverseDataObjectCollection) =>
     set(() => ({ outputValuesStore })),
 }));
