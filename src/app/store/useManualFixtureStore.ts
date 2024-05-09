@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { ManualFixtureState } from "../../components/types/fixture.ts";
+import { ManualFixtureState } from "../components/Fixture/types/Fixture.ts";
 
 type State = { manualFixturesStore: ManualFixtureState };
 

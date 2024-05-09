@@ -186,3 +186,15 @@ export function percentageToColorTemperature(
 
   return colorTemp;
 }
+
+export function mergeTupleArrays(
+  dbStateArray: number[][],
+  manualStateArray: number[][],
+) {
+  return dbStateArray.map(([dbStateFirst, dbStateSecond]) => {
+    const matchingTuple = manualStateArray.find(
+      ([manualFirst]) => manualFirst === dbStateFirst,
+    );
+    return matchingTuple || [dbStateFirst, dbStateSecond];
+  });
+}

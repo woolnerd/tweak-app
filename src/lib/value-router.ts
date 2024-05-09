@@ -4,7 +4,7 @@ import { ProfileTarget } from "./types/buttons.ts";
 import {
   ManualFixtureObj,
   ManualFixtureState,
-} from "../components/types/fixture.ts";
+} from "../app/components/Fixture/types/Fixture.ts";
 import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 import ChannelValueCalculator from "../util/channel-value-calculator.ts";
 

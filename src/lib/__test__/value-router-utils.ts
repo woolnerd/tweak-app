@@ -1,4 +1,4 @@
-import { ManualFixtureState } from "../../components/types/fixture.ts";
+import { ManualFixtureState } from "../../app/components/Fixture/types/Fixture.ts";
 import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
 import { ActionObject } from "../command-line/types/command-line-types.ts";
 import { ProfileTarget } from "../types/buttons.ts";

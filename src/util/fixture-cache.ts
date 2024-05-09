@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/typescript/types";
 
-import { FixtureControlData } from "../components/types/fixture.ts";
+import { FixtureControlData } from "../app/components/Fixture/types/Fixture.ts";
 
 function buildKey(sceneId: number, channel: number) {
   return `sceneId:${sceneId}#fixtureChannel:${channel}`;

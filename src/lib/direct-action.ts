@@ -1,4 +1,4 @@
-import { FixtureControlData } from "../components/types/fixture.ts";
+import { FixtureControlData } from "../app/components/Fixture/types/Fixture.ts";
 import { DirectActionButton } from "../db/button-data.ts";
 
 export default class DirectAction {
