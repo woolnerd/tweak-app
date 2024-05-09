@@ -1,5 +1,3 @@
-import { Link } from "expo-router";
-import { useEffect, useState } from "react";
 import { View, Text } from "react-native";
 
 export default function Tab() {
