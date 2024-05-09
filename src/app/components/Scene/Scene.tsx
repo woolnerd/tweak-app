@@ -2,8 +2,8 @@ import { View, Pressable, Text, StyleSheet } from "react-native";
 
 // import { FixtureControlData } from "../types/fixture.ts";
 import { updateFixureAssignmentDb } from "./helpers.ts";
-import { useFixtureChannelSelectionStore } from "../../app/store/useFixtureChannelSelectionStore.ts";
-import { useManualFixtureStore } from "../../app/store/useManualFixtureStore.ts";
+import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
+import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
 
 export type SceneProps = {
   name: string;

@@ -9,11 +9,11 @@ jest.mock("../../app/store/useFixtureChannelSelectionStore.ts");
 jest.mock("../../app/store/useManualFixtureStore.ts");
 jest.mock("../../models/scene-to-fixture-assignments");
 
-import { useCompositeFixtureStore } from "../../app/store/useCompositeFixtureStore.ts";
-import { useFixtureChannelSelectionStore } from "../../app/store/useFixtureChannelSelectionStore.ts";
-import { useManualFixtureStore } from "../../app/store/useManualFixtureStore.ts";
-import ScenesToFixtureAssignments from "../../models/scene-to-fixture-assignments.ts";
-import LayoutArea from "../layout-area.tsx";
+import { useCompositeFixtureStore } from "../../../store/useCompositeFixtureStore.ts";
+import { useFixtureChannelSelectionStore } from "../../../store/useFixtureChannelSelectionStore.ts";
+import { useManualFixtureStore } from "../../../store/useManualFixtureStore.ts";
+import ScenesToFixtureAssignments from "../../../../models/scene-to-fixture-assignments.ts";
+import LayoutArea from "../LayoutArea.tsx";
 
 describe("LayoutArea", () => {
   const mockCompositeFixtures = [

@@ -25,7 +25,8 @@ describe("Universe", () => {
   });
 
   it("assigns universe number to 1", () => {
-    expect(universe.number).toEqual(1);
+    // eslint-disable-next-line dot-notation
+    expect(universe["number"]).toEqual(1);
   });
 
   it("displays utilized fixture channels", () => {

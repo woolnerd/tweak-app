@@ -1,11 +1,11 @@
-import { db } from "../../db/client.ts";
-import FixtureAssignment from "../../models/fixture-assignment.ts";
+import { db } from "../../../db/client.ts";
+import FixtureAssignment from "../../../models/fixture-assignment.ts";
 import {
   clearCacheOnScene,
   getAllFixturesFromSceneKeys,
   getManualFixtureKeys,
-} from "../../util/fixture-cache.ts";
-import { ManualFixtureState } from "../types/fixture.ts";
+} from "../../../util/fixture-cache.ts";
+import { ManualFixtureState } from "../Fixture/types/Fixture.ts";
 
 export const updateFixureAssignmentDb = async <T extends ManualFixtureState>(
   manualFixtureState: T[],

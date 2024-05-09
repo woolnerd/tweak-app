@@ -1,4 +1,3 @@
-/* eslint-disable spaced-comment */
 import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 import ChannelNumber from "../util/channel-number.ts";
 import DmxValue from "../util/dmx-value.ts";

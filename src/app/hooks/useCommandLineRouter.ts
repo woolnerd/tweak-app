@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { ManualFixtureState } from "../../components/types/fixture.ts";
+import { ManualFixtureState } from "../components/Fixture/types/Fixture.ts";
 import ProfileAdapter from "../../lib/adapters/profile-adapter.ts";
 import { ActionObject } from "../../lib/command-line/types/command-line-types.ts";
 import ValueRouter from "../../lib/value-router.ts";

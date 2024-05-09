@@ -1,40 +1,25 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useCallback } from "react";
 import { StyleSheet, View, FlatList } from "react-native";
 
-import { Fixture as FixtureComponent } from "./fixture.tsx";
-import { useCompositeFixtureStore } from "../app/store/useCompositeFixtureStore.ts";
-import { useFixtureChannelSelectionStore } from "../app/store/useFixtureChannelSelectionStore.ts";
-import { useManualFixtureStore } from "../app/store/useManualFixtureStore.ts";
-import { db } from "../db/client.ts";
-import ScenesToFixtureAssignments from "../models/scene-to-fixture-assignments.ts";
-// import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
-// import { mergeCacheWithDBFixtures } from "../util/helpers.ts";
-
-// import UniverseDataBuilder from "../lib/universe-data-builder.ts";
-// import ValueUniverse, { DmxTuple } from "../util/value-universe.ts";
+import { Fixture as FixtureComponent } from "../Fixture/Fixture.tsx";
+import { useCompositeFixtureStore } from "../../store/useCompositeFixtureStore.ts";
+import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
+import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
+import { useOutputValuesStore } from "../../store/useOutputValuesStore.ts";
+import { db } from "../../../db/client.ts";
+import UniverseDataBuilder from "../../../lib/universe-data-builder.ts";
+import ScenesToFixtureAssignments from "../../../models/scene-to-fixture-assignments.ts";
+import ValueUniverse, { DmxTuple } from "../../../util/value-universe.ts";
 
 type LayoutAreaProps = {
   selectedSceneId: number;
   goToOut: boolean;
 };
 
-// Drizzle inArray method must have at least one value in the array.
-// using -1, because we should never have that id.
-// const DRIZZLE_ARRAY_CHECK_VALUE = -1;
-
 export default function LayoutArea({
   selectedSceneId,
   goToOut,
 }: LayoutAreaProps): React.JSX.Element {
-  // const [compositeFixturesStore, setCompositeFixtures] = useState<
-  //   ParsedCompositeFixtureInfo[]
-  // >([]);
-  // const [selectedFixtureIds, setSelectedFixtureIds] = useState<Set<number>>(
-  //   new Set([DRIZZLE_ARRAY_CHECK_VALUE]),
-  // );
-  // const [mergeManualAndCompositeFixtures, setMergeManualAndCompositeFixtures] =
-  //   useState([]);
-
   const { compositeFixturesStore, updateCompositeFixturesStore } =
     useCompositeFixtureStore((state) => state);
 
@@ -42,8 +27,9 @@ export default function LayoutArea({
     (state) => state.fixtureChannelSelectionStore,
   );
 
-  const { manualFixturesStore, updateManualFixturesStore } =
-    useManualFixtureStore((state) => state);
+  const { manualFixturesStore } = useManualFixtureStore((state) => state);
+
+  const { updateOutputValuesStore } = useOutputValuesStore((state) => state);
 
   const fetchCompositeFixtures = useCallback(async () => {
     try {
@@ -56,28 +42,33 @@ export default function LayoutArea({
       console.log(e);
       throw new Error();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSceneId]);
 
-  // useEffect(() => {
-  //   if (compositeFixtures.length > 0) {
-  //     const universeObjs = compositeFixtures.map((compFixture) =>
-  //       new UniverseDataBuilder(compFixture).toUniverseTuples(),
-  //     );
-  //     const universe = new ValueUniverse(1);
-  //     universeObjs.flat().forEach((uni: DmxTuple) => {
-  //       universe.addDmxValues(uni);
-  //     });
-  //     console.log(universe);
-  //   }
-  // }, [compositeFixtures]);
+  useEffect(() => {
+    if (compositeFixturesStore.length > 0) {
+      const universeObjs = compositeFixturesStore.map((compFixture) => {
+        if (compFixture.channel in manualFixturesStore) {
+          compFixture.values = manualFixturesStore[compFixture.channel].values;
+        }
+        return new UniverseDataBuilder(compFixture).toUniverseTuples();
+      });
+
+      const universe = new ValueUniverse(1);
+      universeObjs.flat().forEach((uni: DmxTuple) => {
+        universe.addDmxValues(uni);
+      });
+
+      console.log(universe.getDmxValues);
+      console.log({ manualFixturesStore });
+
+      updateOutputValuesStore(universe.getDmxValues);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [compositeFixturesStore, manualFixturesStore]);
 
   useEffect(() => {
     fetchCompositeFixtures().then((res) => updateCompositeFixturesStore(res));
-    // mergeCacheWithDBFixtures(
-    //   selectedSceneId,
-    //   fetchCompositeFixtures,
-    //   updateCompositeFixturesStore,
-    // );
   }, [selectedSceneId, fetchCompositeFixtures, updateCompositeFixturesStore]);
 
   useEffect(() => {
@@ -92,6 +83,7 @@ export default function LayoutArea({
         return compFixtureStateObj;
       }),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [manualFixturesStore]);
 
   return (

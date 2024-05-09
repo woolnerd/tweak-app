@@ -5,12 +5,13 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import ErrorBoundary from "react-native-error-boundary";
 
-import ControlPanel from "../../components/control-panel.tsx";
-import LayoutArea from "../../components/layout-area.tsx";
-import { Scene as SceneComponent } from "../../components/scene/scene.tsx";
+import ControlPanel from "../components/ControlPanel/ControlPanel.tsx";
+import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
+import { Scene as SceneComponent } from "../components/Scene/Scene.tsx";
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
 import Scene from "../../models/scene.ts";
+
 import runMigrataions from "scripts/migrations.js";
 import seedDatabase from "scripts/seedDatabase.js";
 import * as FileSystem from "expo-file-system";
