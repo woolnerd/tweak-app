@@ -1,26 +1,33 @@
 interface CompositeFixtureInfo {
   fixtureAssignmentId: number;
   channel: number;
-  title: string | null;
-  profileName: string | null;
-  fixtureName: string | null;
-  fixtureNotes: string | null;
-  sceneId: number | null;
-  addressStart: number | null;
-  addressEnd: number | null;
-  colorTempLow: number | null;
-  colorTempHigh: number | null;
+  title: string;
+  profileName: string;
+  fixtureName: string;
+  fixtureNotes: string;
+  sceneId: number;
+  startAddress: number;
+  endAddress: number;
+  colorTempLow: number;
+  colorTempHigh: number;
   is16Bit: boolean;
 }
 
+type ProfileDescription = string;
+type DmxValue = number;
+type Address = number;
+type ProfileKey = number;
+export type ProfileChannels = Record<ProfileKey, ProfileDescription>;
+export type AddressTuples = [Address, DmxValue][];
+
 export interface ParsedCompositeFixtureInfo extends CompositeFixtureInfo {
-  values: number[][];
-  profileChannels: Record<number, string> | null;
+  values: AddressTuples;
+  profileChannels: ProfileChannels;
   channelPairs16Bit: number[][];
 }
 
 export interface UnparsedCompositeFixtureInfo extends CompositeFixtureInfo {
-  values: string | null;
-  profileChannels: string | null;
+  values: string;
+  profileChannels: string;
   channelPairs16Bit: string;
 }

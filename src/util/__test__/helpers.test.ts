@@ -1,3 +1,4 @@
+import { AddressTuples } from "../../models/types/scene-to-fixture-assignment.ts";
 import {
   merge16BitValues,
   handleChannelValues,
@@ -12,13 +13,13 @@ describe("Merge 16bit values", () => {
       [3, 4],
       [5, 6],
     ];
-    const values = [
+    const values: AddressTuples = [
       [1, 128],
       [2, 128],
       [7, 255],
     ];
 
-    const values8Bit = [
+    const values8Bit: AddressTuples = [
       [7, 255],
       [8, 255],
     ];
@@ -40,14 +41,14 @@ describe("Merge 16bit values", () => {
         2: "Dimmer fine",
       };
 
-      const values1 = [
+      const values1: AddressTuples = [
         [1, 255],
         [2, 255],
         [3, 128],
         [4, 128],
       ];
 
-      const channelPairs16Bit1 = [
+      const channelPairs16Bit1: AddressTuples = [
         [1, 2],
         [3, 4],
       ];
@@ -67,14 +68,14 @@ describe("Merge 16bit values", () => {
         4: "Color Temp fine",
       };
 
-      const values2 = [
+      const values2: AddressTuples = [
         [1, 255],
         [2, 255],
         [3, 128],
         [4, 128],
       ];
 
-      const channelPairs16Bit2 = [
+      const channelPairs16Bit2: AddressTuples = [
         [1, 2],
         [3, 4],
       ];
@@ -96,7 +97,7 @@ describe("Merge 16bit values", () => {
         3: "Color Temp",
         4: "Color Temp fine",
       };
-      const values = [
+      const values: AddressTuples = [
         [1, 255],
         [2, 0],
       ];

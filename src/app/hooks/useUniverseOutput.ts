@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 
 import UniverseDataBuilder from "../../lib/universe-data-builder.ts";
-import ValueUniverse, { DmxTuple } from "../../util/value-universe.ts";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 import { useManualFixtureStore } from "../store/useManualFixtureStore.ts";
 import { useOutputValuesStore } from "../store/useOutputValuesStore.ts";

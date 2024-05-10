@@ -28,8 +28,8 @@ export const fixturesRelations = relations(fixtures, ({ one, many }) => ({
 export const manufacturers = sqliteTable("manufacturers", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   name: text("name").notNull().unique(),
-  notes: text("notes"),
-  website: text("website"),
+  notes: text("notes").notNull().default(""),
+  website: text("website").notNull().default(""),
 });
 
 export const manufacturersRelations = relations(manufacturers, ({ many }) => ({
@@ -67,10 +67,10 @@ export const patchesRelations = relations(patches, ({ one, many }) => ({
 
 export const profiles = sqliteTable("profiles", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  name: text("name"),
-  channels: text("channels"),
+  name: text("name").notNull().default(""),
+  channels: text("channels").notNull().default("{}"),
   channelCount: integer("channel_count").notNull(),
-  fixtureId: integer("fixture_id"),
+  fixtureId: integer("fixture_id").notNull(),
   channelPairs16Bit: text("channel_pairs_16_bit").default("[]").notNull(),
   is16Bit: integer("is_16_bit", { mode: "boolean" }).default(false).notNull(),
 });
@@ -86,12 +86,12 @@ export const profilesRelations = relations(profiles, ({ one, many }) => ({
 
 export const fixtureAssignments = sqliteTable("fixtureAssignments", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  title: text("title"),
+  title: text("title").notNull().default(""),
   channel: integer("channel").notNull(),
-  values: text("values"),
-  fixtureId: integer("fixture_id"),
-  profileId: integer("profile_id"),
-  patchId: integer("patch_id"),
+  values: text("values").notNull().default("[]"),
+  fixtureId: integer("fixture_id").notNull(),
+  profileId: integer("profile_id").notNull(),
+  patchId: integer("patch_id").notNull(),
 });
 
 export const fixtureAssignmentRelations = relations(
@@ -118,6 +118,7 @@ export const scenes = sqliteTable("scenes", {
   name: text("name").notNull(),
   order: integer("order").notNull().unique(),
   showId: integer("show_id").notNull(),
+  timeRate: integer("time_rate").notNull().default(5),
 });
 
 export const scenesRelations = relations(scenes, ({ many, one }) => ({
@@ -159,9 +160,13 @@ export const scenesToFixturesAssignmentsRelations = relations(
 
 export const shows = sqliteTable("shows", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  name: text("name"),
-  createdAt: text("created_at").default(sql`(CURRENT_TIME)`),
-  updatedAt: text("updated_at").default(sql`(CURRENT_TIME)`),
+  name: text("name").notNull().default(""),
+  createdAt: text("created_at")
+    .notNull()
+    .default(sql`(CURRENT_TIME)`),
+  updatedAt: text("updated_at")
+    .notNull()
+    .default(sql`(CURRENT_TIME)`),
 });
 
 export const showsRelations = relations(shows, ({ many }) => ({

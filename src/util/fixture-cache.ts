@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyValuePair } from "@react-native-async-storage/async-storage/lib/typescript/types";
 
-import { FixtureControlData } from "../app/components/Fixture/types/Fixture.ts";
+import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 
 function buildKey(sceneId: number, channel: number) {
   return `sceneId:${sceneId}#fixtureChannel:${channel}`;
@@ -16,7 +16,7 @@ function keyIncludesScene(key: KeyValuePair | string, sceneId: number) {
 
 function mapValuesToFixtures(
   keyValuePairs: KeyValuePair[],
-): FixtureControlData[] {
+): ParsedCompositeFixtureInfo[] {
   return keyValuePairs.map((key) => {
     const value = key[1];
     if (value !== null) {
@@ -36,7 +36,7 @@ export const getManualFixture = async (sceneId: number, channel: number) => {
   }
 };
 
-export const addManualFixture = async (fixture: FixtureControlData) => {
+export const addManualFixture = async (fixture: ParsedCompositeFixtureInfo) => {
   try {
     const jsonValue = JSON.stringify(fixture);
     await AsyncStorage.setItem(

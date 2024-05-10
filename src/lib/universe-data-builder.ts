@@ -2,56 +2,54 @@ import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-ass
 import ChannelNumber from "../util/channel-number.ts";
 import DmxValue from "../util/dmx-value.ts";
 
-type UniverseDataObject = Record<number, number[]>;
-type UniverseDataObjectCollection = Record<number, number[][]>;
+export type UniverseDataObject = Record<number, number[]>;
+export type UniverseDataObjectCollection = Record<number, number[][]>;
+
+export type PickFixtureInfo = Pick<
+  ParsedCompositeFixtureInfo,
+  "startAddress" | "endAddress" | "values"
+>;
 
 export default class UniverseDataBuilder {
   UNIVERSE_SIZE: number = 511;
 
-  private data: ParsedCompositeFixtureInfo;
+  private data: PickFixtureInfo;
 
-  constructor(data: ParsedCompositeFixtureInfo) {
+  constructor(data: PickFixtureInfo) {
     this.data = data;
   }
 
-  toUniverseObject() {
+  public toUniverseObject() {
     const uniObj: UniverseDataObject = {};
-    if (!this.data.addressStart || !this.data.addressEnd || !this.data.values) {
-      throw new Error("Address start cannot be null");
-    }
 
-    uniObj[this.data.addressStart] = [];
+    uniObj[this.data.startAddress] = [];
 
-    const addressFootprint = this.data.addressEnd - this.data.addressStart + 1;
+    const addressFootprint = this.data.endAddress - this.data.startAddress + 1;
 
     for (let i = 0; i < addressFootprint; i += 1) {
-      uniObj[this.data.addressStart][i] = 0;
+      uniObj[this.data.startAddress][i] = 0;
     }
 
     this.data.values.forEach((tuple) => {
       const [addressIdx, dmxValue] = tuple;
-      uniObj[this.data.addressStart!][addressIdx - 1] = dmxValue;
+      uniObj[this.data.startAddress!][addressIdx - 1] = dmxValue;
     });
 
     return uniObj;
   }
 
-  buildUniverses() {
-    if (!this.data.addressStart || !this.data.values) {
-      throw new Error("Starting addresss cannot be null");
-    }
-
+  public buildUniverses() {
     return this.data.values?.reduce(
       (universes: UniverseDataObjectCollection, [orignalAddress, dmxVal]) => {
-        if (!this.data.addressStart) {
+        if (!this.data.startAddress) {
           throw new Error("Addres start cannot be falsy");
         }
         const channelValue = UniverseDataBuilder.offsetByOneAndZeroIndex(
-          orignalAddress + this.data.addressStart,
+          orignalAddress + this.data.startAddress,
         );
 
         const universeNum = this.deriveUniverseFromAddress(
-          this.data.addressStart,
+          this.data.startAddress,
         );
 
         const channel = new ChannelNumber(
@@ -70,12 +68,12 @@ export default class UniverseDataBuilder {
     );
   }
 
-  deriveUniverseFromAddress(startAddress: number) {
+  public deriveUniverseFromAddress(startAddress: number) {
     return Math.ceil(startAddress / this.UNIVERSE_SIZE);
   }
 
-  clampAddressToUniverseSize(startAddress: number) {
-    return startAddress % this.UNIVERSE_SIZE;
+  public clampAddressToUniverseSize(startAddress: number) {
+    return startAddress % (this.UNIVERSE_SIZE + 1);
   }
 
   static mergeUniverseData(arrayOfUniObjs: UniverseDataObjectCollection[]) {

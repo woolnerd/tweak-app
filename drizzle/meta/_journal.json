@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1711562855473,
-      "tag": "0000_bored_phil_sheldon",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1712184008415,
-      "tag": "0001_watery_gwen_stacy",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1712840231875,
-      "tag": "0002_fuzzy_morlun",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1713968016698,
-      "tag": "0003_brainy_the_executioner",
+      "when": 1715359184665,
+      "tag": "0000_pink_blob",
       "breakpoints": true
     }
   ]

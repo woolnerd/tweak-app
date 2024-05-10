@@ -4,9 +4,12 @@ import {
   getManualFixtureKeys,
   getAllFixturesFromSceneKeys,
 } from "./fixture-cache.ts";
-import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
+import {
+  ParsedCompositeFixtureInfo,
+  AddressTuples,
+} from "../models/types/scene-to-fixture-assignment.ts";
 
-type FetchCallback = () => Promise<ParsedCompositeFixtureInfo[] | void>;
+type FetchCallback = () => Promise<ParsedCompositeFixtureInfo[]>;
 
 type SetCallback = (compositeFixtures: ParsedCompositeFixtureInfo[]) => void;
 
@@ -72,7 +75,7 @@ function choose8bitOrBuildValueTupleFor16bit(
 export function merge16BitValues(
   channelPairs16Bit: ParsedCompositeFixtureInfo["channelPairs16Bit"],
   values: ParsedCompositeFixtureInfo["values"],
-) {
+): AddressTuples {
   const compute16bitVal = (coarseVal: number, fineVal: number) =>
     coarseVal * 256 + fineVal;
 
@@ -131,9 +134,9 @@ export function handleChannelValues(
   mergeFunc: (
     channelPairs: ParsedCompositeFixtureInfo["channelPairs16Bit"],
     valuesArg: ParsedCompositeFixtureInfo["values"],
-  ) => number[][] = merge16BitValues,
+  ) => AddressTuples = merge16BitValues,
 ): {
-  result: Record<string, number> | null;
+  result: Record<string, number>;
   manualStyleChannels: Record<string, boolean>;
 } {
   const result: Record<string, number> = {};

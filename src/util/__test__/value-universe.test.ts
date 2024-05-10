@@ -34,7 +34,5 @@ describe("ValueUniverse", () => {
     const display = valueUniverse.buildUniverse();
     expect(display[channel1.value]).toBe(dmxValue1.value);
     expect(display[channel2.value]).toBe(dmxValue2.value);
-
-    console.log(display);
   });
 });

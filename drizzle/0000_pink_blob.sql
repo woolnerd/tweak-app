@@ -1,26 +1,28 @@
 CREATE TABLE `fixtureAssignments` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`title` text,
+	`title` text DEFAULT '' NOT NULL,
 	`channel` integer NOT NULL,
-	`value` integer DEFAULT 0 NOT NULL,
-	`fixture_id` integer,
-	`profile_id` integer
+	`values` text DEFAULT '[]' NOT NULL,
+	`fixture_id` integer NOT NULL,
+	`profile_id` integer NOT NULL,
+	`patch_id` integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `fixtures` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
-	`notes` text,
-	`assigned` integer DEFAULT false,
+	`notes` text NOT NULL,
 	`manufacturer_id` integer,
+	`color_temp_range_low` integer,
+	`color_temp_range_high` integer,
 	FOREIGN KEY (`manufacturer_id`) REFERENCES `manufacturers`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `manufacturers` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
-	`notes` text,
-	`website` text
+	`notes` text DEFAULT '' NOT NULL,
+	`website` text DEFAULT '' NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `patches` (
@@ -29,22 +31,26 @@ CREATE TABLE `patches` (
 	`end_address` integer NOT NULL,
 	`fixture_id` integer NOT NULL,
 	`profile_id` integer NOT NULL,
-	`show_id` integer NOT NULL
+	`show_id` integer NOT NULL,
+	`fixture_assignment_id` integer
 );
 --> statement-breakpoint
 CREATE TABLE `profiles` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`name` text,
-	`channels` text,
+	`name` text DEFAULT '' NOT NULL,
+	`channels` text DEFAULT '{}' NOT NULL,
 	`channel_count` integer NOT NULL,
-	`fixture_id` integer
+	`fixture_id` integer NOT NULL,
+	`channel_pairs_16_bit` text DEFAULT '[]' NOT NULL,
+	`is_16_bit` integer DEFAULT false NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `scenes` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
 	`order` integer NOT NULL,
-	`show_id` integer NOT NULL
+	`show_id` integer NOT NULL,
+	`time_rate` integer DEFAULT 5 NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `scenes_to_fixture_assignments` (
@@ -57,9 +63,10 @@ CREATE TABLE `scenes_to_fixture_assignments` (
 --> statement-breakpoint
 CREATE TABLE `shows` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`name` text,
-	`created_at` text DEFAULT (CURRENT_TIME),
-	`updated_at` text DEFAULT (CURRENT_TIME)
+	`name` text DEFAULT '' NOT NULL,
+	`created_at` text DEFAULT (CURRENT_TIME) NOT NULL,
+	`updated_at` text DEFAULT (CURRENT_TIME) NOT NULL
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `manufacturers_name_unique` ON `manufacturers` (`name`);
+CREATE UNIQUE INDEX `manufacturers_name_unique` ON `manufacturers` (`name`);--> statement-breakpoint
+CREATE UNIQUE INDEX `scenes_order_unique` ON `scenes` (`order`);
