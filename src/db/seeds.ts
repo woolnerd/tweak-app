@@ -319,6 +319,7 @@ export const seeds: Seeds = {
       profileId: 1,
       title: "Vortex 1 at full",
       values: JSON.stringify([[1, 255]]),
+      patchId: 1,
     },
     {
       channel: 2,
@@ -326,6 +327,7 @@ export const seeds: Seeds = {
       profileId: 1,
       title: "Vortex 2 at 50%",
       values: JSON.stringify([[1, 128]]),
+      patchId: 2,
     },
     {
       channel: 10,
@@ -333,6 +335,7 @@ export const seeds: Seeds = {
       profileId: 1,
       title: "S60 1 at 50%",
       values: JSON.stringify([[1, 128]]),
+      patchId: 3,
     },
     {
       channel: 11,
@@ -340,6 +343,7 @@ export const seeds: Seeds = {
       profileId: 1,
       title: "S60 2 at 50%",
       values: JSON.stringify([[1, 128]]),
+      patchId: 4,
     },
     {
       channel: 11,
@@ -347,6 +351,7 @@ export const seeds: Seeds = {
       profileId: 1,
       title: "Different scene (2)",
       values: JSON.stringify([[1, 0]]),
+      patchId: 5,
     },
     {
       channel: 12,
@@ -357,6 +362,7 @@ export const seeds: Seeds = {
         [1, 128],
         [2, 128],
       ]),
+      patchId: 6,
     },
   ],
   scenesToFixtureAssignments: [
@@ -372,8 +378,8 @@ export const seeds: Seeds = {
 
 export const testData = [
   {
-    addressEnd: 5,
-    addressStart: 1,
+    startAddress: 1,
+    endAddress: 5,
     channel: 1,
     fixtureAssignmentId: 1,
     fixtureName: "Vortex",
@@ -388,11 +394,11 @@ export const testData = [
     profileName: "mode 1",
     sceneId: 1,
     title: "Vortex 1 at full",
-    values: [[Array]],
+    values: [[4, 255]],
   },
   {
-    addressEnd: 10,
-    addressStart: 5,
+    startAddress: 5,
+    endAddress: 10,
     channel: 2,
     fixtureAssignmentId: 2,
     fixtureName: "Vortex",
@@ -407,11 +413,11 @@ export const testData = [
     profileName: "mode 1",
     sceneId: 1,
     title: "Vortex 2 at 50%",
-    values: [[Array]],
+    values: [[4, 255]],
   },
   {
-    addressEnd: 11,
-    addressStart: 10,
+    startAddress: 10,
+    endAddress: 11,
     channel: 10,
     fixtureAssignmentId: 3,
     fixtureName: "S60",
@@ -426,11 +432,11 @@ export const testData = [
     profileName: "mode 1",
     sceneId: 1,
     title: "S60 1 at 50%",
-    values: [[Array]],
+    values: [[4, 255]],
   },
   {
-    addressEnd: 15,
-    addressStart: 11,
+    startAddress: 11,
+    endAddress: 15,
     channel: 11,
     fixtureAssignmentId: 4,
     fixtureName: "S60",
@@ -445,6 +451,6 @@ export const testData = [
     profileName: "mode 1",
     sceneId: 1,
     title: "S60 2 at 50%",
-    values: [[Array]],
+    values: [[4, 255]],
   },
 ];

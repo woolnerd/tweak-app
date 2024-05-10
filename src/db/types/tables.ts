@@ -37,6 +37,7 @@ export type SelectSceneToFixtureAssignment =
     id: number;
   };
 
+// eslint-disable-next-line no-shadow
 export enum TableNames {
   Fixtures = "fixtures",
   FixtureAssignments = "fixtureAssignments",
