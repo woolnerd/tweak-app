@@ -44,7 +44,9 @@ export default function LayoutArea({
   useUniverseOutput();
 
   useEffect(() => {
-    fetchCompositeFixtures().then((res) => updateCompositeFixturesStore(res));
+    fetchCompositeFixtures()
+      .then((res) => updateCompositeFixturesStore(res))
+      .catch((err) => console.log(err));
   }, [selectedSceneId, fetchCompositeFixtures, updateCompositeFixturesStore]);
 
   useEffect(() => {
@@ -84,6 +86,9 @@ export default function LayoutArea({
             channelPairs16Bit={item.channelPairs16Bit}
             colorTempHigh={item.colorTempHigh}
             colorTempLow={item.colorTempLow}
+            title={item.title}
+            startAddress={item.startAddress}
+            endAddress={item.endAddress}
           />
         )}
         keyExtractor={(item, idx) => item.fixtureAssignmentId.toString()}

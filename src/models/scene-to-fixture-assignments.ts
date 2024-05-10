@@ -46,8 +46,8 @@ export default class ScenesToFixtureAssignments extends Base<
           fixtureName: fixtures.name,
           fixtureNotes: fixtures.notes,
           sceneId: scenesToFixtureAssignments.sceneId,
-          addressStart: patches.startAddress,
-          addressEnd: patches.endAddress,
+          startAddress: patches.startAddress,
+          endAddress: patches.endAddress,
           colorTempLow: fixtures.colorTempRangeLow,
           colorTempHigh: fixtures.colorTempRangeHigh,
         })
@@ -76,7 +76,8 @@ export default class ScenesToFixtureAssignments extends Base<
 
       return this.parseStringColumnsToJSON();
     } catch (err) {
-      return this.handleError(err);
+      this.handleError(err);
+      return [];
     }
   }
 

@@ -5,8 +5,8 @@ import { openDatabaseSync } from "expo-sqlite/next";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import ErrorBoundary from "react-native-error-boundary";
-import runMigrataions from "scripts/migrations.js";
-import seedDatabase from "scripts/seedDatabase.js";
+// import runMigrataions from "scripts/migrations.js";
+// import seedDatabase from "scripts/seedDatabase.js";
 
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
@@ -26,7 +26,7 @@ function App() {
     const response = await new Scene(db).getAllOrdered();
     return !response ? [] : response;
   };
-  // console.log(FileSystem.documentDirectory);
+  console.log(FileSystem.documentDirectory);
 
   useEffect(() => {
     fetchScenes().then((response) => setScenes(response));

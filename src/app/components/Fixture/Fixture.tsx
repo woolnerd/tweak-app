@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-import { FixtureControlData } from "./types/Fixture.ts";
 import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import {
   handleChannelValues,
@@ -26,10 +25,7 @@ export type FixtureProps = {
   // setSelectedFixtureIds: (
   //   fixtureIds: (currentState: Set<number>) => Set<number>,
   // ) => void;
-} & ParsedCompositeFixtureInfo & {
-    values: ChannelTuples;
-    profileChannels: { ProfileKey: string }[];
-  };
+} & ParsedCompositeFixtureInfo;
 export function Fixture({
   channel,
   fixtureName,
@@ -38,8 +34,6 @@ export function Fixture({
   fixtureAssignmentId,
   is16Bit,
   channelPairs16Bit,
-  // selectedFixtureIds,
-  // setSelectedFixtureIds,
   sceneId,
   startAddress,
   endAddress,
@@ -59,15 +53,15 @@ export function Fixture({
 
   const fixtureInManualState = fixtureChannelSelectionStore.has(channel);
 
-  const removeFixtureFromState = (fixture: FixtureControlData): void => {
+  const removeFixtureFromState = (fixtureChannel: number): void => {
     const dupe = new Set([...fixtureChannelSelectionStore]);
-    dupe.delete(fixture.channel);
+    dupe.delete(fixtureChannel);
     updateFixtureChannelSelectionStore(dupe);
   };
 
-  const addFixtureToState = (fixture: FixtureControlData): void => {
+  const addFixtureToState = (fixtureChannel: number): void => {
     const dupe = new Set([...fixtureChannelSelectionStore]);
-    dupe.add(fixture.channel);
+    dupe.add(fixtureChannel);
     updateFixtureChannelSelectionStore(dupe);
   };
 
@@ -103,11 +97,11 @@ export function Fixture({
   //   endAddress,
   // ]);
 
-  const handleOutput = (fixture: FixtureControlData) => {
+  const handleOutput = (fixtureChannel: number) => {
     if (fixtureInManualState) {
-      removeFixtureFromState(fixture);
+      removeFixtureFromState(fixtureChannel);
     } else {
-      addFixtureToState(fixture);
+      addFixtureToState(fixtureChannel);
     }
   };
 
@@ -183,18 +177,7 @@ export function Fixture({
     <View
       key={fixtureAssignmentId}
       style={{ ...styles.fixtures, ...selectedStyle(false) }}
-      onTouchStart={() =>
-        handleOutput({
-          channel,
-          fixtureName,
-          profileChannels,
-          values,
-          fixtureAssignmentId,
-          sceneId,
-          startAddress,
-          endAddress,
-        })
-      }>
+      onTouchStart={() => handleOutput(channel)}>
       <Text style={styles.text}>{channel}</Text>
       <Text style={styles.text}>{fixtureName}</Text>
       {buildOutputDetails()}

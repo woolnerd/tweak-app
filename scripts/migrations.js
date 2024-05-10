@@ -1,6 +1,6 @@
 import { migrate } from "drizzle-orm/expo-sqlite/migrator";
 
-import migrations from "../drizzle/migrations.js";
+import migrations from "../drizzle/migrations";
 
 const { db } = require("../src/db/client.ts");
 

@@ -1,18 +1,19 @@
-import UniverseDataBuilder from "../universe-data-builder.ts";
+import UniverseDataBuilder, {
+  UniverseDataObjectCollection,
+  PickFixtureInfo,
+} from "../universe-data-builder.ts";
 
 describe("UniverseDataBuilder", () => {
   describe("toUniverseObject", () => {
     test("should initialize and populate universe object correctly", () => {
-      const data = {
-        addressStart: 1,
-        addressEnd: 3,
+      const data: PickFixtureInfo = {
+        startAddress: 1,
+        endAddress: 3,
         values: [
           [1, 100],
           [2, 150],
           [3, 200],
         ],
-        profileChannels: null,
-        channelPairs16Bit: [],
       };
       const builder = new UniverseDataBuilder(data);
       const result = builder.toUniverseObject();
@@ -20,36 +21,17 @@ describe("UniverseDataBuilder", () => {
         1: [100, 150, 200],
       });
     });
-
-    test("should throw an error when addressStart, addressEnd, or values are null", () => {
-      const data = {
-        addressStart: null,
-        addressEnd: 3,
-        values: [
-          [1, 100],
-          [2, 150],
-          [3, 200],
-        ],
-        profileChannels: null,
-        channelPairs16Bit: [],
-      };
-      const builder = new UniverseDataBuilder(data);
-      expect(() => builder.toUniverseObject()).toThrow(
-        "Address start cannot be null",
-      );
-    });
   });
 
   describe("toUniverseTuples", () => {
     test("should convert data values into tuples correctly, applying transformations", () => {
-      const data = {
-        addressStart: 1,
+      const data: PickFixtureInfo = {
+        startAddress: 1,
+        endAddress: 4,
         values: [
           [1, 100],
           [2, 150],
         ],
-        profileChannels: null,
-        channelPairs16Bit: [],
       };
       const builder = new UniverseDataBuilder(data);
       const result = builder.buildUniverses();
@@ -63,24 +45,52 @@ describe("UniverseDataBuilder", () => {
   });
 
   describe("buildDataOutput", () => {
-    test("it should create an object with proper amount of universes", () => {
-      const data = {
-        addressStart: 1,
+    test("it should create an object with proper amount of universes, and address vaues 0-indexed", () => {
+      const data: PickFixtureInfo = {
+        startAddress: 1,
+        endAddress: 4,
         values: [
           [1, 100],
           [2, 150],
         ],
-        profileChannels: null,
-        channelPairs16Bit: [],
       };
       const builder = new UniverseDataBuilder(data);
-      const result = builder.buildUniverses();
+      expect(builder.buildUniverses()).toStrictEqual({
+        1: [
+          [0, 100],
+          [1, 150],
+        ],
+      });
+    });
+  });
+  describe("deriveUniverseFromAddress", () => {
+    test("should return the correct universe number when the start address is a multiple of UNIVERSE_SIZE", () => {
+      const universeDataBuilder = new UniverseDataBuilder({
+        startAddress: 1023,
+        endAddress: 1027,
+        values: [[2, 255]],
+      });
+      const result = universeDataBuilder.deriveUniverseFromAddress(1023);
+      expect(result).toBe(3);
     });
   });
 
+  describe("clampAddressToUniverseSize", () => {
+    test("should return the correct address in context of a single universe", () => {
+      const universeDataBuilder = new UniverseDataBuilder({
+        startAddress: 1023,
+        endAddress: 1027,
+        values: [[2, 255]],
+      });
+      expect(universeDataBuilder.clampAddressToUniverseSize(1024)).toBe(0);
+      expect(universeDataBuilder.clampAddressToUniverseSize(1023)).toBe(511);
+      expect(universeDataBuilder.clampAddressToUniverseSize(512)).toBe(0);
+      expect(universeDataBuilder.clampAddressToUniverseSize(2)).toBe(2);
+    });
+  });
   describe("mergeUniverseData", () => {
     test("it should create an object with universe keys, and tuples as values", () => {
-      const data = [
+      const data: UniverseDataObjectCollection[] = [
         {
           1: [
             [1, 100],
