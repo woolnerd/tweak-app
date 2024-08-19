@@ -14,6 +14,7 @@ import Scene from "../../models/scene.ts";
 import ControlPanel from "../components/ControlPanel/ControlPanel.tsx";
 import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
 import { Scene as SceneComponent } from "../components/Scene/Scene.tsx";
+import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
@@ -26,7 +27,7 @@ function App() {
     const response = await new Scene(db).getAllOrdered();
     return !response ? [] : response;
   };
-  console.log(FileSystem.documentDirectory);
+  // console.log(FileSystem.documentDirectory);
 
   useEffect(() => {
     fetchScenes().then((response) => setScenes(response));
@@ -74,26 +75,31 @@ function App() {
               <Text style={{ ...styles.btnText, fontSize: 18 }}>Label</Text>
             </Pressable>
 
-            <Pressable
+            {/* <Pressable
               style={styles.bigButtons}
               onPress={() => AsyncStorage.clear()}>
               <Text style={{ ...styles.btnText, fontSize: 18 }}>
                 Clear Cache
               </Text>
-            </Pressable>
+            </Pressable> */}
           </View>
         </View>
 
         <View
           style={{
-            flex: 3,
+            flex: 2,
             ...styles.container,
           }}>
           <LayoutArea selectedSceneId={selectedSceneId} goToOut={false} />
         </View>
 
-        <View style={{ flex: 1.5, flexDirection: "row", ...styles.container }}>
-          <ControlPanel />
+        <View style={{ flex: 2, flexDirection: "row", ...styles.container }}>
+          <ControlPanel
+            allSelectionHasColorTemp
+            selectionColorTempMin={2200}
+            selectionColorTempMax={6000}
+            allSelectionHasTint
+          />
         </View>
       </View>
     </ErrorBoundary>

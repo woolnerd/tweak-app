@@ -1,26 +1,62 @@
 import { Pressable, Text, StyleSheet } from "react-native";
 
-import { ControlButton } from "../../../lib/types/buttons.ts";
+import {
+  Buttons,
+  ControlButton,
+  ProfileTarget,
+} from "../../../lib/types/buttons.ts";
 
 export default function ControlPanelButton({
   buttonData,
   handleTouch,
+  allSelectionHasColorTemp,
+  selectionColorTempMax,
+  selectionColorTempMin,
+  allSelectionHasTint,
 }: {
   buttonData: ControlButton;
   handleTouch: (data: ControlButton) => void;
+  allSelectionHasColorTemp: boolean;
+  selectionColorTempMax: number;
+  selectionColorTempMin: number;
+  allSelectionHasTint: boolean;
 }) {
+  const disableColorTemp =
+    buttonData.type === Buttons.DIRECT_ACTION_BUTTON &&
+    buttonData.profileTarget === ProfileTarget.COLOR_TEMP &&
+    !allSelectionHasColorTemp;
+
+  const disableTint =
+    buttonData.type === Buttons.DIRECT_ACTION_BUTTON &&
+    buttonData.profileTarget === ProfileTarget.TINT &&
+    !allSelectionHasTint;
+
+  const disableTempMax =
+    buttonData.type === Buttons.DIRECT_ACTION_BUTTON &&
+    buttonData.profileTarget === ProfileTarget.COLOR_TEMP &&
+    Number(buttonData.label) > selectionColorTempMax;
+
+  const disableTempMin =
+    buttonData.type === Buttons.DIRECT_ACTION_BUTTON &&
+    buttonData.profileTarget === ProfileTarget.COLOR_TEMP &&
+    Number(buttonData.label) < selectionColorTempMin;
+
+  const shouldDisable =
+    disableColorTemp || disableTempMax || disableTempMin || disableTint;
+
   return (
     <Pressable
       key={buttonData.id}
       style={styles.touchpadBtn}
-      onPressIn={() => handleTouch(buttonData)}>
+      onPressIn={() => handleTouch(buttonData)}
+      disabled={shouldDisable}>
       <Text
         style={{
           fontSize: 12,
           textAlign: "center",
           padding: 15,
           fontWeight: "800",
-          backgroundColor: `${buttonData.styles.color}`,
+          backgroundColor: `${shouldDisable ? "gray" : buttonData.styles.color}`,
         }}>
         {buttonData.label}
       </Text>

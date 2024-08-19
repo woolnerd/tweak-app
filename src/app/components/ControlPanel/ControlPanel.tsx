@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { View } from "react-native";
 
 import controlPanelButtonData from "../../../db/button-data.ts";
@@ -14,9 +14,17 @@ import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSe
 import ControlPanelButton from "../ControlPanelButton/ControlPanelButton.tsx";
 
 type ControlPanelProps = {
-  // setControlPanelValue: any;
+  allSelectionHasColorTemp: boolean;
+  selectionColorTempMin: number;
+  selectionColorTempMax: number;
+  allSelectionHasTint: boolean;
 };
-export default function ControlPanel() {
+export default function ControlPanel({
+  allSelectionHasColorTemp,
+  selectionColorTempMax,
+  selectionColorTempMin,
+  allSelectionHasTint,
+}: ControlPanelProps): React.JSX.Element {
   const [action, setAction] = useState<ActionObject | null>(null);
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
     useFixtureChannelSelectionStore((state) => state);
@@ -50,6 +58,10 @@ export default function ControlPanel() {
             key={buttonData.id}
             buttonData={buttonData}
             handleTouch={handleTouch}
+            allSelectionHasColorTemp={allSelectionHasColorTemp}
+            selectionColorTempMax={selectionColorTempMax}
+            selectionColorTempMin={selectionColorTempMin}
+            allSelectionHasTint={allSelectionHasTint}
           />
         ))}
       </View>
