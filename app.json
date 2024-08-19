@@ -33,6 +33,9 @@
         "projectId": "250f7caf-3869-4dc7-a5d4-1677b8aee3d3"
       }
     },
-    "owner": "davewoolner"
+    "owner": "davewoolner",
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
