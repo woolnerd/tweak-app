@@ -18,12 +18,14 @@ type ControlPanelProps = {
   selectionColorTempMin: number;
   selectionColorTempMax: number;
   allSelectionHasTint: boolean;
+  selectionPresent: boolean;
 };
 export default function ControlPanel({
   allSelectionHasColorTemp,
   selectionColorTempMax,
   selectionColorTempMin,
   allSelectionHasTint,
+  selectionPresent,
 }: ControlPanelProps): React.JSX.Element {
   const [action, setAction] = useState<ActionObject | null>(null);
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
@@ -62,6 +64,7 @@ export default function ControlPanel({
             selectionColorTempMax={selectionColorTempMax}
             selectionColorTempMin={selectionColorTempMin}
             allSelectionHasTint={allSelectionHasTint}
+            selectionPresent={selectionPresent}
           />
         ))}
       </View>

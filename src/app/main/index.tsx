@@ -5,19 +5,18 @@ import { openDatabaseSync } from "expo-sqlite/next";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import ErrorBoundary from "react-native-error-boundary";
-// import runMigrataions from "scripts/migrations.js";
-// import seedDatabase from "scripts/seedDatabase.js";
+import runMigrataions from "scripts/migrations.js";
+import seedDatabase from "scripts/seedDatabase.js";
 
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
 import Scene from "../../models/scene.ts";
+import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
 import ControlPanel from "../components/ControlPanel/ControlPanel.tsx";
 import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
 import { Scene as SceneComponent } from "../components/Scene/Scene.tsx";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelectionStore.ts";
-import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
-import { selectPatch } from "../../models/__mocks__/patch.ts";
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
@@ -43,8 +42,8 @@ function App() {
     );
 
   const selectionHasColorTemp = (fixtures: ParsedCompositeFixtureInfo[]) => {
-    console.log(fixtures);
     if (fixtures.length === 0) return true;
+
     return (
       fixtures.every((fixture) => fixture.colorTempLow) &&
       fixtures.every((fixture) => fixture.colorTempHigh)
@@ -53,13 +52,13 @@ function App() {
 
   const selectionMinColorTemp = (fixtures: ParsedCompositeFixtureInfo[]) =>
     fixtures.length === 0
-      ? true
-      : Math.min(...fixtures.map((fixture) => fixture.colorTempLow));
+      ? Infinity
+      : Math.max(...fixtures.map((fixture) => fixture.colorTempLow));
 
   const selectionMaxColorTemp = (fixtures: ParsedCompositeFixtureInfo[]) =>
     fixtures.length === 0
-      ? true
-      : Math.max(...fixtures.map((fixture) => fixture.colorTempHigh));
+      ? -Infinity
+      : Math.min(...fixtures.map((fixture) => fixture.colorTempHigh));
 
   useEffect(() => {
     fetchScenes().then((response) => setScenes(response));
@@ -67,7 +66,7 @@ function App() {
 
   const handleGoToOut = () => {
     // runMigrataions();
-    // seedDatabase();
+    seedDatabase();
   };
 
   return (
@@ -127,6 +126,7 @@ function App() {
 
         <View style={{ flex: 2, flexDirection: "row", ...styles.container }}>
           <ControlPanel
+            selectionPresent={selectedCompositeFixtures.length > 0}
             allSelectionHasColorTemp={selectionHasColorTemp(
               selectedCompositeFixtures(),
             )}
@@ -136,7 +136,7 @@ function App() {
             selectionColorTempMax={selectionMaxColorTemp(
               selectedCompositeFixtures(),
             )}
-            allSelectionHasTint
+            // allSelectionHasTint
           />
         </View>
       </View>

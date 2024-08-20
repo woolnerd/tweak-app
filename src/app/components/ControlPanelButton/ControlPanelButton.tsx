@@ -13,6 +13,7 @@ export default function ControlPanelButton({
   selectionColorTempMax,
   selectionColorTempMin,
   allSelectionHasTint,
+  selectionPresent,
 }: {
   buttonData: ControlButton;
   handleTouch: (data: ControlButton) => void;
@@ -20,6 +21,7 @@ export default function ControlPanelButton({
   selectionColorTempMax: number;
   selectionColorTempMin: number;
   allSelectionHasTint: boolean;
+  selectionPresent: boolean;
 }) {
   const disableColorTemp =
     buttonData.type === Buttons.DIRECT_ACTION_BUTTON &&
@@ -41,9 +43,7 @@ export default function ControlPanelButton({
     buttonData.profileTarget === ProfileTarget.COLOR_TEMP &&
     Number(buttonData.label) < selectionColorTempMin;
 
-  const shouldDisable =
-    disableColorTemp || disableTempMax || disableTempMin || disableTint;
-
+  const shouldDisable = disableColorTemp || disableTempMax || disableTempMin;
   return (
     <Pressable
       key={buttonData.id}
