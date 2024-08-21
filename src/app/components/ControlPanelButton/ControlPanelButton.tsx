@@ -1,3 +1,4 @@
+import { useEffect, useState, useRef } from "react";
 import { Pressable, Text, StyleSheet } from "react-native";
 
 import {
@@ -43,20 +44,24 @@ export default function ControlPanelButton({
     buttonData.profileTarget === ProfileTarget.COLOR_TEMP &&
     Number(buttonData.label) < selectionColorTempMin;
 
-  const shouldDisable = disableColorTemp || disableTempMax || disableTempMin;
+  const shouldDisable = () =>
+    !selectionPresent
+      ? false
+      : disableColorTemp || disableTint || disableTempMax || disableTempMin;
+
   return (
     <Pressable
       key={buttonData.id}
       style={styles.touchpadBtn}
       onPressIn={() => handleTouch(buttonData)}
-      disabled={shouldDisable}>
+      disabled={shouldDisable()}>
       <Text
         style={{
           fontSize: 12,
           textAlign: "center",
           padding: 15,
           fontWeight: "800",
-          backgroundColor: `${shouldDisable ? "gray" : buttonData.styles.color}`,
+          backgroundColor: `${shouldDisable() ? "gray" : buttonData.styles.color}`,
         }}>
         {buttonData.label}
       </Text>

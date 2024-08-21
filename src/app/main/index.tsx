@@ -17,6 +17,12 @@ import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
 import { Scene as SceneComponent } from "../components/Scene/Scene.tsx";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelectionStore.ts";
+import {
+  selectionHasColorTemp,
+  selectionMaxColorTemp,
+  selectionMinColorTemp,
+  selectionHasTint,
+} from "./helpers.tsx";
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
@@ -36,29 +42,9 @@ function App() {
     (state) => state,
   );
 
-  const selectedCompositeFixtures = () =>
-    compositeFixturesStore.filter((fixture) =>
-      fixtureChannelSelectionStore.has(fixture.channel),
-    );
-
-  const selectionHasColorTemp = (fixtures: ParsedCompositeFixtureInfo[]) => {
-    if (fixtures.length === 0) return true;
-
-    return (
-      fixtures.every((fixture) => fixture.colorTempLow) &&
-      fixtures.every((fixture) => fixture.colorTempHigh)
-    );
-  };
-
-  const selectionMinColorTemp = (fixtures: ParsedCompositeFixtureInfo[]) =>
-    fixtures.length === 0
-      ? Infinity
-      : Math.max(...fixtures.map((fixture) => fixture.colorTempLow));
-
-  const selectionMaxColorTemp = (fixtures: ParsedCompositeFixtureInfo[]) =>
-    fixtures.length === 0
-      ? -Infinity
-      : Math.min(...fixtures.map((fixture) => fixture.colorTempHigh));
+  const selectedCompositeFixtures = compositeFixturesStore.filter((fixture) =>
+    fixtureChannelSelectionStore.has(fixture.channel),
+  );
 
   useEffect(() => {
     fetchScenes().then((response) => setScenes(response));
@@ -128,15 +114,15 @@ function App() {
           <ControlPanel
             selectionPresent={selectedCompositeFixtures.length > 0}
             allSelectionHasColorTemp={selectionHasColorTemp(
-              selectedCompositeFixtures(),
+              selectedCompositeFixtures,
             )}
+            allSelectionHasTint={selectionHasTint(selectedCompositeFixtures)}
             selectionColorTempMin={selectionMinColorTemp(
-              selectedCompositeFixtures(),
+              selectedCompositeFixtures,
             )}
             selectionColorTempMax={selectionMaxColorTemp(
-              selectedCompositeFixtures(),
+              selectedCompositeFixtures,
             )}
-            // allSelectionHasTint
           />
         </View>
       </View>
