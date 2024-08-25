@@ -171,10 +171,10 @@ export function convertDmxValueToPercent(
   rounding: (n: number) => number = dynamicRound,
 ) {
   if (val > 256) {
-    return rounding((val / 65535) * 100);
+    return Math.round((val / 65535) * 100 * 100) / 100;
   }
 
-  return rounding((val / 255) * 100);
+  return Math.round((val / 255) * 100 * 100) / 100;
 }
 
 export function percentageToColorTemperature(
@@ -187,7 +187,11 @@ export function percentageToColorTemperature(
   const colorTempRange = highTemp - lowTemp;
   const colorTemp = lowTemp + colorTempRange * (percentage / 100); // not rounding
 
-  return colorTemp;
+  return Math.round(colorTemp * 0.01) * 100;
+}
+
+export function percentageToIntensityLevel(percentage: number) {
+  return Math.round(percentage);
 }
 
 export function mergeTupleArrays(
