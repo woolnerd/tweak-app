@@ -92,7 +92,7 @@ export default class CommandLine {
   }
 
   static enterPressed(data: ControlButton) {
-    return data.label.toLowerCase() === "enter";
+    return data.label.toLowerCase() === "confirm";
   }
 
   clearPressed(data: ControlButton) {

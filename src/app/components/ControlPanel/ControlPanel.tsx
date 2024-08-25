@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 
 import controlPanelButtonData from "../../../db/button-data.ts";
@@ -16,9 +16,13 @@ import ControlPanelButton from "../ControlPanelButton/ControlPanelButton.tsx";
 
 type ControlPanelProps = {
   selectedFixtures: ParsedCompositeFixtureInfo[];
+  goToOut: boolean;
+  setGoToOut: (arg: boolean) => void;
 };
 export default function ControlPanel({
   selectedFixtures,
+  goToOut,
+  setGoToOut,
 }: ControlPanelProps): React.JSX.Element {
   const [action, setAction] = useState<ActionObject | null>(null);
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
@@ -37,6 +41,22 @@ export default function ControlPanel({
   };
 
   useCommandLineRouter(action);
+
+  if (goToOut) {
+    handleTouch({
+      id: "button13",
+      type: Buttons.DIRECT_ACTION_BUTTON,
+      label: "0%",
+      value: 0,
+      styles: { color: "red" },
+      profileTarget: ProfileTarget.DIMMER,
+    });
+    setGoToOut(false);
+  }
+
+  useEffect(() => {
+    console.log({ fixtureChannelSelectionStore });
+  }, [goToOut]);
 
   const buildPanel = () =>
     controlPanelButtonData.map((col) => (

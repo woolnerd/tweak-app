@@ -541,7 +541,7 @@ const controlPanelButtonData: ButtonColumn[] = [
       {
         id: "button75",
         type: Buttons.COMMAND_BUTTON,
-        label: "Enter",
+        label: "Confirm",
         styles: { color: "#cfcccc" },
       },
     ],

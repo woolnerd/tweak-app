@@ -16,6 +16,7 @@ import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
 import { Scene as SceneComponent } from "../components/Scene/Scene.tsx";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelectionStore.ts";
+import { useManualFixtureStore } from "../store/useManualFixtureStore.ts";
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
@@ -23,6 +24,7 @@ const db = drizzle(expoDb, { schema });
 function App() {
   const [scenes, setScenes] = useState<SelectScene[]>([]);
   const [selectedSceneId, setSelectedSceneId] = useState<number>(1);
+  const [goToOut, setGoToOut] = useState(false);
 
   const fetchScenes = async () => {
     const response = await new Scene(db).getAllOrdered();
@@ -31,9 +33,10 @@ function App() {
   // console.log(FileSystem.documentDirectory);
 
   const { compositeFixturesStore } = useCompositeFixtureStore((state) => state);
-  const { fixtureChannelSelectionStore } = useFixtureChannelSelectionStore(
-    (state) => state,
-  );
+  const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
+    useFixtureChannelSelectionStore((state) => state);
+  const { manualFixturesStore, updateManualFixturesStore } =
+    useManualFixtureStore((state) => state);
 
   const selectedCompositeFixtures = compositeFixturesStore.filter((fixture) =>
     fixtureChannelSelectionStore.has(fixture.channel),
@@ -44,13 +47,23 @@ function App() {
   }, []);
 
   const handleGoToOut = () => {
-    // all fixtures with output should go to 0
-    // this can remain as manual
-    // this can be cleared out
-    // runMigrataions();
-    // seedDatabase();
-    // console.log(selectedCompositeFixtures);
+    // take all fixtures with output to zero
+    // this is manual and fixtures in DB
+    // this is like selecting all fixture with output and selecting 0
+    // this requires determining dimmer channels for each fixture
+
+    const tempSet = new Set<number>();
+    compositeFixturesStore
+      .map((fixture) => fixture.channel)
+      .forEach((channel) => tempSet.add(channel));
+
+    // setGoToOut(true);
+    updateFixtureChannelSelectionStore(tempSet);
   };
+
+  useEffect(() => {
+    // setGoToOut(true);
+  }, [fixtureChannelSelectionStore]);
 
   return (
     <ErrorBoundary>
@@ -108,7 +121,11 @@ function App() {
         </View>
 
         <View style={{ flex: 2, flexDirection: "row", ...styles.container }}>
-          <ControlPanel selectedFixtures={selectedCompositeFixtures} />
+          <ControlPanel
+            selectedFixtures={selectedCompositeFixtures}
+            goToOut={goToOut}
+            setGoToOut={setGoToOut}
+          />
         </View>
       </View>
     </ErrorBoundary>

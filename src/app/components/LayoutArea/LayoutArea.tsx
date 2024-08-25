@@ -61,6 +61,9 @@ export default function LayoutArea({
         return compFixtureStateObj;
       }),
     );
+
+    // console.log({ compositeFixturesStore });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [manualFixturesStore]);
 
