@@ -9,23 +9,16 @@ import {
   ControlButton,
   ProfileTarget,
 } from "../../../lib/types/buttons.ts";
+import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import useCommandLineRouter from "../../hooks/useCommandLineRouter.ts";
 import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
 import ControlPanelButton from "../ControlPanelButton/ControlPanelButton.tsx";
 
 type ControlPanelProps = {
-  allSelectionHasColorTemp: boolean;
-  selectionColorTempMin: number;
-  selectionColorTempMax: number;
-  allSelectionHasTint: boolean;
-  selectionPresent: boolean;
+  selectedFixtures: ParsedCompositeFixtureInfo[];
 };
 export default function ControlPanel({
-  allSelectionHasColorTemp,
-  selectionColorTempMax,
-  selectionColorTempMin,
-  allSelectionHasTint,
-  selectionPresent,
+  selectedFixtures,
 }: ControlPanelProps): React.JSX.Element {
   const [action, setAction] = useState<ActionObject | null>(null);
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
@@ -60,11 +53,7 @@ export default function ControlPanel({
             key={buttonData.id}
             buttonData={buttonData}
             handleTouch={handleTouch}
-            allSelectionHasColorTemp={allSelectionHasColorTemp}
-            selectionColorTempMax={selectionColorTempMax}
-            selectionColorTempMin={selectionColorTempMin}
-            allSelectionHasTint={allSelectionHasTint}
-            selectionPresent={selectionPresent}
+            selectedFixtures={selectedFixtures}
           />
         ))}
       </View>

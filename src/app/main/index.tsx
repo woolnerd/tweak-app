@@ -11,18 +11,11 @@ import seedDatabase from "scripts/seedDatabase.js";
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
 import Scene from "../../models/scene.ts";
-import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
 import ControlPanel from "../components/ControlPanel/ControlPanel.tsx";
 import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
 import { Scene as SceneComponent } from "../components/Scene/Scene.tsx";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelectionStore.ts";
-import {
-  selectionHasColorTemp,
-  selectionMaxColorTemp,
-  selectionMinColorTemp,
-  selectionHasTint,
-} from "./helpers.tsx";
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
@@ -52,7 +45,8 @@ function App() {
 
   const handleGoToOut = () => {
     // runMigrataions();
-    seedDatabase();
+    // seedDatabase();
+    // console.log(selectedCompositeFixtures);
   };
 
   return (
@@ -111,19 +105,7 @@ function App() {
         </View>
 
         <View style={{ flex: 2, flexDirection: "row", ...styles.container }}>
-          <ControlPanel
-            selectionPresent={selectedCompositeFixtures.length > 0}
-            allSelectionHasColorTemp={selectionHasColorTemp(
-              selectedCompositeFixtures,
-            )}
-            allSelectionHasTint={selectionHasTint(selectedCompositeFixtures)}
-            selectionColorTempMin={selectionMinColorTemp(
-              selectedCompositeFixtures,
-            )}
-            selectionColorTempMax={selectionMaxColorTemp(
-              selectedCompositeFixtures,
-            )}
-          />
+          <ControlPanel selectedFixtures={selectedCompositeFixtures} />
         </View>
       </View>
     </ErrorBoundary>
