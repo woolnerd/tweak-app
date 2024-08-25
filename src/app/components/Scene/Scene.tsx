@@ -51,14 +51,12 @@ export function Scene({
       </Pressable>
       <View
         style={{
-          borderColor: selectedSceneId === id ? "gold" : "#9806b5",
-          borderWidth: selectedSceneId === id ? 2 : 0,
+          backgroundColor: selectedSceneId === id ? "blue" : "#000",
         }}>
         <Pressable
           style={{
             ...styles.scene,
             borderColor: selectedSceneId === id ? "#cb09f1" : "#9806b5",
-            borderWidth: selectedSceneId === id ? 1 : 3,
           }}
           onPress={handleScenePress}>
           <Text style={styles.btnText}>{name}</Text>

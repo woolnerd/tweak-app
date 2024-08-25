@@ -5,8 +5,8 @@ import { openDatabaseSync } from "expo-sqlite/next";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import ErrorBoundary from "react-native-error-boundary";
-import runMigrataions from "scripts/migrations.js";
-import seedDatabase from "scripts/seedDatabase.js";
+// import runMigrataions from "scripts/migrations.js";
+// import seedDatabase from "scripts/seedDatabase.js";
 
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
@@ -44,6 +44,9 @@ function App() {
   }, []);
 
   const handleGoToOut = () => {
+    // all fixtures with output should go to 0
+    // this can remain as manual
+    // this can be cleared out
     // runMigrataions();
     // seedDatabase();
     // console.log(selectedCompositeFixtures);
