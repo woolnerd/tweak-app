@@ -7,6 +7,7 @@ import {
   handleChannelValues,
   convertDmxValueToPercent,
   percentageToColorTemperature,
+  percentageToIntensityLevel,
 } from "../../../util/helpers.ts";
 import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
 // import {
@@ -170,7 +171,7 @@ export function Fixture({
         colorTempHigh,
       );
     }
-    return `${convertDmxValueToPercent(details[profileField])}%`;
+    return `${percentageToIntensityLevel(convertDmxValueToPercent(details[profileField]))}%`;
   };
 
   return (
