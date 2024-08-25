@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { View } from "react-native";
 
 import controlPanelButtonData from "../../../db/button-data.ts";
@@ -9,14 +9,17 @@ import {
   ControlButton,
   ProfileTarget,
 } from "../../../lib/types/buttons.ts";
+import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import useCommandLineRouter from "../../hooks/useCommandLineRouter.ts";
 import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
 import ControlPanelButton from "../ControlPanelButton/ControlPanelButton.tsx";
 
 type ControlPanelProps = {
-  // setControlPanelValue: any;
+  selectedFixtures: ParsedCompositeFixtureInfo[];
 };
-export default function ControlPanel() {
+export default function ControlPanel({
+  selectedFixtures,
+}: ControlPanelProps): React.JSX.Element {
   const [action, setAction] = useState<ActionObject | null>(null);
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
     useFixtureChannelSelectionStore((state) => state);
@@ -50,6 +53,7 @@ export default function ControlPanel() {
             key={buttonData.id}
             buttonData={buttonData}
             handleTouch={handleTouch}
+            selectedFixtures={selectedFixtures}
           />
         ))}
       </View>
