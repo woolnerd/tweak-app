@@ -92,7 +92,6 @@ export default function LayoutArea({
             title={item.title}
             startAddress={item.startAddress}
             endAddress={item.endAddress}
-            goToOut={goToOut}
           />
         )}
         keyExtractor={(item, idx) => item.fixtureAssignmentId.toString()}

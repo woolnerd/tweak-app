@@ -60,7 +60,6 @@ export default function ControlPanel({
 
       handleTouch(mockZeroButton);
       setGoToOut(false);
-      updateFixtureChannelSelectionStore(new Set());
     }
   }, [
     action,
@@ -69,6 +68,10 @@ export default function ControlPanel({
     updateFixtureChannelSelectionStore,
     handleTouch,
   ]);
+
+  useEffect(() => {
+    if (!goToOut) updateFixtureChannelSelectionStore(new Set());
+  }, [goToOut, updateFixtureChannelSelectionStore]);
 
   const buildPanel = () =>
     controlPanelButtonData.map((col) => (

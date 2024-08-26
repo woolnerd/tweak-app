@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import * as FileSystem from "expo-file-system";
 import { openDatabaseSync } from "expo-sqlite/next";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import ErrorBoundary from "react-native-error-boundary";
 // import runMigrataions from "scripts/migrations.js";
@@ -16,7 +16,6 @@ import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
 import { Scene as SceneComponent } from "../components/Scene/Scene.tsx";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelectionStore.ts";
-import { useManualFixtureStore } from "../store/useManualFixtureStore.ts";
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
@@ -45,15 +44,11 @@ function App() {
   }, []);
 
   const handleGoToOut = () => {
-    // take all fixtures with output to zero
-    // this is manual and fixtures in DB
-    // this is like selecting all fixture with output and selecting 0
-    // this requires determining dimmer channels for each fixture
-
     const tempSet = new Set<number>();
     compositeFixturesStore
       .map((fixture) => fixture.channel)
       .forEach((channel) => tempSet.add(channel));
+    console.log({ tempSet });
 
     setGoToOut(true);
     updateFixtureChannelSelectionStore(tempSet);
@@ -111,7 +106,7 @@ function App() {
             flex: 2,
             ...styles.container,
           }}>
-          <LayoutArea selectedSceneId={selectedSceneId} goToOut={goToOut} />
+          <LayoutArea selectedSceneId={selectedSceneId} />
         </View>
 
         <View style={{ flex: 2, flexDirection: "row", ...styles.container }}>
