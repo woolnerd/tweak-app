@@ -49,6 +49,7 @@ export default class CommandLine {
     };
 
     this.commandEvents.add(data);
+    console.log(this.commandEvents.commands);
 
     if (data.type === Buttons.DIRECT_ACTION_BUTTON) {
       return this.actionProc();
@@ -64,6 +65,11 @@ export default class CommandLine {
     if (this.clearPressed(data)) {
       console.log("Cleared");
       this.clearCommands();
+      return {
+        complete: false,
+        directive: 999,
+        profileTarget: ProfileTarget.EMPTY,
+      };
     }
 
     if (CommandLine.enterPressed(data)) {

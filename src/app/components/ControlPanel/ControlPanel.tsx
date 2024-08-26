@@ -12,6 +12,7 @@ import {
 import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import useCommandLineRouter from "../../hooks/useCommandLineRouter.ts";
 import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
+import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
 import ControlPanelButton from "../ControlPanelButton/ControlPanelButton.tsx";
 
 type ControlPanelProps = {
@@ -27,6 +28,7 @@ export default function ControlPanel({
   const [action, setAction] = useState<ActionObject | null>(null);
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
     useFixtureChannelSelectionStore((state) => state);
+  const { updateManualFixturesStore } = useManualFixtureStore((state) => state);
 
   const handleTouch = useCallback(
     (data: ControlButton) => {
@@ -68,6 +70,13 @@ export default function ControlPanel({
     updateFixtureChannelSelectionStore,
     handleTouch,
   ]);
+
+  useEffect(() => {
+    if (action?.directive === 999) {
+      updateFixtureChannelSelectionStore(new Set());
+      updateManualFixturesStore([]);
+    }
+  }, [action]);
 
   useEffect(() => {
     if (!goToOut) updateFixtureChannelSelectionStore(new Set());
