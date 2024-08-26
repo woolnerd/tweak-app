@@ -35,8 +35,6 @@ function App() {
   const { compositeFixturesStore } = useCompositeFixtureStore((state) => state);
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
     useFixtureChannelSelectionStore((state) => state);
-  const { manualFixturesStore, updateManualFixturesStore } =
-    useManualFixtureStore((state) => state);
 
   const selectedCompositeFixtures = compositeFixturesStore.filter((fixture) =>
     fixtureChannelSelectionStore.has(fixture.channel),
@@ -57,13 +55,9 @@ function App() {
       .map((fixture) => fixture.channel)
       .forEach((channel) => tempSet.add(channel));
 
-    // setGoToOut(true);
+    setGoToOut(true);
     updateFixtureChannelSelectionStore(tempSet);
   };
-
-  useEffect(() => {
-    // setGoToOut(true);
-  }, [fixtureChannelSelectionStore]);
 
   return (
     <ErrorBoundary>
@@ -117,7 +111,7 @@ function App() {
             flex: 2,
             ...styles.container,
           }}>
-          <LayoutArea selectedSceneId={selectedSceneId} goToOut={false} />
+          <LayoutArea selectedSceneId={selectedSceneId} goToOut={goToOut} />
         </View>
 
         <View style={{ flex: 2, flexDirection: "row", ...styles.container }}>

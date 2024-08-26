@@ -4,11 +4,7 @@ import { View } from "react-native";
 import controlPanelButtonData from "../../../db/button-data.ts";
 import CommandLine from "../../../lib/command-line/command-line.ts";
 import { ActionObject } from "../../../lib/command-line/types/command-line-types.ts";
-import {
-  Buttons,
-  ControlButton,
-  ProfileTarget,
-} from "../../../lib/types/buttons.ts";
+import { ControlButton, ProfileTarget } from "../../../lib/types/buttons.ts";
 import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import useCommandLineRouter from "../../hooks/useCommandLineRouter.ts";
 import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
@@ -23,7 +19,7 @@ export default function ControlPanel({
   selectedFixtures,
   goToOut,
   setGoToOut,
-}: ControlPanelProps): React.JSX.Element {
+}: ControlPanelProps): React.JSX.Element[] {
   const [action, setAction] = useState<ActionObject | null>(null);
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
     useFixtureChannelSelectionStore((state) => state);
@@ -42,21 +38,12 @@ export default function ControlPanel({
 
   useCommandLineRouter(action);
 
-  if (goToOut) {
-    handleTouch({
-      id: "button13",
-      type: Buttons.DIRECT_ACTION_BUTTON,
-      label: "0%",
-      value: 0,
-      styles: { color: "red" },
-      profileTarget: ProfileTarget.DIMMER,
-    });
-    setGoToOut(false);
-  }
-
   useEffect(() => {
-    console.log({ fixtureChannelSelectionStore });
-  }, [goToOut]);
+    if (goToOut) {
+      setGoToOut(false);
+      updateFixtureChannelSelectionStore(new Set());
+    }
+  }, [action, goToOut, setGoToOut, updateFixtureChannelSelectionStore]);
 
   const buildPanel = () =>
     controlPanelButtonData.map((col) => (
@@ -74,6 +61,7 @@ export default function ControlPanel({
             buttonData={buttonData}
             handleTouch={handleTouch}
             selectedFixtures={selectedFixtures}
+            goToOut={goToOut}
           />
         ))}
       </View>
