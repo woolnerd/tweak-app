@@ -17,12 +17,10 @@ export default function ControlPanelButton({
   buttonData,
   handleTouch,
   selectedFixtures,
-  goToOut,
 }: {
   buttonData: ControlButton;
   handleTouch: (data: ControlButton) => void;
   selectedFixtures: ParsedCompositeFixtureInfo[];
-  goToOut: boolean;
 }) {
   const noFixturesSelected = selectedFixtures.length === 0;
 
@@ -50,19 +48,6 @@ export default function ControlPanelButton({
   const disable = noFixturesSelected
     ? false
     : disableColorTemp || disableTint || disableTempMax || disableTempMin;
-
-  if (goToOut && buttonData.id === "button13") {
-    handleTouch({
-      id: "button13",
-      type: Buttons.DIRECT_ACTION_BUTTON,
-      label: "0%",
-      value: 0,
-      styles: { color: "red" },
-      profileTarget: ProfileTarget.DIMMER,
-    });
-    // setGoToOut(false);
-    console.log({ goToOut });
-  }
 
   return (
     <Pressable
