@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import * as FileSystem from "expo-file-system";
 import { openDatabaseSync } from "expo-sqlite/next";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import ErrorBoundary from "react-native-error-boundary";
 // import runMigrataions from "scripts/migrations.js";
@@ -23,6 +23,7 @@ const db = drizzle(expoDb, { schema });
 function App() {
   const [scenes, setScenes] = useState<SelectScene[]>([]);
   const [selectedSceneId, setSelectedSceneId] = useState<number>(1);
+  const [goToOut, setGoToOut] = useState(false);
 
   const fetchScenes = async () => {
     const response = await new Scene(db).getAllOrdered();
@@ -31,9 +32,8 @@ function App() {
   // console.log(FileSystem.documentDirectory);
 
   const { compositeFixturesStore } = useCompositeFixtureStore((state) => state);
-  const { fixtureChannelSelectionStore } = useFixtureChannelSelectionStore(
-    (state) => state,
-  );
+  const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
+    useFixtureChannelSelectionStore((state) => state);
 
   const selectedCompositeFixtures = compositeFixturesStore.filter((fixture) =>
     fixtureChannelSelectionStore.has(fixture.channel),
@@ -44,12 +44,14 @@ function App() {
   }, []);
 
   const handleGoToOut = () => {
-    // all fixtures with output should go to 0
-    // this can remain as manual
-    // this can be cleared out
-    // runMigrataions();
-    // seedDatabase();
-    // console.log(selectedCompositeFixtures);
+    const tempSet = new Set<number>();
+    compositeFixturesStore
+      .map((fixture) => fixture.channel)
+      .forEach((channel) => tempSet.add(channel));
+    console.log({ tempSet });
+
+    setGoToOut(true);
+    updateFixtureChannelSelectionStore(tempSet);
   };
 
   return (
@@ -104,11 +106,15 @@ function App() {
             flex: 2,
             ...styles.container,
           }}>
-          <LayoutArea selectedSceneId={selectedSceneId} goToOut={false} />
+          <LayoutArea selectedSceneId={selectedSceneId} />
         </View>
 
         <View style={{ flex: 2, flexDirection: "row", ...styles.container }}>
-          <ControlPanel selectedFixtures={selectedCompositeFixtures} />
+          <ControlPanel
+            selectedFixtures={selectedCompositeFixtures}
+            goToOut={goToOut}
+            setGoToOut={setGoToOut}
+          />
         </View>
       </View>
     </ErrorBoundary>
