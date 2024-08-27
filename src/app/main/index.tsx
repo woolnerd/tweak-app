@@ -24,6 +24,7 @@ function App() {
   const [scenes, setScenes] = useState<SelectScene[]>([]);
   const [selectedSceneId, setSelectedSceneId] = useState<number>(1);
   const [goToOut, setGoToOut] = useState(false);
+  const [loadFixtures, setLoadFixtures] = useState(false);
 
   const fetchScenes = async () => {
     const response = await new Scene(db).getAllOrdered();
@@ -106,7 +107,11 @@ function App() {
             flex: 2,
             ...styles.container,
           }}>
-          <LayoutArea selectedSceneId={selectedSceneId} />
+          <LayoutArea
+            selectedSceneId={selectedSceneId}
+            loadFixtures={loadFixtures}
+            setLoadFixtures={setLoadFixtures}
+          />
         </View>
 
         <View style={{ flex: 2, flexDirection: "row", ...styles.container }}>
@@ -114,6 +119,7 @@ function App() {
             selectedFixtures={selectedCompositeFixtures}
             goToOut={goToOut}
             setGoToOut={setGoToOut}
+            setLoadFixtures={setLoadFixtures}
           />
         </View>
       </View>

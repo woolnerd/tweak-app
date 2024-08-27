@@ -8,6 +8,7 @@ import {
   ControlButton,
   ProfileTarget,
   Buttons,
+  COMMAND,
 } from "../../../lib/types/buttons.ts";
 import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import useCommandLineRouter from "../../hooks/useCommandLineRouter.ts";
@@ -19,11 +20,13 @@ type ControlPanelProps = {
   selectedFixtures: ParsedCompositeFixtureInfo[];
   goToOut: boolean;
   setGoToOut: (arg: boolean) => void;
+  setLoadFixtures: (arg: boolean) => void;
 };
 export default function ControlPanel({
   selectedFixtures,
   goToOut,
   setGoToOut,
+  setLoadFixtures,
 }: ControlPanelProps): React.JSX.Element[] {
   const [action, setAction] = useState<ActionObject | null>(null);
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
@@ -72,11 +75,17 @@ export default function ControlPanel({
   ]);
 
   useEffect(() => {
-    if (action?.directive === 999) {
+    if (action?.directive === COMMAND.CLEAR) {
       updateFixtureChannelSelectionStore(new Set());
       updateManualFixturesStore([]);
+      setLoadFixtures(true);
     }
-  }, [action]);
+  }, [
+    action,
+    updateFixtureChannelSelectionStore,
+    updateManualFixturesStore,
+    setLoadFixtures,
+  ]);
 
   useEffect(() => {
     if (!goToOut) updateFixtureChannelSelectionStore(new Set());
