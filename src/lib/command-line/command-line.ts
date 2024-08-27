@@ -2,7 +2,12 @@ import CommandLineErrorHandler from "./command-line-error-handler.ts";
 import CommandLineService from "./command-line-service.ts";
 import CommandLineStack from "./command-line-stack.ts";
 import { ActionObject } from "./types/command-line-types.ts";
-import { Buttons, ControlButton, ProfileTarget } from "../types/buttons.ts";
+import {
+  Buttons,
+  COMMAND,
+  ControlButton,
+  ProfileTarget,
+} from "../types/buttons.ts";
 
 export default class CommandLine {
   // eslint-disable-next-line no-use-before-define
@@ -67,7 +72,7 @@ export default class CommandLine {
       this.clearCommands();
       return {
         complete: false,
-        directive: 999,
+        directive: COMMAND.CLEAR,
         profileTarget: ProfileTarget.EMPTY,
       };
     }
