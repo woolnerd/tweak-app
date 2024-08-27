@@ -1,4 +1,4 @@
-// /* eslint-disable no-shadow */
+/* eslint-disable no-shadow */
 export enum Buttons {
   DIRECT_ACTION_BUTTON = "DIRECT_ACTION_BUTTON",
   COMMAND_BUTTON = "COMMAND_BUTTON",
@@ -11,6 +11,10 @@ export enum ProfileTarget {
   TINT = "TINT",
   CROSSFADE = "CROSSFADE",
   EMPTY = "",
+}
+
+export enum COMMAND {
+  CLEAR = 999,
 }
 
 interface BaseButton {

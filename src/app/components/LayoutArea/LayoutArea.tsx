@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { StyleSheet, View, FlatList } from "react-native";
 
 import { db } from "../../../db/client.ts";
@@ -12,11 +12,15 @@ import { Fixture as FixtureComponent } from "../Fixture/Fixture.tsx";
 type LayoutAreaProps = {
   selectedSceneId: number;
   goToOut: boolean;
+  loadFixtures: boolean;
+  setLoadFixtures: (arg: boolean) => void;
 };
 
 export default function LayoutArea({
   selectedSceneId,
   goToOut,
+  loadFixtures,
+  setLoadFixtures,
 }: LayoutAreaProps): React.JSX.Element {
   const { compositeFixturesStore, updateCompositeFixturesStore } =
     useCompositeFixtureStore((state) => state);
@@ -47,7 +51,15 @@ export default function LayoutArea({
     fetchCompositeFixtures()
       .then((res) => updateCompositeFixturesStore(res))
       .catch((err) => console.log(err));
-  }, [selectedSceneId, fetchCompositeFixtures, updateCompositeFixturesStore]);
+
+    if (loadFixtures) setLoadFixtures(false);
+  }, [
+    selectedSceneId,
+    fetchCompositeFixtures,
+    updateCompositeFixturesStore,
+    loadFixtures,
+    setLoadFixtures,
+  ]);
 
   useEffect(() => {
     updateCompositeFixturesStore(

@@ -2,7 +2,12 @@ import CommandLineErrorHandler from "./command-line-error-handler.ts";
 import CommandLineService from "./command-line-service.ts";
 import CommandLineStack from "./command-line-stack.ts";
 import { ActionObject } from "./types/command-line-types.ts";
-import { Buttons, ControlButton, ProfileTarget } from "../types/buttons.ts";
+import {
+  Buttons,
+  COMMAND,
+  ControlButton,
+  ProfileTarget,
+} from "../types/buttons.ts";
 
 export default class CommandLine {
   // eslint-disable-next-line no-use-before-define
@@ -49,6 +54,7 @@ export default class CommandLine {
     };
 
     this.commandEvents.add(data);
+    console.log(this.commandEvents.commands);
 
     if (data.type === Buttons.DIRECT_ACTION_BUTTON) {
       return this.actionProc();
@@ -64,6 +70,11 @@ export default class CommandLine {
     if (this.clearPressed(data)) {
       console.log("Cleared");
       this.clearCommands();
+      return {
+        complete: false,
+        directive: COMMAND.CLEAR,
+        profileTarget: ProfileTarget.EMPTY,
+      };
     }
 
     if (CommandLine.enterPressed(data)) {

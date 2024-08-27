@@ -8,25 +8,30 @@ import {
   ControlButton,
   ProfileTarget,
   Buttons,
+  COMMAND,
 } from "../../../lib/types/buttons.ts";
 import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import useCommandLineRouter from "../../hooks/useCommandLineRouter.ts";
 import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
+import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
 import ControlPanelButton from "../ControlPanelButton/ControlPanelButton.tsx";
 
 type ControlPanelProps = {
   selectedFixtures: ParsedCompositeFixtureInfo[];
   goToOut: boolean;
   setGoToOut: (arg: boolean) => void;
+  setLoadFixtures: (arg: boolean) => void;
 };
 export default function ControlPanel({
   selectedFixtures,
   goToOut,
   setGoToOut,
+  setLoadFixtures,
 }: ControlPanelProps): React.JSX.Element[] {
   const [action, setAction] = useState<ActionObject | null>(null);
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
     useFixtureChannelSelectionStore((state) => state);
+  const { updateManualFixturesStore } = useManualFixtureStore((state) => state);
 
   const handleTouch = useCallback(
     (data: ControlButton) => {
@@ -67,6 +72,19 @@ export default function ControlPanel({
     setGoToOut,
     updateFixtureChannelSelectionStore,
     handleTouch,
+  ]);
+
+  useEffect(() => {
+    if (action?.directive === COMMAND.CLEAR) {
+      updateFixtureChannelSelectionStore(new Set());
+      updateManualFixturesStore([]);
+      setLoadFixtures(true);
+    }
+  }, [
+    action,
+    updateFixtureChannelSelectionStore,
+    updateManualFixturesStore,
+    setLoadFixtures,
   ]);
 
   useEffect(() => {
