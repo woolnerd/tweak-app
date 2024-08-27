@@ -25,6 +25,7 @@ function App() {
   const [selectedSceneId, setSelectedSceneId] = useState<number>(1);
   const [goToOut, setGoToOut] = useState(false);
   const [loadFixtures, setLoadFixtures] = useState(false);
+  const [labelScene, setLabelScene] = useState(false);
 
   const fetchScenes = async () => {
     const response = await new Scene(db).getAllOrdered();
@@ -40,6 +41,8 @@ function App() {
     fixtureChannelSelectionStore.has(fixture.channel),
   );
 
+  const handleLabelBtn = () => setLabelScene(!labelScene);
+
   useEffect(() => {
     fetchScenes().then((response) => setScenes(response));
   }, []);
@@ -49,7 +52,6 @@ function App() {
     compositeFixturesStore
       .map((fixture) => fixture.channel)
       .forEach((channel) => tempSet.add(channel));
-    console.log({ tempSet });
 
     setGoToOut(true);
     updateFixtureChannelSelectionStore(tempSet);
@@ -86,10 +88,10 @@ function App() {
               />
             ))}
 
-            <Pressable
-              style={styles.bigButtons}
-              onPress={() => console.log("Simple Pressable pressed")}>
-              <Text style={{ ...styles.btnText, fontSize: 18 }}>Label</Text>
+            <Pressable style={styles.bigButtons} onPress={handleLabelBtn}>
+              <Text style={{ ...styles.btnText, fontSize: 18 }}>
+                {labelScene ? "Label" : "Update Label"}
+              </Text>
             </Pressable>
 
             {/* <Pressable
