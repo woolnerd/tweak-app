@@ -26,6 +26,7 @@ function App() {
   const [goToOut, setGoToOut] = useState(false);
   const [loadFixtures, setLoadFixtures] = useState(false);
   const [labelScene, setLabelScene] = useState(false);
+  const sceneRef = useRef(false);
 
   const fetchScenes = async () => {
     const response = await new Scene(db).getAllOrdered();
@@ -85,12 +86,14 @@ function App() {
                 name={scene.name}
                 setSelectedSceneId={setSelectedSceneId}
                 selectedSceneId={selectedSceneId}
+                labelScene={labelScene}
+                ref={sceneRef}
               />
             ))}
 
             <Pressable style={styles.bigButtons} onPress={handleLabelBtn}>
               <Text style={{ ...styles.btnText, fontSize: 18 }}>
-                {labelScene ? "Label" : "Update Label"}
+                {labelScene ? "Update Label" : "Label"}
               </Text>
             </Pressable>
 

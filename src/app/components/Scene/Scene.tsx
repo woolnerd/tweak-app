@@ -1,6 +1,6 @@
-import { View, Pressable, Text, StyleSheet } from "react-native";
+import { forwardRef, useState } from "react";
+import { View, Pressable, Text, TextInput, StyleSheet } from "react-native";
 
-// import { FixtureControlData } from "../types/fixture.ts";
 import { updateFixureAssignmentDb } from "./helpers.ts";
 import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
 import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
@@ -10,61 +10,83 @@ export type SceneProps = {
   id: number;
   setSelectedSceneId: (id: number) => void;
   selectedSceneId: number;
+  labelScene: boolean;
 };
 
-export function Scene({
-  name,
-  id,
-  setSelectedSceneId,
-  selectedSceneId,
-}: SceneProps) {
-  const { manualFixturesStore, updateManualFixturesStore } =
-    useManualFixtureStore((state) => state);
+export const Scene = forwardRef(
+  (
+    { name, id, setSelectedSceneId, selectedSceneId, labelScene }: SceneProps,
+    sceneRef,
+  ) => {
+    const { manualFixturesStore, updateManualFixturesStore } =
+      useManualFixtureStore((state) => state);
 
-  const updateFixtureChannelSelectionStore = useFixtureChannelSelectionStore(
-    (state) => state.updateFixtureChannelSelectionStore,
-  );
+    const updateFixtureChannelSelectionStore = useFixtureChannelSelectionStore(
+      (state) => state.updateFixtureChannelSelectionStore,
+    );
+    const [newLabel, setNewLabel] = useState("");
 
-  const handleScenePress = () => {
-    setSelectedSceneId(id);
-    updateFixtureChannelSelectionStore(new Set([]));
-    updateManualFixturesStore([]);
-  };
+    const handleScenePress = () => {
+      console.log({ id });
+      console.log({ labelScene });
 
-  const handleRecPress = () => {
-    updateFixureAssignmentDb(Object.values(manualFixturesStore));
+      if (labelScene) {
+        return;
+      }
+      setSelectedSceneId(id);
+      updateFixtureChannelSelectionStore(new Set([]));
+      updateManualFixturesStore([]);
+    };
 
-    updateFixtureChannelSelectionStore(new Set());
-    updateManualFixturesStore([]);
-  };
+    const handleTextLabel = (text: string) => {
+      setNewLabel(text);
+    };
 
-  return (
-    <View style={{ flex: 2, flexDirection: "row", ...styles.sceneCtrl }}>
-      <Pressable
-        style={{
-          ...styles.rec,
-          borderColor: selectedSceneId === id ? "#df010f" : "#82000a",
-        }}
-        onPress={handleRecPress}
-        disabled={selectedSceneId !== id}>
-        <Text style={styles.btnText}>REC</Text>
-      </Pressable>
-      <View
-        style={{
-          backgroundColor: selectedSceneId === id ? "blue" : "#000",
-        }}>
+    const handleRecPress = () => {
+      updateFixureAssignmentDb(Object.values(manualFixturesStore));
+
+      updateFixtureChannelSelectionStore(new Set());
+      updateManualFixturesStore([]);
+    };
+
+    return (
+      <View style={{ flex: 2, flexDirection: "row", ...styles.sceneCtrl }}>
         <Pressable
           style={{
-            ...styles.scene,
-            borderColor: selectedSceneId === id ? "#cb09f1" : "#9806b5",
+            ...styles.rec,
+            borderColor: selectedSceneId === id ? "#df010f" : "#82000a",
           }}
-          onPress={handleScenePress}>
-          <Text style={styles.btnText}>{name}</Text>
+          onPress={handleRecPress}
+          disabled={selectedSceneId !== id}>
+          <Text style={styles.btnText}>REC</Text>
         </Pressable>
+        <View
+          style={{
+            backgroundColor: selectedSceneId === id ? "blue" : "#000",
+          }}>
+          <Pressable
+            style={{
+              ...styles.scene,
+              borderColor: selectedSceneId === id ? "#cb09f1" : "#9806b5",
+            }}
+            onPress={handleScenePress}>
+            {labelScene ? (
+              <TextInput
+                style={styles.btnText}
+                onChangeText={handleTextLabel}
+                value={labelScene ? newLabel : name}
+                placeholder="New Label"
+                keyboardType="numeric"
+              />
+            ) : (
+              <Text style={styles.btnText}>{name}</Text>
+            )}
+          </Pressable>
+        </View>
       </View>
-    </View>
-  );
-}
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   scene: {
