@@ -8,6 +8,7 @@ import ErrorBoundary from "react-native-error-boundary";
 // import runMigrataions from "scripts/migrations.js";
 // import seedDatabase from "scripts/seedDatabase.js";
 
+import { SceneLabelRecords } from "./types/index.ts";
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
 import Scene from "../../models/scene.ts";
@@ -25,13 +26,74 @@ function App() {
   const [selectedSceneId, setSelectedSceneId] = useState<number>(1);
   const [goToOut, setGoToOut] = useState(false);
   const [loadFixtures, setLoadFixtures] = useState(false);
-  const [labelScene, setLabelScene] = useState(false);
+  const [labelScene, setLabelScene] = useState<boolean>(false);
+  const [sceneToLabel, setSceneToLabel] = useState<number | null>(null);
+  const [newSceneLabels, setNewSceneLabels] = useState<SceneLabelRecords>({});
   const sceneRef = useRef(false);
 
   const fetchScenes = async () => {
     const response = await new Scene(db).getAllOrdered();
     return !response ? [] : response;
   };
+
+  const updateScenes = async () => {
+    try {
+      await db.transaction(async (tx) => {
+        await Promise.all(
+          Object.keys(newSceneLabels).map(async (sceneId) => {
+            const id = parseInt(sceneId, 10);
+            const prevSceneData = scenes[id];
+            const newLabelText = newSceneLabels[id];
+
+            const response = await db.update(
+              {
+                ...prevSceneData,
+                name: newLabelText,
+              },
+              tx,
+            ); // Pass transaction object if required
+
+            return { [id]: response };
+          }),
+        );
+      });
+    } catch (error) {
+      console.error("Transaction error:", error);
+    }
+  };
+
+  // const updateScenes = async () => {
+  //   let tempScenes: any = {};
+  //   const updatePromises = Object.keys(newSceneLabels).map(
+  //     async (sceneId: string) => {
+  //       const id = parseInt(sceneId, 10);
+  //       const prevSceneData = scenes[id];
+  //       const newLabelText = newSceneLabels[id];
+
+  //       const response = await new Scene(db).update({
+  //         ...prevSceneData,
+  //         name: newLabelText,
+  //       });
+
+  //       console.log({ response });
+
+  //       return { [id]: response };
+  //     },
+  //   );
+
+  //   const results = await Promise.all(updatePromises);
+  //   console.log({ results });
+
+  //   // Merge results into tempScenes
+  //   results.forEach((result) => {
+  //     tempScenes = { ...tempScenes, ...result };
+  //   });
+
+  //   console.log({ tempScenes });
+
+  //   return tempScenes;
+  // };
+
   // console.log(FileSystem.documentDirectory);
 
   const { compositeFixturesStore } = useCompositeFixtureStore((state) => state);
@@ -42,11 +104,25 @@ function App() {
     fixtureChannelSelectionStore.has(fixture.channel),
   );
 
-  const handleLabelBtn = () => setLabelScene(!labelScene);
+  const handleLabelBtn = async () => {
+    console.log(newSceneLabels);
+    setLabelScene(!labelScene);
+  };
 
   useEffect(() => {
     fetchScenes().then((response) => setScenes(response));
   }, []);
+
+  useEffect(() => {
+    if (!labelScene && Object.keys(newSceneLabels).length > 0) {
+      console.log("here");
+
+      updateScenes()
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err));
+    }
+    setNewSceneLabels({});
+  }, [labelScene]);
 
   const handleGoToOut = () => {
     const tempSet = new Set<number>();
@@ -87,6 +163,10 @@ function App() {
                 setSelectedSceneId={setSelectedSceneId}
                 selectedSceneId={selectedSceneId}
                 labelScene={labelScene}
+                setSceneToLabel={setSceneToLabel}
+                sceneToLabel={sceneToLabel}
+                newSceneLabels={newSceneLabels}
+                setNewSceneLabels={setNewSceneLabels}
                 ref={sceneRef}
               />
             ))}

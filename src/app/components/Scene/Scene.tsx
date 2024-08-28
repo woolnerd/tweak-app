@@ -1,7 +1,8 @@
-import { forwardRef, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { View, Pressable, Text, TextInput, StyleSheet } from "react-native";
 
 import { updateFixureAssignmentDb } from "./helpers.ts";
+import { SceneLabelRecords } from "../../main/types/index.ts";
 import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
 import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
 
@@ -11,20 +12,41 @@ export type SceneProps = {
   setSelectedSceneId: (id: number) => void;
   selectedSceneId: number;
   labelScene: boolean;
+  sceneToLabel: number | null;
+  setSceneToLabel: (id: number | null) => void;
+  newSceneLabels: SceneLabelRecords;
+  setNewSceneLabels: (scenes: SceneLabelRecords) => void;
 };
 
 export const Scene = forwardRef(
   (
-    { name, id, setSelectedSceneId, selectedSceneId, labelScene }: SceneProps,
+    {
+      name,
+      id,
+      setSelectedSceneId,
+      selectedSceneId,
+      labelScene,
+      setSceneToLabel,
+      sceneToLabel,
+      newSceneLabels,
+      setNewSceneLabels,
+    }: SceneProps,
     sceneRef,
   ) => {
+    const [newLabelText, setNewLabelText] = useState<string>("");
+
     const { manualFixturesStore, updateManualFixturesStore } =
       useManualFixtureStore((state) => state);
 
     const updateFixtureChannelSelectionStore = useFixtureChannelSelectionStore(
       (state) => state.updateFixtureChannelSelectionStore,
     );
-    const [newLabel, setNewLabel] = useState("");
+
+    const handleSceneChange = () => {
+      setSelectedSceneId(id);
+      updateFixtureChannelSelectionStore(new Set([]));
+      updateManualFixturesStore([]);
+    };
 
     const handleScenePress = () => {
       console.log({ id });
@@ -33,14 +55,20 @@ export const Scene = forwardRef(
       if (labelScene) {
         return;
       }
-      setSelectedSceneId(id);
-      updateFixtureChannelSelectionStore(new Set([]));
-      updateManualFixturesStore([]);
+      setNewLabelText("");
+      handleSceneChange();
     };
 
     const handleTextLabel = (text: string) => {
-      setNewLabel(text);
+      console.log(text);
+      console.log(newLabelText);
+
+      setNewLabelText(text);
     };
+
+    useEffect(() => {
+      setNewSceneLabels({ ...newSceneLabels, ...{ [id]: newLabelText } });
+    }, [selectedSceneId, newLabelText]);
 
     const handleRecPress = () => {
       updateFixureAssignmentDb(Object.values(manualFixturesStore));
@@ -74,8 +102,9 @@ export const Scene = forwardRef(
               <TextInput
                 style={styles.btnText}
                 onChangeText={handleTextLabel}
-                value={labelScene ? newLabel : name}
-                placeholder="New Label"
+                value={newLabelText}
+                placeholder="Press to Edit"
+                placeholderTextColor={styles.btnText.color}
                 keyboardType="numeric"
               />
             ) : (
