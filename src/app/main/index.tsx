@@ -14,7 +14,7 @@ import { SelectScene } from "../../db/types/tables.ts";
 import Scene from "../../models/scene.ts";
 import ControlPanel from "../components/ControlPanel/ControlPanel.tsx";
 import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
-import { Scene as SceneComponent } from "../components/Scene/Scene.tsx";
+import { SceneComponent } from "../components/Scene/Scene.tsx";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelectionStore.ts";
 
@@ -36,64 +36,6 @@ function App() {
     return !response ? [] : response;
   };
 
-  // const updateScenes = async () => {
-  //   try {
-  //     await db.transaction(async (tx) => {
-  //       await Promise.all(
-  //         Object.keys(newSceneLabels).map(async (sceneId) => {
-  //           const id = parseInt(sceneId, 10);
-  //           const prevSceneData = scenes[id];
-  //           const newLabelText = newSceneLabels[id];
-
-  //           const response = await db.update(
-  //             {
-  //               ...prevSceneData,
-  //               name: newLabelText,
-  //             },
-  //             tx,
-  //           ); // Pass transaction object if required
-
-  //           return { [id]: response };
-  //         }),
-  //       );
-  //     });
-  //   } catch (error) {
-  //     console.error("Transaction error:", error);
-  //   }
-  // };
-
-  const updateScenes = async () => {
-    let tempScenes: any = {};
-    const updatePromises = Object.keys(newSceneLabels).map(
-      async (sceneId: string) => {
-        const id = parseInt(sceneId, 10);
-        const prevSceneData = scenes[id];
-        const newLabelText = newSceneLabels[id];
-
-        const response = await new Scene(db).update({
-          ...prevSceneData,
-          name: newLabelText,
-        });
-
-        console.log({ response });
-
-        return { [id]: response };
-      },
-    );
-
-    const results = await Promise.all(updatePromises);
-    console.log({ results });
-
-    // Merge results into tempScenes
-    results.forEach((result) => {
-      tempScenes = { ...tempScenes, ...result };
-    });
-
-    console.log({ tempScenes });
-
-    return tempScenes;
-  };
-
   // console.log(FileSystem.documentDirectory);
 
   const { compositeFixturesStore } = useCompositeFixtureStore((state) => state);
@@ -113,16 +55,16 @@ function App() {
     fetchScenes().then((response) => setScenes(response));
   }, []);
 
-  useEffect(() => {
-    if (!labelScene && Object.keys(newSceneLabels).length > 0) {
-      console.log("here");
+  // useEffect(() => {
+  //   if (!labelScene && Object.keys(newSceneLabels).length > 0) {
+  //     console.log("here");
 
-      updateScenes()
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err));
-    }
-    setNewSceneLabels({});
-  }, [labelScene]);
+  //     updateScenes()
+  //       .then((res) => console.log(res))
+  //       .catch((err) => console.log(err));
+  //   }
+  //   setNewSceneLabels({});
+  // }, [labelScene]);
 
   const handleGoToOut = () => {
     const tempSet = new Set<number>();
@@ -160,6 +102,9 @@ function App() {
                 key={scene.id}
                 id={scene.id}
                 name={scene.name}
+                showId={scene.showId}
+                timeRate={scene.timeRate}
+                order={scene.order}
                 setSelectedSceneId={setSelectedSceneId}
                 selectedSceneId={selectedSceneId}
                 labelScene={labelScene}

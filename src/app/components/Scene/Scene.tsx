@@ -21,10 +21,15 @@ import { updateFixureAssignmentDb } from "./helpers.ts";
 import { SceneLabelRecords } from "../../main/types/index.ts";
 import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
 import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
+import Scene from "../../../models/scene.ts";
+import { db } from "../../../db/client.ts";
 
 export type SceneProps = {
   name: string;
   id: number;
+  showId: number;
+  timeRate: number;
+  order: number;
   setSelectedSceneId: (id: number) => void;
   selectedSceneId: number;
   labelScene: boolean;
@@ -32,13 +37,25 @@ export type SceneProps = {
   setSceneToLabel: (id: number | null) => void;
   newSceneLabels: SceneLabelRecords;
   setNewSceneLabels: (scenes: SceneLabelRecords) => void;
+  fetchScenes: () => Promise<
+    {
+      name: string;
+      id: number;
+      showId: number;
+      timeRate: number;
+      order: number;
+    }[]
+  >;
 };
 
-export const Scene = forwardRef(
+export const SceneComponent = forwardRef(
   (
     {
       name,
       id,
+      showId,
+      timeRate,
+      order,
       setSelectedSceneId,
       selectedSceneId,
       labelScene,
@@ -46,6 +63,7 @@ export const Scene = forwardRef(
       sceneToLabel,
       newSceneLabels,
       setNewSceneLabels,
+      fetchScenes,
     }: SceneProps,
     sceneRef,
   ) => {
@@ -58,6 +76,22 @@ export const Scene = forwardRef(
     const updateFixtureChannelSelectionStore = useFixtureChannelSelectionStore(
       (state) => state.updateFixtureChannelSelectionStore,
     );
+    const sceneUpdate = async (newLabel: string) => {
+      let response;
+      try {
+        response = await new Scene(db).update({
+          id,
+          name: newLabel,
+          order,
+          timeRate,
+          showId,
+        });
+      } catch (err) {
+        console.log("Transaction Error", err);
+      }
+      fetchScenes();
+      // return response;
+    };
 
     const handleSceneChange = () => {
       if (pressLong) return;
@@ -82,11 +116,18 @@ export const Scene = forwardRef(
       setNewLabelText(text);
     };
 
-    const handleKeyPress = (
+    const handleLabelBorder = () => {
+      if (pressLong) {
+        return "#cba601";
+      }
+      return selectedSceneId === id ? "#cb09f1" : "#9806b5";
+    };
+
+    const handleEnterBtn = (
       e: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
     ) => {
-      e.nativeEvent.text;
       setPressLong(false);
+      sceneUpdate(e.nativeEvent.text);
     };
 
     useEffect(() => {
@@ -118,7 +159,7 @@ export const Scene = forwardRef(
           <Pressable
             style={{
               ...styles.scene,
-              borderColor: selectedSceneId === id ? "#cb09f1" : "#9806b5",
+              borderColor: handleLabelBorder(),
             }}
             onPress={handleSceneChange}
             onLongPress={handleLabelScene}>
@@ -127,10 +168,10 @@ export const Scene = forwardRef(
                 style={styles.btnText}
                 onChangeText={handleTextLabel}
                 value={newLabelText}
-                placeholder="Press to Edit"
+                placeholder="New Label"
                 placeholderTextColor={styles.btnText.color}
                 keyboardType="numeric"
-                onSubmitEditing={handleKeyPress}
+                onSubmitEditing={handleEnterBtn}
               />
             ) : (
               <Text style={styles.btnText}>{name}</Text>
