@@ -1,23 +1,46 @@
-import { View, Pressable, Text, StyleSheet } from "react-native";
+import { MutableRefObject, useState } from "react";
+import {
+  View,
+  Pressable,
+  Text,
+  TextInput,
+  StyleSheet,
+  NativeSyntheticEvent,
+  TextInputSubmitEditingEventData,
+} from "react-native";
 
-// import { FixtureControlData } from "../types/fixture.ts";
 import { updateFixureAssignmentDb } from "./helpers.ts";
+import { db } from "../../../db/client.ts";
+import Scene from "../../../models/scene.ts";
 import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
 import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
 
-export type SceneProps = {
-  name: string;
+export type SceneComponentProps = {
   id: number;
+  name: string;
+  showId: number;
+  timeRate: number;
+  order: number;
   setSelectedSceneId: (id: number) => void;
   selectedSceneId: number;
+  setReloadScenes: (arg: boolean) => void;
+  labelRef: MutableRefObject<boolean>;
 };
 
-export function Scene({
-  name,
+export const SceneComponent = ({
   id,
+  name,
+  showId,
+  timeRate,
+  order,
   setSelectedSceneId,
   selectedSceneId,
-}: SceneProps) {
+  setReloadScenes,
+  labelRef,
+}: SceneComponentProps) => {
+  const [newLabelText, setNewLabelText] = useState<string>("");
+  const [pressLong, setPressLong] = useState(false);
+
   const { manualFixturesStore, updateManualFixturesStore } =
     useManualFixtureStore((state) => state);
 
@@ -25,10 +48,54 @@ export function Scene({
     (state) => state.updateFixtureChannelSelectionStore,
   );
 
-  const handleScenePress = () => {
+  const sceneUpdate = async (newLabel: string) => {
+    labelRef.current = false;
+    // If no label is typed in, skip DB update and reload previous label.
+    if (newLabel.length === 0) return;
+
+    try {
+      await new Scene(db).update({
+        name: newLabel,
+        id,
+        order,
+        timeRate,
+        showId,
+      });
+    } catch (err) {
+      console.log("Transaction Error", err);
+    }
+    setReloadScenes(true);
+  };
+
+  const handleSceneChange = () => {
+    // Cannot change scene in the middle of labeling.
+    if (pressLong || labelRef.current) return;
     setSelectedSceneId(id);
     updateFixtureChannelSelectionStore(new Set([]));
     updateManualFixturesStore([]);
+  };
+
+  const handleLabelScene = () => {
+    // Can only re-label one scene at a time.
+    if (labelRef.current) return;
+    labelRef.current = true;
+    setPressLong(true);
+    setNewLabelText("");
+  };
+
+  const handleTextLabel = (text: string) => setNewLabelText(text);
+
+  const handleLabelBorder = () => {
+    if (pressLong) return "#cba601";
+
+    return selectedSceneId === id ? "#cb09f1" : "#9806b5";
+  };
+
+  const handleEnterBtn = (
+    e: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
+  ) => {
+    setPressLong(false);
+    sceneUpdate(e.nativeEvent.text);
   };
 
   const handleRecPress = () => {
@@ -56,15 +123,29 @@ export function Scene({
         <Pressable
           style={{
             ...styles.scene,
-            borderColor: selectedSceneId === id ? "#cb09f1" : "#9806b5",
+            borderColor: handleLabelBorder(),
           }}
-          onPress={handleScenePress}>
-          <Text style={styles.btnText}>{name}</Text>
+          onPress={handleSceneChange}
+          onLongPress={handleLabelScene}>
+          {pressLong ? (
+            <TextInput
+              style={styles.btnText}
+              onChangeText={handleTextLabel}
+              value={newLabelText}
+              placeholder="New Label"
+              placeholderTextColor={styles.btnText.color}
+              keyboardType="numeric"
+              onSubmitEditing={handleEnterBtn}
+              autoFocus
+            />
+          ) : (
+            <Text style={styles.btnText}>{name}</Text>
+          )}
         </Pressable>
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   scene: {

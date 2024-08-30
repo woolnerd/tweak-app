@@ -13,7 +13,7 @@ import { SelectScene } from "../../db/types/tables.ts";
 import Scene from "../../models/scene.ts";
 import ControlPanel from "../components/ControlPanel/ControlPanel.tsx";
 import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
-import { Scene as SceneComponent } from "../components/Scene/Scene.tsx";
+import { SceneComponent } from "../components/Scene/Scene.tsx";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelectionStore.ts";
 
@@ -25,11 +25,14 @@ function App() {
   const [selectedSceneId, setSelectedSceneId] = useState<number>(1);
   const [goToOut, setGoToOut] = useState(false);
   const [loadFixtures, setLoadFixtures] = useState(false);
+  const [reloadScenes, setReloadScenes] = useState(false);
+  const labelRef = useRef<boolean>(false);
 
   const fetchScenes = async () => {
     const response = await new Scene(db).getAllOrdered();
     return !response ? [] : response;
   };
+
   // console.log(FileSystem.documentDirectory);
 
   const { compositeFixturesStore } = useCompositeFixtureStore((state) => state);
@@ -41,15 +44,20 @@ function App() {
   );
 
   useEffect(() => {
-    fetchScenes().then((response) => setScenes(response));
-  }, []);
+    if (reloadScenes) {
+      setReloadScenes(false);
+      return;
+    }
+    fetchScenes()
+      .then((response) => setScenes(response))
+      .catch((err) => console.log(err));
+  }, [reloadScenes]);
 
   const handleGoToOut = () => {
     const tempSet = new Set<number>();
     compositeFixturesStore
       .map((fixture) => fixture.channel)
       .forEach((channel) => tempSet.add(channel));
-    console.log({ tempSet });
 
     setGoToOut(true);
     updateFixtureChannelSelectionStore(tempSet);
@@ -81,24 +89,15 @@ function App() {
                 key={scene.id}
                 id={scene.id}
                 name={scene.name}
+                timeRate={scene.timeRate}
+                showId={scene.showId}
+                order={scene.order}
                 setSelectedSceneId={setSelectedSceneId}
                 selectedSceneId={selectedSceneId}
+                setReloadScenes={setReloadScenes}
+                labelRef={labelRef}
               />
             ))}
-
-            <Pressable
-              style={styles.bigButtons}
-              onPress={() => console.log("Simple Pressable pressed")}>
-              <Text style={{ ...styles.btnText, fontSize: 18 }}>Label</Text>
-            </Pressable>
-
-            {/* <Pressable
-              style={styles.bigButtons}
-              onPress={() => AsyncStorage.clear()}>
-              <Text style={{ ...styles.btnText, fontSize: 18 }}>
-                Clear Cache
-              </Text>
-            </Pressable> */}
           </View>
         </View>
 
