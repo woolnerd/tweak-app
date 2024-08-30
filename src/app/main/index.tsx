@@ -8,7 +8,6 @@ import ErrorBoundary from "react-native-error-boundary";
 // import runMigrataions from "scripts/migrations.js";
 // import seedDatabase from "scripts/seedDatabase.js";
 
-import { SceneLabelRecords } from "./types/index.ts";
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
 import Scene from "../../models/scene.ts";
@@ -27,6 +26,7 @@ function App() {
   const [goToOut, setGoToOut] = useState(false);
   const [loadFixtures, setLoadFixtures] = useState(false);
   const [reloadScenes, setReloadScenes] = useState(false);
+  const labelRef = useRef<boolean>(false);
 
   const fetchScenes = async () => {
     const response = await new Scene(db).getAllOrdered();
@@ -48,7 +48,9 @@ function App() {
       setReloadScenes(false);
       return;
     }
-    fetchScenes().then((response) => setScenes(response));
+    fetchScenes()
+      .then((response) => setScenes(response))
+      .catch((err) => console.log(err));
   }, [reloadScenes]);
 
   const handleGoToOut = () => {
@@ -93,6 +95,7 @@ function App() {
                 setSelectedSceneId={setSelectedSceneId}
                 selectedSceneId={selectedSceneId}
                 setReloadScenes={setReloadScenes}
+                labelRef={labelRef}
               />
             ))}
           </View>

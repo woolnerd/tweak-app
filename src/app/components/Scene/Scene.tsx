@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { MutableRefObject, useState } from "react";
 import {
   View,
   Pressable,
@@ -12,7 +12,6 @@ import {
 import { updateFixureAssignmentDb } from "./helpers.ts";
 import { db } from "../../../db/client.ts";
 import Scene from "../../../models/scene.ts";
-import { SceneLabelRecords } from "../../main/types/index.ts";
 import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
 import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
 
@@ -25,6 +24,7 @@ export type SceneComponentProps = {
   setSelectedSceneId: (id: number) => void;
   selectedSceneId: number;
   setReloadScenes: (arg: boolean) => void;
+  labelRef: MutableRefObject<boolean>;
 };
 
 export const SceneComponent = ({
@@ -36,6 +36,7 @@ export const SceneComponent = ({
   setSelectedSceneId,
   selectedSceneId,
   setReloadScenes,
+  labelRef,
 }: SceneComponentProps) => {
   const [newLabelText, setNewLabelText] = useState<string>("");
   const [pressLong, setPressLong] = useState(false);
@@ -48,6 +49,10 @@ export const SceneComponent = ({
   );
 
   const sceneUpdate = async (newLabel: string) => {
+    labelRef.current = false;
+    // If no label is typed in, skip DB update and reload previous label.
+    if (newLabel.length === 0) return;
+
     try {
       await new Scene(db).update({
         name: newLabel,
@@ -63,13 +68,17 @@ export const SceneComponent = ({
   };
 
   const handleSceneChange = () => {
-    if (pressLong) return;
+    // Cannot change scene in the middle of labeling.
+    if (pressLong || labelRef.current) return;
     setSelectedSceneId(id);
     updateFixtureChannelSelectionStore(new Set([]));
     updateManualFixturesStore([]);
   };
 
   const handleLabelScene = () => {
+    // Can only re-label one scene at a time.
+    if (labelRef.current) return;
+    labelRef.current = true;
     setPressLong(true);
     setNewLabelText("");
   };
@@ -127,6 +136,7 @@ export const SceneComponent = ({
               placeholderTextColor={styles.btnText.color}
               keyboardType="numeric"
               onSubmitEditing={handleEnterBtn}
+              autoFocus
             />
           ) : (
             <Text style={styles.btnText}>{name}</Text>
