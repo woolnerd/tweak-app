@@ -26,10 +26,7 @@ function App() {
   const [selectedSceneId, setSelectedSceneId] = useState<number>(1);
   const [goToOut, setGoToOut] = useState(false);
   const [loadFixtures, setLoadFixtures] = useState(false);
-  const [labelScene, setLabelScene] = useState<boolean>(false);
-  const [sceneToLabel, setSceneToLabel] = useState<number | null>(null);
-  const [newSceneLabels, setNewSceneLabels] = useState<SceneLabelRecords>({});
-  const sceneRef = useRef(false);
+  const [reloadScenes, setReloadScenes] = useState(false);
 
   const fetchScenes = async () => {
     const response = await new Scene(db).getAllOrdered();
@@ -46,25 +43,13 @@ function App() {
     fixtureChannelSelectionStore.has(fixture.channel),
   );
 
-  const handleLabelBtn = async () => {
-    console.log(newSceneLabels);
-    setLabelScene(!labelScene);
-  };
-
   useEffect(() => {
+    if (reloadScenes) {
+      setReloadScenes(false);
+      return;
+    }
     fetchScenes().then((response) => setScenes(response));
-  }, []);
-
-  // useEffect(() => {
-  //   if (!labelScene && Object.keys(newSceneLabels).length > 0) {
-  //     console.log("here");
-
-  //     updateScenes()
-  //       .then((res) => console.log(res))
-  //       .catch((err) => console.log(err));
-  //   }
-  //   setNewSceneLabels({});
-  // }, [labelScene]);
+  }, [reloadScenes]);
 
   const handleGoToOut = () => {
     const tempSet = new Set<number>();
@@ -102,33 +87,14 @@ function App() {
                 key={scene.id}
                 id={scene.id}
                 name={scene.name}
-                showId={scene.showId}
                 timeRate={scene.timeRate}
+                showId={scene.showId}
                 order={scene.order}
                 setSelectedSceneId={setSelectedSceneId}
                 selectedSceneId={selectedSceneId}
-                labelScene={labelScene}
-                setSceneToLabel={setSceneToLabel}
-                sceneToLabel={sceneToLabel}
-                newSceneLabels={newSceneLabels}
-                setNewSceneLabels={setNewSceneLabels}
-                ref={sceneRef}
+                setReloadScenes={setReloadScenes}
               />
             ))}
-
-            <Pressable style={styles.bigButtons} onPress={handleLabelBtn}>
-              <Text style={{ ...styles.btnText, fontSize: 18 }}>
-                {labelScene ? "Update Label" : "Label"}
-              </Text>
-            </Pressable>
-
-            {/* <Pressable
-              style={styles.bigButtons}
-              onPress={() => AsyncStorage.clear()}>
-              <Text style={{ ...styles.btnText, fontSize: 18 }}>
-                Clear Cache
-              </Text>
-            </Pressable> */}
           </View>
         </View>
 
