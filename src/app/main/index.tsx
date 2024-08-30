@@ -36,63 +36,63 @@ function App() {
     return !response ? [] : response;
   };
 
-  const updateScenes = async () => {
-    try {
-      await db.transaction(async (tx) => {
-        await Promise.all(
-          Object.keys(newSceneLabels).map(async (sceneId) => {
-            const id = parseInt(sceneId, 10);
-            const prevSceneData = scenes[id];
-            const newLabelText = newSceneLabels[id];
-
-            const response = await db.update(
-              {
-                ...prevSceneData,
-                name: newLabelText,
-              },
-              tx,
-            ); // Pass transaction object if required
-
-            return { [id]: response };
-          }),
-        );
-      });
-    } catch (error) {
-      console.error("Transaction error:", error);
-    }
-  };
-
   // const updateScenes = async () => {
-  //   let tempScenes: any = {};
-  //   const updatePromises = Object.keys(newSceneLabels).map(
-  //     async (sceneId: string) => {
-  //       const id = parseInt(sceneId, 10);
-  //       const prevSceneData = scenes[id];
-  //       const newLabelText = newSceneLabels[id];
+  //   try {
+  //     await db.transaction(async (tx) => {
+  //       await Promise.all(
+  //         Object.keys(newSceneLabels).map(async (sceneId) => {
+  //           const id = parseInt(sceneId, 10);
+  //           const prevSceneData = scenes[id];
+  //           const newLabelText = newSceneLabels[id];
 
-  //       const response = await new Scene(db).update({
-  //         ...prevSceneData,
-  //         name: newLabelText,
-  //       });
+  //           const response = await db.update(
+  //             {
+  //               ...prevSceneData,
+  //               name: newLabelText,
+  //             },
+  //             tx,
+  //           ); // Pass transaction object if required
 
-  //       console.log({ response });
-
-  //       return { [id]: response };
-  //     },
-  //   );
-
-  //   const results = await Promise.all(updatePromises);
-  //   console.log({ results });
-
-  //   // Merge results into tempScenes
-  //   results.forEach((result) => {
-  //     tempScenes = { ...tempScenes, ...result };
-  //   });
-
-  //   console.log({ tempScenes });
-
-  //   return tempScenes;
+  //           return { [id]: response };
+  //         }),
+  //       );
+  //     });
+  //   } catch (error) {
+  //     console.error("Transaction error:", error);
+  //   }
   // };
+
+  const updateScenes = async () => {
+    let tempScenes: any = {};
+    const updatePromises = Object.keys(newSceneLabels).map(
+      async (sceneId: string) => {
+        const id = parseInt(sceneId, 10);
+        const prevSceneData = scenes[id];
+        const newLabelText = newSceneLabels[id];
+
+        const response = await new Scene(db).update({
+          ...prevSceneData,
+          name: newLabelText,
+        });
+
+        console.log({ response });
+
+        return { [id]: response };
+      },
+    );
+
+    const results = await Promise.all(updatePromises);
+    console.log({ results });
+
+    // Merge results into tempScenes
+    results.forEach((result) => {
+      tempScenes = { ...tempScenes, ...result };
+    });
+
+    console.log({ tempScenes });
+
+    return tempScenes;
+  };
 
   // console.log(FileSystem.documentDirectory);
 

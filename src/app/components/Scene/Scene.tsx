@@ -1,5 +1,21 @@
-import { forwardRef, useEffect, useState } from "react";
-import { View, Pressable, Text, TextInput, StyleSheet } from "react-native";
+import {
+  forwardRef,
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import {
+  View,
+  Pressable,
+  Text,
+  TextInput,
+  StyleSheet,
+  GestureResponderEvent,
+  NativeSyntheticEvent,
+  NativeEventEmitter,
+  TextInputSubmitEditingEventData,
+} from "react-native";
 
 import { updateFixureAssignmentDb } from "./helpers.ts";
 import { SceneLabelRecords } from "../../main/types/index.ts";
@@ -34,6 +50,7 @@ export const Scene = forwardRef(
     sceneRef,
   ) => {
     const [newLabelText, setNewLabelText] = useState<string>("");
+    const [pressLong, setPressLong] = useState(false);
 
     const { manualFixturesStore, updateManualFixturesStore } =
       useManualFixtureStore((state) => state);
@@ -43,27 +60,33 @@ export const Scene = forwardRef(
     );
 
     const handleSceneChange = () => {
+      if (pressLong) return;
       setSelectedSceneId(id);
       updateFixtureChannelSelectionStore(new Set([]));
       updateManualFixturesStore([]);
     };
 
-    const handleScenePress = () => {
-      console.log({ id });
-      console.log({ labelScene });
-
-      if (labelScene) {
-        return;
-      }
+    const handleLabelScene = () => {
+      setPressLong(true);
       setNewLabelText("");
-      handleSceneChange();
     };
+
+    useEffect(() => {
+      console.log({ pressLong });
+    }, [pressLong]);
 
     const handleTextLabel = (text: string) => {
       console.log(text);
       console.log(newLabelText);
 
       setNewLabelText(text);
+    };
+
+    const handleKeyPress = (
+      e: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
+    ) => {
+      e.nativeEvent.text;
+      setPressLong(false);
     };
 
     useEffect(() => {
@@ -97,8 +120,9 @@ export const Scene = forwardRef(
               ...styles.scene,
               borderColor: selectedSceneId === id ? "#cb09f1" : "#9806b5",
             }}
-            onPress={handleScenePress}>
-            {labelScene ? (
+            onPress={handleSceneChange}
+            onLongPress={handleLabelScene}>
+            {pressLong ? (
               <TextInput
                 style={styles.btnText}
                 onChangeText={handleTextLabel}
@@ -106,6 +130,7 @@ export const Scene = forwardRef(
                 placeholder="Press to Edit"
                 placeholderTextColor={styles.btnText.color}
                 keyboardType="numeric"
+                onSubmitEditing={handleKeyPress}
               />
             ) : (
               <Text style={styles.btnText}>{name}</Text>
