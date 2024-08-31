@@ -1,6 +1,7 @@
 import { Database } from "../../db/types/database.ts";
 import {
   insertPatch,
+  mockDbInsert,
   mockDbSelectOverlap,
   selectPatch,
 } from "../__mocks__/patch.ts";
@@ -17,7 +18,7 @@ jest.mock("../../db/client", () =>
 
 describe("Patch", () => {
   let patch: Patch;
-  const mockDb: Database = jest.mock();
+  let mockDb: Database = jest.fn();
   const MIN_START_ADDRESS = 1;
 
   beforeEach(() => {
@@ -53,12 +54,7 @@ describe("Patch", () => {
   });
 
   test("create calls insert method when data is valid", async () => {
-    mockDbSelectOverlap(mockDb, []);
-
-    (mockDb.insert as jest.Mock).mockReturnValue({
-      values: jest.fn().mockResolvedValue(insertPatch),
-    });
-
+    mockDbInsert(mockDb, []);
     await patch.create(insertPatch);
 
     expect(mockDb.insert).toHaveBeenCalledWith(expect.anything());
