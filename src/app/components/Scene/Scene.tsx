@@ -11,11 +11,11 @@ import {
 
 import { updateFixureAssignmentDb } from "./helpers.ts";
 import { db } from "../../../db/client.ts";
-import Scene from "../../../models/scene.ts";
+import SceneModel from "../../../models/scene.ts";
 import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
 import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
 
-export type SceneComponentProps = {
+export type SceneProps = {
   id: number;
   name: string;
   showId: number;
@@ -27,7 +27,7 @@ export type SceneComponentProps = {
   labelRef: MutableRefObject<boolean>;
 };
 
-export const SceneComponent = ({
+export const Scene = ({
   id,
   name,
   showId,
@@ -37,7 +37,7 @@ export const SceneComponent = ({
   selectedSceneId,
   setReloadScenes,
   labelRef,
-}: SceneComponentProps) => {
+}: SceneProps) => {
   const [newLabelText, setNewLabelText] = useState<string>("");
   const [pressLong, setPressLong] = useState(false);
 
@@ -54,7 +54,7 @@ export const SceneComponent = ({
     if (newLabel.length === 0) return;
 
     try {
-      await new Scene(db).update({
+      await new SceneModel(db).update({
         name: newLabel,
         id,
         order,

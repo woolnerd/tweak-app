@@ -10,10 +10,10 @@ import ErrorBoundary from "react-native-error-boundary";
 
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
-import Scene from "../../models/scene.ts";
+import SceneModel from "../../models/scene.ts";
 import ControlPanel from "../components/ControlPanel/ControlPanel.tsx";
 import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
-import { SceneComponent } from "../components/Scene/Scene.tsx";
+import { Scene } from "../components/Scene/Scene.tsx";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelectionStore.ts";
 
@@ -29,7 +29,7 @@ function App() {
   const labelRef = useRef<boolean>(false);
 
   const fetchScenes = async () => {
-    const response = await new Scene(db).getAllOrdered();
+    const response = await new SceneModel(db).getAllOrdered();
     return !response ? [] : response;
   };
 
@@ -85,7 +85,7 @@ function App() {
             </Pressable>
 
             {scenes?.map((scene, i) => (
-              <SceneComponent
+              <Scene
                 key={scene.id}
                 id={scene.id}
                 name={scene.name}

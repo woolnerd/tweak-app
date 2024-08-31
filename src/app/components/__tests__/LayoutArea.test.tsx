@@ -6,7 +6,6 @@ import React from "react";
 jest.mock("../../../util/fixture-cache.ts");
 jest.mock("../../../db/client.ts");
 jest.mock("../../store/useCompositeFixtureStore.ts");
-jest.mock("../../store/useCompositeFixtureStore.ts");
 jest.mock("../../store/useFixtureChannelSelectionStore.ts");
 jest.mock("../../store/useManualFixtureStore.ts");
 jest.mock("../../../models/scene-to-fixture-assignments");
