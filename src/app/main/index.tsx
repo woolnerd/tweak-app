@@ -81,7 +81,11 @@ function App() {
             <View style={{ flex: 1, borderColor: "yellow", height: 100 }} />
 
             <Pressable style={styles.bigButtons} onPress={handleGoToOut}>
-              <Text style={{ ...styles.btnText, fontSize: 18 }}>Go to Out</Text>
+              <Text
+                className="text-xl"
+                style={{ ...styles.btnText, fontSize: 18 }}>
+                Go to Out
+              </Text>
             </Pressable>
 
             {scenes?.map((scene, i) => (
