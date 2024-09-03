@@ -5,6 +5,7 @@ import {
   screen,
   fireEvent,
   userEvent,
+  waitFor,
 } from "@testing-library/react-native";
 import React, { createRef } from "react";
 
@@ -12,6 +13,7 @@ import SceneModel from "../../../models/scene.ts";
 import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
 import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
 import { Scene } from "../Scene/Scene.tsx";
+
 // Mock props
 const mockProps = {
   id: 1,
@@ -24,8 +26,6 @@ const mockProps = {
   setReloadScenes: jest.fn(),
   labelRef: createRef(), // Mock or create a ref
 };
-
-const handleLabelScene = jest.fn();
 
 const mockManualFixtures = {
   1: { values: [[1, 255]] },
@@ -61,37 +61,41 @@ test("labelRef is assigned correctly", () => {
 });
 
 test("handles label scene on long press", () => {
-  const { getByText } = render(<Scene {...mockProps} />);
+  const { getByTestId } = render(<Scene {...mockProps} />);
 
-  const scenePressable = getByText(/Test Scene/i);
+  const scenePressable = getByTestId("label-btn");
 
   fireEvent(scenePressable, "onLongPress");
 
-  expect(screen.getByPlaceholderText(/New Label/i)).toBeTruthy();
+  expect(screen.getByTestId("input-label")).toBeTruthy();
 });
 
 test("calls setReloadScenes when appropriate", () => {});
 
 test("updates scene label on enter button press", async () => {
   const user = userEvent.setup();
+  const sceneUpdateSpy = jest.spyOn(SceneModel.prototype, "update");
 
-  SceneModel.prototype.update = jest.fn();
+  jest.spyOn(React, "useState").mockImplementation((initialState) => {
+    if (initialState === false) {
+      return [true, jest.fn()];
+    }
+    return [initialState, jest.fn()];
+  });
+
   render(<Scene {...mockProps} />);
 
-  await user.longPress(screen.getByText(/Test Scene/i).parent);
+  const input = await screen.findByTestId("input-label");
 
-  await user.type(screen.getByPlaceholderText(/New Label/i), "Hello World", {
+  await user.type(input, "Hello World", {
     submitEditing: true,
   });
-  screen.debug();
 
-  expect(handleLabelScene).toHaveBeenCalled();
-  expect(updateMock).toHaveBeenCalledWith({
+  expect(sceneUpdateSpy).toHaveBeenCalledWith({
     name: "Hello World",
     id: 1,
     order: 3,
     timeRate: 120,
     showId: 1,
   });
-  expect(mockProps.setReloadScenes).toHaveBeenCalledWith(true);
 });

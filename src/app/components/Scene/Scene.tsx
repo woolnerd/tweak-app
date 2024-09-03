@@ -39,7 +39,7 @@ export const Scene = ({
   labelRef,
 }: SceneProps) => {
   const [newLabelText, setNewLabelText] = useState<string>("");
-  const [pressLong, setPressLong] = useState(false);
+  const [pressLong, setPressLong] = useState<boolean>(false);
 
   const { manualFixturesStore, updateManualFixturesStore } =
     useManualFixtureStore((state) => state);
@@ -108,13 +108,16 @@ export const Scene = ({
   return (
     <View style={{ flex: 2, flexDirection: "row", ...styles.sceneCtrl }}>
       <Pressable
+        testID="rec-btn"
         style={{
           ...styles.rec,
           borderColor: selectedSceneId === id ? "#df010f" : "#82000a",
         }}
         onPress={handleRecPress}
         disabled={selectedSceneId !== id}>
-        <Text style={styles.btnText}>REC</Text>
+        <Text style={styles.btnText} testID="rec-text">
+          REC
+        </Text>
       </Pressable>
       <View
         style={{
@@ -126,7 +129,8 @@ export const Scene = ({
             borderColor: handleLabelBorder(),
           }}
           onPress={handleSceneChange}
-          onLongPress={handleLabelScene}>
+          onLongPress={handleLabelScene}
+          testID="label-btn">
           {pressLong ? (
             <TextInput
               style={styles.btnText}
@@ -137,9 +141,12 @@ export const Scene = ({
               keyboardType="numeric"
               onSubmitEditing={handleEnterBtn}
               autoFocus
+              testID="input-label"
             />
           ) : (
-            <Text style={styles.btnText}>{name}</Text>
+            <Text style={styles.btnText} testID="text-label">
+              {name}
+            </Text>
           )}
         </Pressable>
       </View>
