@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, Switch } from "react-native";
-import { styled } from "nativewind";
+// import { styled } from "nativewind";
 
 const UserSettings = () => {
   const [isEnabled, setIsEnabled] = React.useState(false);
@@ -69,4 +69,4 @@ const UserSettings = () => {
   );
 };
 
-export default styled(UserSettings);
+export default UserSettings;

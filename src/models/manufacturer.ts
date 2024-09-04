@@ -1,3 +1,5 @@
+import { eq } from "drizzle-orm";
+
 import Base from "./base.ts";
 import { manufacturers } from "../db/schema.ts";
 import { QueryKeys } from "../db/types/database.ts";
