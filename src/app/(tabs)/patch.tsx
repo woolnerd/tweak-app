@@ -37,7 +37,7 @@ export default function Tab() {
   return (
     <View className="flex-1 items-center justify-center bg-white">
       <View style={{ height: 600, flexDirection: "row" }}>
-        <Text className="text-red-600 text-xl">Patch</Text>
+        <Text className="text-red-600 text-2xl">Patch</Text>
       </View>
     </View>
   );
