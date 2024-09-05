@@ -9,6 +9,7 @@ import Profile from "../../models/profile.ts";
 import PatchModel from "../../models/patch.ts";
 import { patches } from "../../db/schema.ts";
 import { profile } from "../../lib/__test__/value-router-utils.ts";
+import ScenesToFixtureAssignments from "../../models/scene-to-fixture-assignments.ts";
 
 export default function Patch() {
   const [manufacturers, setManufacturers] = useState([]);
@@ -74,22 +75,50 @@ export default function Patch() {
     setSelectChannels([...selectedChannels, channel]);
   };
 
-  const handlePatch = () => {
-    console.log({
+  const handlePatch = async () => {
+    // create patch, return id, pass to fixture assignment for creation, create scene_to_fixture_assignment
+    const calcEndAddress = parseInt(addressTextInput) + profileFootprint - 1;
+    const patchPayload = {
       startAddress: addressTextInput,
+      endAddress: calcEndAddress,
       profileId: profileSelection,
       fixtureId: fixtureSelection,
       showId: SHOW,
-    });
+    };
+    console.log(patchPayload);
+    const channel = selectedChannels[0];
+
+    try {
+      await db.transaction(async (tx) => {
+        const patchResponse = await new PatchModel(db);
+      });
+
+      const res = await new FixtureAssignment(db).create({
+        title: "test component",
+        channel,
+        fixtureId: fixtureSelection,
+        profileId: profileSelection,
+        patchId: patchResponse.lastInsertRowId,
+      });
+
+      const sceneToFixtureUpdate = await new ScenesToFixtureAssignments(
+        db,
+      ).create({ sceneId: SCENE, fixtureAssignmentId: res.lastInsertRowId });
+      console.log({ sceneToFixtureUpdate });
+
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const buildProfile = () => {
-    if (!profileSelection) return;
+  const profile = profiles.find((profile) => profile.id === profileSelection);
+  const profileFootprint = profile
+    ? Object.keys(JSON.parse(profile.channels)).length
+    : 0;
 
-    const profile = profiles.find((profile) => profile.id === profileSelection);
-    console.log(profile);
-
-    if (!profile) return;
+  const buildProfileDisplay = () => {
+    if (!profileSelection || !profile) return null;
 
     return (
       <React.Fragment key={profile.id}>
@@ -118,9 +147,7 @@ export default function Patch() {
     setProfileSelection(null);
   }, [manufacturerSelection, fixtureSelection]);
 
-  useEffect(() => {
-    console.log(patchObjs);
-  }, [patchObjs]);
+  useEffect(() => {}, [patchObjs]);
 
   return (
     <View className="flex-1 justify-center items-center bg-gray-100">
@@ -176,7 +203,7 @@ export default function Patch() {
         </View>
         <View className="border-red-400 border-2 p-5 w-1/8">
           <Text className="text-white text-xl">Channels</Text>
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((m) => (
+          {[101, 102, 103, 104, 105, 106, 107, 108, 109, 110].map((m) => (
             <Pressable key={m} onPress={() => handleChannelSelection(m)}>
               <Text
                 className={
@@ -196,7 +223,7 @@ export default function Patch() {
             placeholder="Enter Address Start"
             onChangeText={setAddressTextInput}
           />
-          <Pressable onPress={handlePatch}>
+          <Pressable onPress={handlePatch} className="">
             <Text>Save Patch</Text>
           </Pressable>
         </View>
@@ -217,7 +244,7 @@ export default function Patch() {
 
         <View className="w-1/2 h-full bg-green-500 justify-center items-center">
           <Text className="text-white">Selected Fixture Details</Text>
-          <View>{buildProfile()}</View>
+          <View>{buildProfileDisplay()}</View>
         </View>
       </View>
     </View>
