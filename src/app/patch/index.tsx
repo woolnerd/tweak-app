@@ -7,13 +7,14 @@ import FixtureAssignment from "../../models/fixture-assignment.ts";
 import Fixture from "../../models/fixture.ts";
 import Manufacturer from "../../models/manufacturer.ts";
 import Profile from "../../models/profile.ts";
+import { fixturesRelations } from "../../db/schema.ts";
 
 export default function Patch() {
   // const [queryText, setQueryText] = useState("");
   const [manufacturers, setManufacturers] = useState([]);
   const [fixtures, setFixtures] = useState([]);
   const [profiles, setProfiles] = useState([]);
-  const [fixturesSelection, setFixtureSelection] = useState(0);
+  const [fixtureSelection, setFixtureSelection] = useState(0);
   const [manufacturerSelection, setManufacturerSelection] = useState(null);
   const [profileSelection, setProfileSelection] = useState(null);
 
@@ -23,26 +24,28 @@ export default function Patch() {
   const fetchManufacturers = async (
     id?: number,
   ): Promise<(typeof manufacturers)[]> => {
-    const response = id
-      ? await new Manufacturer(db).getById(id)
-      : await new Manufacturer(db).getAll();
+    const query = new Manufacturer(db);
+    const response = id ? await query.getById(id) : await query.getAll();
     return !response ? [] : response;
   };
 
   // once fixture is selected, only manufacturer with that fixture id are avail, and profiles for that fixture id
-  const fetchFixture = async (): Promise<(typeof manufacturers)[]> => {
-    const response = await new Fixture(db).getAll();
+  const fetchFixture = async (id?: number): Promise<(typeof fixtures)[]> => {
+    const query = new Fixture(db);
+    const response = id
+      ? await query.getByManufacturerId(id)
+      : await query.getAll();
     return !response ? [] : response;
   };
 
-  const fetchProfiles = async (): Promise<(typeof manufacturers)[]> => {
-    const response = await new Profile(db).getByFixtureId(fixturesSelection);
+  const fetchProfiles = async (): Promise<(typeof profiles)[]> => {
+    const response = await new Profile(db).getByFixtureId(fixtureSelection);
     return !response ? [] : response;
   };
 
   const handleManufacturerSelection = (manufacturer) => {
-    console.log(manufacturer);
-    // setFixtureSelection(manufacturer.id);
+    setManufacturerSelection(manufacturer.id);
+    fetchFixture(manufacturer.id).then((res) => setFixtures(res));
   };
 
   const handleFixtureSelection = (fixture) => {
@@ -66,17 +69,14 @@ export default function Patch() {
 
   useEffect(() => {
     fetchProfiles().then((res) => setProfiles(res));
-  }, [fixturesSelection]);
+  }, [fixtureSelection]);
 
   useEffect(() => {
-    fetchManufacturers(manufacturerSelection).then((res) =>
-      setManufacturers(res),
-    );
-  }, [manufacturerSelection]);
+    setProfileSelection(null);
+  }, [manufacturerSelection, fixtureSelection]);
 
   return (
     <View className="flex-1 justify-center items-center bg-gray-100">
-      {/* First container (takes half of the screen height) */}
       <View className="w-full h-1/2 bg-gray-400 justify-center items-center border-gray-300">
         <View className="border-red-400 border-2 p-5 w-1/4">
           <Text className="text-white text-xl">Manufacturer</Text>
@@ -84,7 +84,13 @@ export default function Patch() {
             <Pressable
               key={m.name}
               onPress={() => handleManufacturerSelection(m)}>
-              <Text className="text-white" key={m.name}>
+              <Text
+                className={
+                  m.id === manufacturerSelection
+                    ? "text-yellow-400"
+                    : "text-white"
+                }
+                key={m.name}>
                 {m.name}
               </Text>
             </Pressable>
@@ -95,7 +101,12 @@ export default function Patch() {
           <Text className="text-white text-xl">Fixture</Text>
           {fixtures.map((m) => (
             <Pressable key={m.name} onPress={() => handleFixtureSelection(m)}>
-              <Text className="text-white">{m.name}</Text>
+              <Text
+                className={
+                  m.id === fixtureSelection ? "text-yellow-400" : "text-white"
+                }>
+                {m.name}
+              </Text>
             </Pressable>
           ))}
         </View>
@@ -103,22 +114,24 @@ export default function Patch() {
           <Text className="text-white text-xl w-1/4">Profile</Text>
           {profiles.map((m) => (
             <Pressable key={m.name} onPress={() => handleProfileSelection(m)}>
-              <Text className="text-white">{m.name}</Text>
+              <Text
+                className={
+                  m.id === profileSelection ? "text-yellow-400" : "text-white"
+                }>
+                {m.name}
+              </Text>
             </Pressable>
           ))}
         </View>
       </View>
 
-      {/* Second container (divided in half) */}
       <View className="w-full h-1/2 flex-row">
-        {/* First half */}
         <View className="w-1/2 h-full bg-red-500 justify-center items-center">
-          <Text className="text-white">Bottom Container - Top Half</Text>
+          <Text className="text-white">Universe Table</Text>
         </View>
 
-        {/* Second half */}
         <View className="w-1/2 h-full bg-green-500 justify-center items-center">
-          <Text className="text-white">Bottom Container - Bottom Half</Text>
+          <Text className="text-white">Selected Fixture Details?</Text>
         </View>
       </View>
     </View>
