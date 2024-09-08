@@ -5,6 +5,7 @@ module.exports = function (api) {
     plugins: [
       "@babel/transform-react-jsx-source",
       ["inline-import", { extensions: [".sql"] }],
+      "nativewind/babel",
     ],
   };
 };

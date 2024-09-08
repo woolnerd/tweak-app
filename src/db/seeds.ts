@@ -159,7 +159,7 @@ export const seeds: Seeds = {
     },
     {
       fixtureId: 1,
-      channelCount: 5,
+      channelCount: 6,
       channels: JSON.stringify({
         1: "Red",
         2: "Green",
