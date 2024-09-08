@@ -17,6 +17,8 @@ import {
   SelectSceneToFixtureAssignment,
   TableNames,
 } from "../db/types/tables.ts";
+import { ManualFixtureState } from "../app/components/Fixture/types/Fixture.ts";
+// import FixtureAssignment from "./fixture-assignment.ts";
 
 export default class ScenesToFixtureAssignments extends Base<
   typeof scenesToFixtureAssignments,
@@ -37,7 +39,7 @@ export default class ScenesToFixtureAssignments extends Base<
         .select({
           fixtureAssignmentId: fixtureAssignments.id,
           channel: fixtureAssignments.channel,
-          values: fixtureAssignments.values,
+          values: scenesToFixtureAssignments.values,
           title: fixtureAssignments.title,
           profileChannels: profiles.channels,
           channelPairs16Bit: profiles.channelPairs16Bit,
@@ -81,6 +83,33 @@ export default class ScenesToFixtureAssignments extends Base<
     }
   }
 
+  async batchUpdate<T extends ManualFixtureState>(fixtureArray: T[]) {
+    try {
+      return await this.db.transaction(async (tx) =>
+        Promise.all(
+          fixtureArray.map((fixture: T) =>
+            tx
+              .update(scenesToFixtureAssignments)
+              .set({
+                values:
+                  ScenesToFixtureAssignments.stringifyFieldsFromJSON(fixture)
+                    .values,
+              })
+              .where(
+                eq(
+                  scenesToFixtureAssignments.fixtureAssignmentId,
+                  fixture.fixtureAssignmentId,
+                ),
+              )
+              .returning(),
+          ),
+        ),
+      );
+    } catch (err) {
+      return this.handleError(err);
+    }
+  }
+
   private parseStringColumnsToJSON(): ParsedCompositeFixtureInfo[] {
     return this.fetchedData.map(
       (
@@ -94,5 +123,12 @@ export default class ScenesToFixtureAssignments extends Base<
         channelPairs16Bit: JSON.parse(assignmentObj.channelPairs16Bit),
       }),
     );
+  }
+
+  private static stringifyFieldsFromJSON(data: { values: number[][] }): {
+    values: string;
+  } {
+    const vals = { values: JSON.stringify(data.values) };
+    return { ...data, ...vals };
   }
 }

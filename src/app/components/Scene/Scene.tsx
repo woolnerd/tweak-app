@@ -99,6 +99,8 @@ export const Scene = ({
   };
 
   const handleRecPress = () => {
+    // TODO handle the DB change of values column to scenes_to_fixture_assignments
+
     updateFixureAssignmentDb(Object.values(manualFixturesStore));
 
     updateFixtureChannelSelectionStore(new Set());

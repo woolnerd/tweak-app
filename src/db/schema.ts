@@ -88,7 +88,6 @@ export const fixtureAssignments = sqliteTable("fixtureAssignments", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   title: text("title").notNull().default(""),
   channel: integer("channel").notNull(),
-  values: text("values").notNull().default("[]"),
   fixtureId: integer("fixture_id").notNull(),
   profileId: integer("profile_id").notNull(),
   patchId: integer("patch_id").notNull(),
@@ -138,6 +137,7 @@ export const scenesToFixtureAssignments = sqliteTable(
     sceneId: integer("scene_id")
       .notNull()
       .references(() => scenes.id, { onDelete: "cascade" }),
+    values: text("values").notNull().default("[]"),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.fixtureAssignmentId, t.sceneId] }),

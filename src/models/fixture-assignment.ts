@@ -35,31 +35,31 @@ export default class FixtureAssignment extends Base<
     }
   }
 
-  async batchUpdate<T extends ManualFixtureState>(fixtureArray: T[]) {
-    try {
-      return await this.db.transaction(async (tx) =>
-        Promise.all(
-          fixtureArray.map((fixture: T) =>
-            tx
-              .update(fixtureAssignments)
-              .set({
-                values:
-                  FixtureAssignment.stringifyFieldsFromJSON(fixture).values,
-              })
-              .where(eq(fixtureAssignments.id, fixture.fixtureAssignmentId))
-              .returning(),
-          ),
-        ),
-      );
-    } catch (err) {
-      return this.handleError(err);
-    }
-  }
+  // async batchUpdate<T extends ManualFixtureState>(fixtureArray: T[]) {
+  //   try {
+  //     return await this.db.transaction(async (tx) =>
+  //       Promise.all(
+  //         fixtureArray.map((fixture: T) =>
+  //           tx
+  //             .update(fixtureAssignments)
+  //             .set({
+  //               values:
+  //                 FixtureAssignment.stringifyFieldsFromJSON(fixture).values,
+  //             })
+  //             .where(eq(fixtureAssignments.id, fixture.fixtureAssignmentId))
+  //             .returning(),
+  //         ),
+  //       ),
+  //     );
+  //   } catch (err) {
+  //     return this.handleError(err);
+  //   }
+  // }
 
-  static stringifyFieldsFromJSON(data: { values: number[][] }): {
-    values: string;
-  } {
-    const vals = { values: JSON.stringify(data.values) };
-    return { ...data, ...vals };
-  }
+  // static stringifyFieldsFromJSON(data: { values: number[][] }): {
+  //   values: string;
+  // } {
+  //   const vals = { values: JSON.stringify(data.values) };
+  //   return { ...data, ...vals };
+  // }
 }
