@@ -31,6 +31,7 @@
   - Each dropdown's state is managed to ensure that the options are filtered correctly based on previous selections.
 - **Validation Rules:**
   - Ensure that the size of the adjusted address matches the profile size.
+  - Check if channel is in use. _All scenes for a show share the same patch/channel/fixtureAssignments_
 - **UI Feedback:**
   - Provide real-time feedback if the user attempts to select an invalid address size or channel number.
 - **APIs:**

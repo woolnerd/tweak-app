@@ -24,7 +24,7 @@ export default function Patch() {
   const [patchObjs, setPatchObjs] = useState([]);
   const [addressTextInput, setAddressTextInput] = useState("");
 
-  const SCENE = 2;
+  const SCENE = 1;
   const SHOW = 1;
 
   // once manufacturer selected, only fixtures with that manufacturer id are avail
