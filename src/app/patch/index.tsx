@@ -7,9 +7,11 @@ import Fixture from "../../models/fixture.ts";
 import Manufacturer from "../../models/manufacturer.ts";
 import Profile from "../../models/profile.ts";
 import PatchModel from "../../models/patch.ts";
-import { patches } from "../../db/schema.ts";
-import { profile } from "../../lib/__test__/value-router-utils.ts";
-import ScenesToFixtureAssignments from "../../models/scene-to-fixture-assignments.ts";
+import {
+  fixtureAssignments,
+  patches,
+  scenesToFixtureAssignments,
+} from "../../db/schema.ts";
 
 export default function Patch() {
   const [manufacturers, setManufacturers] = useState([]);
@@ -22,7 +24,7 @@ export default function Patch() {
   const [patchObjs, setPatchObjs] = useState([]);
   const [addressTextInput, setAddressTextInput] = useState("");
 
-  const SCENE = 1;
+  const SCENE = 2;
   const SHOW = 1;
 
   // once manufacturer selected, only fixtures with that manufacturer id are avail
@@ -85,28 +87,35 @@ export default function Patch() {
       fixtureId: fixtureSelection,
       showId: SHOW,
     };
-    console.log(patchPayload);
+
     const channel = selectedChannels[0];
 
     try {
-      await db.transaction(async (tx) => {
-        const patchResponse = await new PatchModel(db);
-      });
+      const patchRes = await db.transaction(async (tx) =>
+        tx.insert(patches).values(patchPayload).returning({ id: patches.id }),
+      );
 
-      const res = await new FixtureAssignment(db).create({
-        title: "test component",
-        channel,
-        fixtureId: fixtureSelection,
-        profileId: profileSelection,
-        patchId: patchResponse.lastInsertRowId,
-      });
+      const fixAssignmentRes = await db.transaction(async (tx) =>
+        tx
+          .insert(fixtureAssignments)
+          .values({
+            title: "test component",
+            channel,
+            fixtureId: fixtureSelection,
+            profileId: profileSelection,
+            patchId: patchRes[0].id,
+          })
+          .returning({ id: fixtureAssignments.id }),
+      );
 
-      const sceneToFixtureUpdate = await new ScenesToFixtureAssignments(
-        db,
-      ).create({ sceneId: SCENE, fixtureAssignmentId: res.lastInsertRowId });
+      const sceneToFixtureUpdate = await db.transaction(async (tx) =>
+        tx.insert(scenesToFixtureAssignments).values({
+          sceneId: SCENE,
+          fixtureAssignmentId: fixAssignmentRes[0].id,
+        }),
+      );
+
       console.log({ sceneToFixtureUpdate });
-
-      console.log(res);
     } catch (error) {
       console.log(error);
     }
