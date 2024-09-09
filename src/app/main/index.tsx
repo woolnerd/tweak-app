@@ -5,9 +5,9 @@ import { openDatabaseSync } from "expo-sqlite/next";
 import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import ErrorBoundary from "react-native-error-boundary";
-// import runMigrataions from "scripts/migrations.js";
-// import seedDatabase from "scripts/seedDatabase.js";
 
+import runMigrataions from "../../../scripts/migrations.ts";
+import seedDatabase from "../../../scripts/seedDatabase.ts";
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
 import SceneModel from "../../models/scene.ts";
@@ -32,8 +32,6 @@ function App() {
     const response = await new SceneModel(db).getAllOrdered();
     return !response ? [] : response;
   };
-
-  // console.log(FileSystem.documentDirectory);
 
   const { compositeFixturesStore } = useCompositeFixtureStore((state) => state);
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
@@ -102,6 +100,32 @@ function App() {
                 labelRef={labelRef}
               />
             ))}
+
+            <Pressable
+              style={styles.bigButtons}
+              onPress={() => console.log(FileSystem.documentDirectory)}>
+              <Text
+                className="text-xl"
+                style={{ ...styles.btnText, fontSize: 18 }}>
+                Print DB directory
+              </Text>
+            </Pressable>
+            <Pressable
+              style={styles.bigButtons}
+              onPress={() => runMigrataions()}>
+              <Text
+                className="text-xl"
+                style={{ ...styles.btnText, fontSize: 18 }}>
+                Run Migrations
+              </Text>
+            </Pressable>
+            <Pressable style={styles.bigButtons} onPress={() => seedDatabase()}>
+              <Text
+                className="text-xl"
+                style={{ ...styles.btnText, fontSize: 18 }}>
+                Seed DB
+              </Text>
+            </Pressable>
           </View>
         </View>
 

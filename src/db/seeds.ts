@@ -363,10 +363,6 @@ export const seeds: Seeds = {
       fixtureId: 1,
       profileId: 11,
       title: "Vortex 1 at full",
-      values: JSON.stringify([
-        [1, 255],
-        [2, 255],
-      ]),
       patchId: 1,
     },
     {
@@ -374,10 +370,6 @@ export const seeds: Seeds = {
       fixtureId: 1,
       profileId: 11,
       title: "Vortex 2 at 50%",
-      values: JSON.stringify([
-        [1, 128],
-        [2, 128],
-      ]),
       patchId: 2,
     },
     {
@@ -385,10 +377,6 @@ export const seeds: Seeds = {
       fixtureId: 2,
       profileId: 12,
       title: "S60 1 at 50%",
-      values: JSON.stringify([
-        [1, 128],
-        [2, 128],
-      ]),
       patchId: 3,
     },
     {
@@ -396,10 +384,6 @@ export const seeds: Seeds = {
       fixtureId: 2,
       profileId: 12,
       title: "S60 2 at 50%",
-      values: JSON.stringify([
-        [1, 128],
-        [2, 128],
-      ]),
       patchId: 4,
     },
     {
@@ -407,10 +391,6 @@ export const seeds: Seeds = {
       fixtureId: 2,
       profileId: 12,
       title: "Different scene (2)",
-      values: JSON.stringify([
-        [1, 128],
-        [2, 128],
-      ]),
       patchId: 5,
     },
     {
@@ -418,27 +398,112 @@ export const seeds: Seeds = {
       fixtureId: 2,
       profileId: 12,
       title: "s60 mode 6 16bit",
-      values: JSON.stringify([
-        [1, 128],
-        [2, 128],
-      ]),
       patchId: 6,
     },
     {
       channel: 13,
       fixtureId: 7,
       profileId: 13,
-      values: JSON.stringify([1, 128]),
       patchId: 7,
     },
   ],
   scenesToFixtureAssignments: [
-    { fixtureAssignmentId: 1, sceneId: 1 },
-    { fixtureAssignmentId: 2, sceneId: 1 },
-    { fixtureAssignmentId: 3, sceneId: 1 },
-    { fixtureAssignmentId: 4, sceneId: 1 },
-    { fixtureAssignmentId: 5, sceneId: 2 },
-    { fixtureAssignmentId: 6, sceneId: 1 },
+    {
+      fixtureAssignmentId: 1,
+      sceneId: 1,
+      values: JSON.stringify([
+        [1, 255],
+        [2, 255],
+      ]),
+    },
+    {
+      fixtureAssignmentId: 2,
+      sceneId: 1,
+      values: JSON.stringify([
+        [1, 128],
+        [2, 128],
+      ]),
+    },
+    {
+      fixtureAssignmentId: 3,
+      sceneId: 1,
+      values: JSON.stringify([
+        [1, 128],
+        [2, 128],
+      ]),
+    },
+    {
+      fixtureAssignmentId: 4,
+      sceneId: 1,
+      values: JSON.stringify([
+        [1, 128],
+        [2, 128],
+      ]),
+    },
+    {
+      fixtureAssignmentId: 5,
+      sceneId: 1,
+      values: JSON.stringify([
+        [1, 128],
+        [2, 128],
+      ]),
+    },
+    {
+      fixtureAssignmentId: 6,
+      sceneId: 1,
+      values: JSON.stringify([
+        [1, 128],
+        [2, 128],
+      ]),
+    },
+    {
+      fixtureAssignmentId: 1,
+      sceneId: 2,
+      values: JSON.stringify([
+        [1, 255],
+        [2, 255],
+      ]),
+    },
+    {
+      fixtureAssignmentId: 2,
+      sceneId: 2,
+      values: JSON.stringify([
+        [1, 255],
+        [2, 255],
+      ]),
+    },
+    {
+      fixtureAssignmentId: 3,
+      sceneId: 2,
+      values: JSON.stringify([
+        [1, 255],
+        [2, 255],
+      ]),
+    },
+    {
+      fixtureAssignmentId: 4,
+      sceneId: 2,
+      values: JSON.stringify([
+        [1, 255],
+        [2, 255],
+      ]),
+    },
+    {
+      fixtureAssignmentId: 5,
+      sceneId: 2,
+      values: JSON.stringify([
+        [1, 255],
+        [2, 255],
+      ]),
+    },
+    {
+      fixtureAssignmentId: 6,
+      sceneId: 2,
+      values: JSON.stringify([
+        [1, 255],
+        [2, 255],
+      ]),
+    },
   ],
   shows: [{ name: "my first show" }, { name: "my second show" }],
 };

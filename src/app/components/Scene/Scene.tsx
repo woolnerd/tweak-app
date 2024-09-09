@@ -9,7 +9,7 @@ import {
   TextInputSubmitEditingEventData,
 } from "react-native";
 
-import { updateFixureAssignmentDb } from "./helpers.ts";
+import { batchUpdateFixtureValuesInScene } from "./helpers.ts";
 import { db } from "../../../db/client.ts";
 import SceneModel from "../../../models/scene.ts";
 import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
@@ -99,7 +99,7 @@ export const Scene = ({
   };
 
   const handleRecPress = () => {
-    updateFixureAssignmentDb(Object.values(manualFixturesStore));
+    batchUpdateFixtureValuesInScene(Object.values(manualFixturesStore), id);
 
     updateFixtureChannelSelectionStore(new Set());
     updateManualFixturesStore([]);

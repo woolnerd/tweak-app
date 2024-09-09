@@ -11,14 +11,12 @@ import { Fixture as FixtureComponent } from "../Fixture/Fixture.tsx";
 
 type LayoutAreaProps = {
   selectedSceneId: number;
-  goToOut: boolean;
   loadFixtures: boolean;
   setLoadFixtures: (arg: boolean) => void;
 };
 
 export default function LayoutArea({
   selectedSceneId,
-  goToOut,
   loadFixtures,
   setLoadFixtures,
 }: LayoutAreaProps): React.JSX.Element {

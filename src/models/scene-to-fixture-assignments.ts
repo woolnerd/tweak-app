@@ -5,6 +5,7 @@ import {
   ParsedCompositeFixtureInfo,
   UnparsedCompositeFixtureInfo,
 } from "./types/scene-to-fixture-assignment.ts";
+import { ManualFixtureState } from "../app/components/Fixture/types/Fixture.ts";
 import {
   fixtures,
   fixtureAssignments,
@@ -37,7 +38,7 @@ export default class ScenesToFixtureAssignments extends Base<
         .select({
           fixtureAssignmentId: fixtureAssignments.id,
           channel: fixtureAssignments.channel,
-          values: fixtureAssignments.values,
+          values: scenesToFixtureAssignments.values,
           title: fixtureAssignments.title,
           profileChannels: profiles.channels,
           channelPairs16Bit: profiles.channelPairs16Bit,
@@ -81,6 +82,39 @@ export default class ScenesToFixtureAssignments extends Base<
     }
   }
 
+  async batchUpdate<T extends ManualFixtureState[number]>(
+    fixtureArray: T[],
+    sceneId: number,
+  ) {
+    try {
+      return await this.db.transaction(async (tx) =>
+        Promise.all(
+          fixtureArray.map((fixture: T) =>
+            tx
+              .update(scenesToFixtureAssignments)
+              .set({
+                values:
+                  ScenesToFixtureAssignments.stringifyFieldsFromJSON(fixture)
+                    .values,
+              })
+              .where(
+                and(
+                  eq(
+                    scenesToFixtureAssignments.fixtureAssignmentId,
+                    fixture.fixtureAssignmentId,
+                  ),
+                  eq(scenesToFixtureAssignments.sceneId, sceneId),
+                ),
+              )
+              .returning(),
+          ),
+        ),
+      );
+    } catch (err) {
+      return this.handleError(err);
+    }
+  }
+
   private parseStringColumnsToJSON(): ParsedCompositeFixtureInfo[] {
     return this.fetchedData.map(
       (
@@ -94,5 +128,12 @@ export default class ScenesToFixtureAssignments extends Base<
         channelPairs16Bit: JSON.parse(assignmentObj.channelPairs16Bit),
       }),
     );
+  }
+
+  private static stringifyFieldsFromJSON(data: { values: number[][] }): {
+    values: string;
+  } {
+    const vals = { values: JSON.stringify(data.values) };
+    return { ...data, ...vals };
   }
 }
