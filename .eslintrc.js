@@ -30,6 +30,7 @@ module.exports = {
       "warn",
       { allowShortCircuit: true, allowTernary: true },
     ],
+    "no-return-await": "off",
   },
   plugins: ["drizzle"],
 };
