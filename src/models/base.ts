@@ -27,6 +27,7 @@ export default abstract class Base<
 
   async create(
     data: SQLiteInsertValue<T> | SQLiteInsertValue<T>[],
+    options?: any,
   ): Promise<typeof this.table.$inferInsert> {
     try {
       return await this.db.insert(this.table).values(data).returning();

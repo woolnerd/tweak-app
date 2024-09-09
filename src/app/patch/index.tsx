@@ -146,7 +146,21 @@ export default function Patch() {
       .catch((err) => console.log(err));
 
     fetchFixtures().then((res) => setFixtures(res));
-    fetchPatches().then((res) => setPatchObjs(res));
+
+    fetchPatches().then((res) => {
+      res = res.map((obj) => {
+        const profileChannels = JSON.parse(obj.profileChannels);
+        obj = { ...obj, profileChannels };
+        const endAddress =
+          Object.values(profileChannels).length > 0
+            ? obj.startAddress + Object.values(profileChannels).length - 1
+            : obj.startAddress;
+        return { ...obj, endAddress };
+      });
+
+      console.log({ res });
+      setPatchObjs(res);
+    });
   }, []);
 
   useEffect(() => {
