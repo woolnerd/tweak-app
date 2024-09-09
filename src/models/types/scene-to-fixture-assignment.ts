@@ -1,16 +1,13 @@
 interface CompositeFixtureInfo {
   fixtureAssignmentId: number;
   channel: number;
-  title: string;
   profileName: string;
   fixtureName: string;
   fixtureNotes: string;
   sceneId: number;
   startAddress: number;
-  endAddress: number;
   colorTempLow: number;
   colorTempHigh: number;
-  is16Bit: boolean;
 }
 
 type ProfileDescription = string;
@@ -24,6 +21,8 @@ export interface ParsedCompositeFixtureInfo extends CompositeFixtureInfo {
   values: AddressTuples;
   profileChannels: ProfileChannels;
   channelPairs16Bit: number[][];
+  is16Bit: boolean;
+  endAddress: number;
 }
 
 export interface UnparsedCompositeFixtureInfo extends CompositeFixtureInfo {

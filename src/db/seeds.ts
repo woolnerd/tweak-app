@@ -93,47 +93,41 @@ export const seeds: Seeds = {
     { name: "Generic", website: "", notes: "single channel device" },
   ],
   patches: [
-    { fixtureId: 1, profileId: 11, startAddress: 1, endAddress: 20, showId: 1 },
+    { fixtureId: 1, profileId: 11, startAddress: 1, showId: 1 },
     {
       fixtureId: 1,
       profileId: 11,
       startAddress: 21,
-      endAddress: 40,
       showId: 1,
     },
     {
       fixtureId: 2,
       profileId: 11,
       startAddress: 41,
-      endAddress: 60,
       showId: 1,
     },
     {
       fixtureId: 2,
       profileId: 11,
       startAddress: 61,
-      endAddress: 80,
       showId: 1,
     },
     {
       fixtureId: 2,
       profileId: 11,
       startAddress: 81,
-      endAddress: 100,
       showId: 1,
     },
     {
       fixtureId: 2,
       profileId: 11,
       startAddress: 101,
-      endAddress: 120,
       showId: 1,
     },
     {
       fixtureId: 4,
       profileId: 7,
       startAddress: 121,
-      endAddress: 121,
       showId: 1,
     },
   ],
@@ -147,7 +141,6 @@ export const seeds: Seeds = {
   profiles: [
     {
       fixtureId: 1,
-      channelCount: 5,
       channels: JSON.stringify({
         1: "Red",
         2: "Green",
@@ -159,7 +152,6 @@ export const seeds: Seeds = {
     },
     {
       fixtureId: 1,
-      channelCount: 6,
       channels: JSON.stringify({
         1: "Red",
         2: "Green",
@@ -173,7 +165,6 @@ export const seeds: Seeds = {
 
     {
       fixtureId: 2,
-      channelCount: 5,
       channels: JSON.stringify({
         1: "Red",
         2: "Green",
@@ -185,7 +176,6 @@ export const seeds: Seeds = {
     },
     {
       fixtureId: 2,
-      channelCount: 6,
       channels: JSON.stringify({
         1: "Red",
         2: "Green",
@@ -199,7 +189,6 @@ export const seeds: Seeds = {
 
     {
       fixtureId: 3,
-      channelCount: 5,
       channels: JSON.stringify({
         1: "Red",
         2: "Green",
@@ -211,7 +200,6 @@ export const seeds: Seeds = {
     },
     {
       fixtureId: 3,
-      channelCount: 6,
       channels: JSON.stringify({
         1: "Red",
         2: "Green",
@@ -225,7 +213,6 @@ export const seeds: Seeds = {
 
     {
       fixtureId: 4,
-      channelCount: 5,
       channels: JSON.stringify({
         1: "Red",
         2: "Green",
@@ -237,7 +224,6 @@ export const seeds: Seeds = {
     },
     {
       fixtureId: 4,
-      channelCount: 6,
       channels: JSON.stringify({
         1: "Red",
         2: "Green",
@@ -251,7 +237,6 @@ export const seeds: Seeds = {
 
     {
       fixtureId: 5,
-      channelCount: 5,
       channels: JSON.stringify({
         1: "Red",
         2: "Green",
@@ -263,7 +248,6 @@ export const seeds: Seeds = {
     },
     {
       fixtureId: 5,
-      channelCount: 6,
       channels: JSON.stringify({
         1: "Red",
         2: "Green",
@@ -276,7 +260,6 @@ export const seeds: Seeds = {
     },
     {
       fixtureId: 2,
-      channelCount: 20,
       channels: JSON.stringify({
         1: "Dimmer",
         2: "Dimmer fine",
@@ -300,7 +283,6 @@ export const seeds: Seeds = {
         20: "Reserved for future use",
       }),
       name: "mode 6",
-      is16Bit: true,
       channelPairs16Bit: JSON.stringify([
         [1, 2],
         [3, 4],
@@ -314,7 +296,6 @@ export const seeds: Seeds = {
     },
     {
       fixtureId: 1,
-      channelCount: 18,
       channels: JSON.stringify({
         1: "Dimmer",
         2: "Dimmer fine",
@@ -336,7 +317,6 @@ export const seeds: Seeds = {
         18: "Reserved for future use",
       }),
       name: "mode 6",
-      is16Bit: true,
       channelPairs16Bit: JSON.stringify([
         [1, 2],
         [3, 4],
@@ -350,7 +330,6 @@ export const seeds: Seeds = {
     },
     {
       fixtureId: 7,
-      channelCount: 1,
       channels: JSON.stringify({
         1: "Dimmer",
       }),
@@ -362,42 +341,36 @@ export const seeds: Seeds = {
       channel: 1,
       fixtureId: 1,
       profileId: 11,
-      title: "Vortex 1 at full",
       patchId: 1,
     },
     {
       channel: 2,
       fixtureId: 1,
       profileId: 11,
-      title: "Vortex 2 at 50%",
       patchId: 2,
+    },
+    {
+      channel: 9,
+      fixtureId: 2,
+      profileId: 12,
+      patchId: 3,
     },
     {
       channel: 10,
       fixtureId: 2,
       profileId: 12,
-      title: "S60 1 at 50%",
-      patchId: 3,
-    },
-    {
-      channel: 11,
-      fixtureId: 2,
-      profileId: 12,
-      title: "S60 2 at 50%",
       patchId: 4,
     },
     {
       channel: 11,
       fixtureId: 2,
       profileId: 12,
-      title: "Different scene (2)",
       patchId: 5,
     },
     {
       channel: 12,
       fixtureId: 2,
       profileId: 12,
-      title: "s60 mode 6 16bit",
       patchId: 6,
     },
     {
