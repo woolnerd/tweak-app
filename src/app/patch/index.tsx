@@ -2,16 +2,16 @@ import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Pressable } from "react-native";
 
 import { db } from "../../db/client.ts";
-import FixtureAssignment from "../../models/fixture-assignment.ts";
-import Fixture from "../../models/fixture.ts";
-import Manufacturer from "../../models/manufacturer.ts";
-import Profile from "../../models/profile.ts";
-import PatchModel from "../../models/patch.ts";
 import {
   fixtureAssignments,
   patches,
   scenesToFixtureAssignments,
 } from "../../db/schema.ts";
+import FixtureAssignment from "../../models/fixture-assignment.ts";
+import Fixture from "../../models/fixture.ts";
+import Manufacturer from "../../models/manufacturer.ts";
+import PatchModel from "../../models/patch.ts";
+import Profile from "../../models/profile.ts";
 
 export default function Patch() {
   const [manufacturers, setManufacturers] = useState([]);
@@ -79,7 +79,8 @@ export default function Patch() {
 
   const handlePatch = async () => {
     // create patch, return id, pass to fixture assignment for creation, create scene_to_fixture_assignment
-    const calcEndAddress = parseInt(addressTextInput) + profileFootprint - 1;
+    const calcEndAddress =
+      parseInt(addressTextInput, 10) + profileFootprint - 1;
     const patchPayload = {
       startAddress: addressTextInput,
       endAddress: calcEndAddress,

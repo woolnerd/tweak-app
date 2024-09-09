@@ -5,9 +5,9 @@ import { openDatabaseSync } from "expo-sqlite/next";
 import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import ErrorBoundary from "react-native-error-boundary";
-import runMigrataions from "scripts/migrations.js";
-import seedDatabase from "scripts/seedDatabase.js";
 
+import runMigrataions from "../../../scripts/migrations.ts";
+import seedDatabase from "../../../scripts/seedDatabase.ts";
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
 import SceneModel from "../../models/scene.ts";

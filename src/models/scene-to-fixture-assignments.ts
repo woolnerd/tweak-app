@@ -5,6 +5,7 @@ import {
   ParsedCompositeFixtureInfo,
   UnparsedCompositeFixtureInfo,
 } from "./types/scene-to-fixture-assignment.ts";
+import { ManualFixtureState } from "../app/components/Fixture/types/Fixture.ts";
 import {
   fixtures,
   fixtureAssignments,
@@ -17,8 +18,6 @@ import {
   SelectSceneToFixtureAssignment,
   TableNames,
 } from "../db/types/tables.ts";
-import { ManualFixtureState } from "../app/components/Fixture/types/Fixture.ts";
-// import FixtureAssignment from "./fixture-assignment.ts";
 
 export default class ScenesToFixtureAssignments extends Base<
   typeof scenesToFixtureAssignments,
@@ -83,7 +82,10 @@ export default class ScenesToFixtureAssignments extends Base<
     }
   }
 
-  async batchUpdate<T extends ManualFixtureState>(fixtureArray: T[]) {
+  async batchUpdate<T extends ManualFixtureState[number]>(
+    fixtureArray: T[],
+    sceneId: number,
+  ) {
     try {
       return await this.db.transaction(async (tx) =>
         Promise.all(
@@ -96,9 +98,12 @@ export default class ScenesToFixtureAssignments extends Base<
                     .values,
               })
               .where(
-                eq(
-                  scenesToFixtureAssignments.fixtureAssignmentId,
-                  fixture.fixtureAssignmentId,
+                and(
+                  eq(
+                    scenesToFixtureAssignments.fixtureAssignmentId,
+                    fixture.fixtureAssignmentId,
+                  ),
+                  eq(scenesToFixtureAssignments.sceneId, sceneId),
                 ),
               )
               .returning(),
