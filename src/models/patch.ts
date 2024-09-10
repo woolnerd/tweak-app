@@ -1,4 +1,4 @@
-import { gte, lte, and, or, eq } from "drizzle-orm";
+import { gte, lte, and, or, eq, sql } from "drizzle-orm";
 
 import Base from "./base.ts";
 import { db } from "../db/client.ts";
@@ -12,17 +12,18 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
 
   readonly MIN_START_ADDRESS = 1;
 
-  // TODO
-  // join patches and profiles
-  // use Profile channels length + patch.startAddress - 1 to derive endAddress
-  // return patch objects with endAddress populated
-
-  // update patch creation, using the selected to profile to check if there is a conflict with starting address of patches
-
   async getAll(options?: any) {
+    const { id, startAddress, fixtureId, profileId, showId } = this.table;
     try {
       return await this.db
-        .select({ ...this.table, profileChannels: profiles.channels })
+        .select({
+          id,
+          startAddress,
+          fixtureId,
+          profileId,
+          showId,
+          profileChannels: profiles.channels,
+        })
         .from(this.table)
         .leftJoin(profiles, eq(profiles.id, this.table.profileId));
     } catch (err) {
@@ -33,7 +34,6 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
   }
 
   async create(data: InsertPatch, endAddress: number) {
-    // we join with profile to get the channel length, so we can derive endAddress
     if (data.startAddress > endAddress) {
       throw Error(
         `Starting address (${data.startAddress}) cannot be greater than ending address (${endAddress}).`,
@@ -54,33 +54,31 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
       throw new Error("Address overlaps with current patch address in scene");
     }
 
-    return await this.db.insert(patches).values(data);
+    return await this.db.insert(patches).values(data).returning();
   }
 
-  async checkOverlap(
+  private async checkOverlap(
     startAddressForCheck: number,
     endAddressForCheck: number,
     showIdForCheck: number,
   ): Promise<boolean> {
-    const overlaps = await this.db
+    const OFFSET_BY_ONE = 1;
+    const overlappingPatches = await db
       .select()
-      .from(this.table)
+      .from(patches)
       .where(
-        and(
-          or(
-            and(
-              lte(this.table.startAddress, startAddressForCheck),
-              // gte(endAddress, startAddressForCheck),
-            ),
-            and(
-              lte(this.table.startAddress, endAddressForCheck),
-              // gte(endAddress, endAddressForCheck),
-            ),
-          ),
-          eq(this.table.showId, showIdForCheck),
-        ),
-      );
+        sql`NOT (
+        ${endAddressForCheck} < ${this.table.startAddress} OR
+        ${startAddressForCheck} > (
+          ${this.table.startAddress} + (
+            SELECT COUNT(*)
+            FROM json_each(${profiles.channels})
+          ) - ${OFFSET_BY_ONE}
+        )
+      ) AND ${this.table.showId} = ${showIdForCheck}`,
+      )
+      .leftJoin(profiles, eq(this.table.profileId, profiles.id));
 
-    return overlaps.length > 0;
+    return overlappingPatches.length > 0;
   }
 }

@@ -13,10 +13,17 @@ import Manufacturer from "../../models/manufacturer.ts";
 import PatchModel from "../../models/patch.ts";
 import Profile from "../../models/profile.ts";
 
+type ProfileType = {
+  id: number;
+  channels: Record<number, string>;
+  fixtureId: number;
+  channelPairs16Bit: number[][];
+};
+
 export default function Patch() {
   const [manufacturers, setManufacturers] = useState([]);
   const [fixtures, setFixtures] = useState([]);
-  const [profiles, setProfiles] = useState<(typeof Profile)[]>([]);
+  const [profiles, setProfiles] = useState<ProfileType[]>([]);
   const [fixtureSelection, setFixtureSelection] = useState(0);
   const [manufacturerSelection, setManufacturerSelection] = useState(null);
   const [profileSelection, setProfileSelection] = useState<number>(-1);
@@ -51,7 +58,7 @@ export default function Patch() {
     return !response ? [] : response;
   };
 
-  const fetchProfiles = async (): Promise<(typeof profiles)[]> => {
+  const fetchProfiles = async (): Promise<ProfileType[]> => {
     const query = new Profile(db);
     const response = await query.getByFixtureId(fixtureSelection);
     return !response ? [] : response;
@@ -88,7 +95,7 @@ export default function Patch() {
     setFixtureSelection(fixture.id);
   };
 
-  const handleProfileSelection = (profile) => {
+  const handleProfileSelection = (profile: ProfileType) => {
     setProfileSelection(profile.id);
   };
 
@@ -97,12 +104,9 @@ export default function Patch() {
   };
 
   const handlePatch = async () => {
-    // create patch, return id, pass to fixture assignment for creation, create scene_to_fixture_assignment
-    const calcEndAddress =
-      parseInt(addressTextInput, 10) + profileFootprint - 1;
+    const endAddress = parseInt(addressTextInput, 10) + profileFootprint - 1;
     const patchPayload = {
-      startAddress: addressTextInput,
-      endAddress: calcEndAddress,
+      startAddress: parseInt(addressTextInput, 10),
       profileId: profileSelection,
       fixtureId: fixtureSelection,
       showId: SHOW,
@@ -114,8 +118,9 @@ export default function Patch() {
     const channel = selectedChannels[0];
 
     try {
-      const patchRes = await db.transaction(async (tx) =>
-        tx.insert(patches).values(patchPayload).returning({ id: patches.id }),
+      const patchRes = await new PatchModel(db).create(
+        patchPayload,
+        endAddress,
       );
 
       const fixAssignmentRes = await db.transaction(async (tx) =>
@@ -174,7 +179,6 @@ export default function Patch() {
         return { ...obj, endAddress };
       });
 
-      // console.log({ res });
       setPatchObjs(res);
     });
 
