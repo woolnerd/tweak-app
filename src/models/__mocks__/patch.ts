@@ -28,7 +28,6 @@ export const mockDbInsert = (db: Database, returnVal: SelectPatch) => {
 
 export const insertPatch: InsertPatch = {
   startAddress: 1,
-  endAddress: 10,
   fixtureId: 1,
   profileId: 1,
   showId: 1,
@@ -37,7 +36,6 @@ export const insertPatch: InsertPatch = {
 export const selectPatch: SelectPatch = {
   id: 1,
   startAddress: 1,
-  endAddress: 10,
   fixtureId: 1,
   profileId: 1,
   showId: 1,
