@@ -19,39 +19,37 @@ export default class UniverseDataBuilder {
     this.data = data;
   }
 
-  public toUniverseObject() {
-    const uniObj: UniverseDataObject = {};
+  // public toUniverseObject() {
+  //   const uniObj: UniverseDataObject = {};
 
-    uniObj[this.data.startAddress] = [];
+  //   uniObj[this.data.startAddress] = [];
 
-    const addressFootprint = this.data.endAddress - this.data.startAddress + 1;
+  //   const addressFootprint = this.data.endAddress - this.data.startAddress + 1;
 
-    for (let i = 0; i < addressFootprint; i += 1) {
-      uniObj[this.data.startAddress][i] = 0;
-    }
+  //   for (let i = 0; i < addressFootprint; i += 1) {
+  //     uniObj[this.data.startAddress][i] = 0;
+  //   }
 
-    this.data.values.forEach((tuple) => {
-      const [addressIdx, dmxValue] = tuple;
-      uniObj[this.data.startAddress!][addressIdx - 1] = dmxValue;
-    });
+  //   this.data.values.forEach((tuple) => {
+  //     const [addressIdx, dmxValue] = tuple;
+  //     uniObj[this.data.startAddress!][addressIdx - 1] = dmxValue;
+  //   });
 
-    return uniObj;
-  }
+  //   return uniObj;
+  // }
 
   public buildUniverses() {
     return this.data.values?.reduce(
-      (universes: UniverseDataObjectCollection, [orignalAddress, dmxVal]) => {
+      (universes: UniverseDataObjectCollection, [originalAddress, dmxVal]) => {
         if (!this.data.startAddress) {
-          throw new Error("Addres start cannot be falsy");
+          throw new Error("Address start cannot be falsy");
         }
         const channelValue = UniverseDataBuilder.offsetByOneAndZeroIndex(
-          orignalAddress + this.data.startAddress,
+          originalAddress + this.data.startAddress,
         );
-
         const universeNum = this.deriveUniverseFromAddress(
           this.data.startAddress,
         );
-
         const channel = new ChannelNumber(
           this.clampAddressToUniverseSize(channelValue),
         );
@@ -83,7 +81,6 @@ export default class UniverseDataBuilder {
         universe: UniverseDataObjectCollection,
       ) => {
         const uniNum = Number(Object.keys(universe)[0]);
-
         if (uniNum in universeAccum) {
           universeAccum[uniNum].push(...universe[uniNum]);
         } else {

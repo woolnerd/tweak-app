@@ -19,8 +19,12 @@ export default function useUniverseOutput() {
         return new UniverseDataBuilder(compFixture).buildUniverses();
       });
 
-      const outputUniverses =
-        UniverseDataBuilder.mergeUniverseData(universeObjs);
+      const outputUniverses = UniverseDataBuilder.mergeUniverseData(
+        // remove data with no output value
+        universeObjs.filter(
+          (universeObj) => Object.keys(universeObj).length > 0,
+        ),
+      );
 
       updateOutputValuesStore(outputUniverses);
     }

@@ -5,22 +5,22 @@ import UniverseDataBuilder, {
 
 describe("UniverseDataBuilder", () => {
   describe("toUniverseObject", () => {
-    test("should initialize and populate universe object correctly", () => {
-      const data: PickFixtureInfo = {
-        startAddress: 1,
-        endAddress: 3,
-        values: [
-          [1, 100],
-          [2, 150],
-          [3, 200],
-        ],
-      };
-      const builder = new UniverseDataBuilder(data);
-      const result = builder.toUniverseObject();
-      expect(result).toEqual({
-        1: [100, 150, 200],
-      });
-    });
+    // test("should initialize and populate universe object correctly", () => {
+    //   const data: PickFixtureInfo = {
+    //     startAddress: 1,
+    //     endAddress: 3,
+    //     values: [
+    //       [1, 100],
+    //       [2, 150],
+    //       [3, 200],
+    //     ],
+    //   };
+    //   const builder = new UniverseDataBuilder(data);
+    //   const result = builder.toUniverseObject();
+    //   expect(result).toEqual({
+    //     1: [100, 150, 200],
+    //   });
+    // });
   });
 
   describe("toUniverseTuples", () => {

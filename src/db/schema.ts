@@ -39,11 +39,9 @@ export const manufacturersRelations = relations(manufacturers, ({ many }) => ({
 export const patches = sqliteTable("patches", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   startAddress: integer("start_address").notNull(),
-  endAddress: integer("end_address").notNull(),
   fixtureId: integer("fixture_id").notNull(),
   profileId: integer("profile_id").notNull(),
   showId: integer("show_id").notNull(),
-  fixtureAssignmentId: integer("fixture_assignment_id"),
 });
 
 export const patchesRelations = relations(patches, ({ one, many }) => ({
@@ -59,20 +57,14 @@ export const patchesRelations = relations(patches, ({ one, many }) => ({
     fields: [patches.showId],
     references: [shows.id],
   }),
-  fixtureAssignment: one(fixtureAssignments, {
-    fields: [patches.id],
-    references: [fixtureAssignments.id],
-  }),
 }));
 
 export const profiles = sqliteTable("profiles", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   name: text("name").notNull().default(""),
   channels: text("channels").notNull().default("{}"),
-  channelCount: integer("channel_count").notNull(), // remove this, it can be derived
   fixtureId: integer("fixture_id").notNull(),
   channelPairs16Bit: text("channel_pairs_16_bit").default("[]").notNull(),
-  is16Bit: integer("is_16_bit", { mode: "boolean" }).default(false).notNull(), // remove this, same
 });
 
 export const profilesRelations = relations(profiles, ({ one, many }) => ({
@@ -86,7 +78,6 @@ export const profilesRelations = relations(profiles, ({ one, many }) => ({
 
 export const fixtureAssignments = sqliteTable("fixtureAssignments", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  title: text("title").notNull().default(""),
   channel: integer("channel").notNull(),
   fixtureId: integer("fixture_id").notNull(),
   profileId: integer("profile_id").notNull(),

@@ -26,15 +26,20 @@ describe("Patch", () => {
   });
 
   test("create throws error when startAddress greater than endAddress", async () => {
-    const errorPatch = { ...insertPatch, startAddress: 10, endAddress: 1 };
-    await expect(patch.create(errorPatch)).rejects.toThrow(
-      `Starting address (${errorPatch.startAddress}) cannot be greater than ending address (${errorPatch.endAddress}).`,
+    const errorPatch = { ...insertPatch, startAddress: 10 };
+    const endAddress = 1;
+    await expect(patch.create(errorPatch, endAddress)).rejects.toThrow(
+      `Starting address (${errorPatch.startAddress}) cannot be greater than ending address (${endAddress}).`,
     );
   });
 
   test("create should throw an error if startAddress is less than 1", async () => {
+    const endAddress = 1;
     await expect(
-      patch.create({ ...insertPatch, startAddress: MIN_START_ADDRESS - 1 }),
+      patch.create(
+        { ...insertPatch, startAddress: MIN_START_ADDRESS - 1 },
+        endAddress,
+      ),
     ).rejects.toThrow("Starting address must be 1 or greater");
   });
 
@@ -45,7 +50,8 @@ describe("Patch", () => {
 
     mockDbSelectOverlap(mockDb, [selectPatch]);
 
-    const result = await patch.checkOverlap(
+    // eslint-disable-next-line dot-notation
+    const result = await patch["checkOverlap"](
       startAddressForCheck,
       endAddressForCheck,
       showIdForCheck,
@@ -55,12 +61,11 @@ describe("Patch", () => {
 
   test("create calls insert method when data is valid", async () => {
     mockDbInsert(mockDb, []);
-    await patch.create(insertPatch);
+    await patch.create(insertPatch, 10);
 
     expect(mockDb.insert).toHaveBeenCalledWith(expect.anything());
     expect(mockDb.insert({} as any).values).toHaveBeenCalledWith({
       startAddress: 1,
-      endAddress: 10,
       fixtureId: 1,
       profileId: 1,
       showId: 1,

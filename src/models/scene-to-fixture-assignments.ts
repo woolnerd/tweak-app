@@ -1,4 +1,4 @@
-import { and, eq, notInArray } from "drizzle-orm";
+import { and, eq, notInArray, sql } from "drizzle-orm";
 
 import Base from "./base.ts";
 import {
@@ -29,6 +29,8 @@ export default class ScenesToFixtureAssignments extends Base<
 
   private fetchedData: UnparsedCompositeFixtureInfo[];
 
+  private caldEndAddress: number;
+
   async getCompositeFixtureInfo(
     sceneId: number,
     selectedFixtureChannels: Set<number>,
@@ -39,16 +41,13 @@ export default class ScenesToFixtureAssignments extends Base<
           fixtureAssignmentId: fixtureAssignments.id,
           channel: fixtureAssignments.channel,
           values: scenesToFixtureAssignments.values,
-          title: fixtureAssignments.title,
           profileChannels: profiles.channels,
           channelPairs16Bit: profiles.channelPairs16Bit,
-          is16Bit: profiles.is16Bit,
           profileName: profiles.name,
           fixtureName: fixtures.name,
           fixtureNotes: fixtures.notes,
           sceneId: scenesToFixtureAssignments.sceneId,
           startAddress: patches.startAddress,
-          endAddress: patches.endAddress,
           colorTempLow: fixtures.colorTempRangeLow,
           colorTempHigh: fixtures.colorTempRangeHigh,
         })
@@ -121,13 +120,24 @@ export default class ScenesToFixtureAssignments extends Base<
         assignmentObj: UnparsedCompositeFixtureInfo,
       ): ParsedCompositeFixtureInfo => ({
         ...assignmentObj,
-        values: assignmentObj.values ? JSON.parse(assignmentObj.values) : null,
+        values: assignmentObj.values ? JSON.parse(assignmentObj.values) : [],
         profileChannels: assignmentObj.profileChannels
           ? JSON.parse(assignmentObj.profileChannels)
-          : null,
+          : [],
         channelPairs16Bit: JSON.parse(assignmentObj.channelPairs16Bit),
+        is16Bit: JSON.parse(assignmentObj.channelPairs16Bit).length > 0,
+        endAddress: ScenesToFixtureAssignments.calcEndAddress(assignmentObj),
       }),
     );
+  }
+
+  private static calcEndAddress(
+    assignmentObj: UnparsedCompositeFixtureInfo,
+  ): number {
+    const profileChannels = JSON.parse(assignmentObj.profileChannels);
+    return Object.keys(profileChannels).length > 0
+      ? assignmentObj.startAddress + Object.keys(profileChannels).length - 1
+      : assignmentObj.startAddress;
   }
 
   private static stringifyFieldsFromJSON(data: { values: number[][] }): {
