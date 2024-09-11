@@ -5,6 +5,10 @@ import { db } from "../db/client.ts";
 import { patches, profiles } from "../db/schema.ts";
 import { InsertPatch, SelectPatch, TableNames } from "../db/types/tables.ts";
 
+export type PatchAfterProcess = SelectPatch & { endAddress: number };
+type PatchBeforeProcess = SelectPatch & {
+  profileChannels: string | null;
+};
 export default class Patch extends Base<typeof patches, SelectPatch> {
   readonly table = patches;
 
@@ -12,10 +16,14 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
 
   readonly MIN_START_ADDRESS = 1;
 
+  private unproccessedData: Awaited<PatchBeforeProcess[]>;
+
+  private processedData: PatchAfterProcess[];
+
   async getAll(options?: any) {
     const { id, startAddress, fixtureId, profileId, showId } = this.table;
     try {
-      return await this.db
+      this.unproccessedData = await this.db
         .select({
           id,
           startAddress,
@@ -28,9 +36,11 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
         .leftJoin(profiles, eq(profiles.id, this.table.profileId));
     } catch (err) {
       console.log(err);
-
       return this.handleError(err);
     }
+
+    this.processData();
+    return this.processedData;
   }
 
   async create(data: InsertPatch, endAddress: number) {
@@ -80,5 +90,33 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
       .leftJoin(profiles, eq(this.table.profileId, profiles.id));
 
     return overlappingPatches.length > 0;
+  }
+
+  private processData() {
+    this.addEndAddressField();
+  }
+
+  private addEndAddressField() {
+    this.processedData = this.unproccessedData.map((obj): PatchAfterProcess => {
+      const profileChannels: Record<number, string> = obj.profileChannels
+        ? JSON.parse(obj.profileChannels)
+        : [];
+
+      delete obj.profileChannels;
+
+      return {
+        ...obj,
+        endAddress: Patch.getEndAddress(obj.startAddress, profileChannels),
+      };
+    });
+  }
+
+  private static getEndAddress(
+    startAddress: number,
+    channels: Record<number, string>,
+  ) {
+    return Object.values(channels).length > 0
+      ? startAddress + Object.values(channels).length - 1
+      : startAddress;
   }
 }

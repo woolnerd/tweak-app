@@ -43,7 +43,7 @@ export default function LayoutArea({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSceneId]);
 
-  useUniverseOutput();
+  // useUniverseOutput();
 
   useEffect(() => {
     fetchCompositeFixtures()
@@ -72,8 +72,6 @@ export default function LayoutArea({
       }),
     );
 
-    // console.log({ compositeFixturesStore });
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [manualFixturesStore]);
 
@@ -99,7 +97,6 @@ export default function LayoutArea({
             channelPairs16Bit={item.channelPairs16Bit}
             colorTempHigh={item.colorTempHigh}
             colorTempLow={item.colorTempLow}
-            title={item.title}
             startAddress={item.startAddress}
             endAddress={item.endAddress}
           />

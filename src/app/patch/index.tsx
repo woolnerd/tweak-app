@@ -4,14 +4,10 @@ import { View, Text, TextInput, Pressable } from "react-native";
 import { db } from "../../db/client.ts";
 import {
   fixtureAssignments,
-  patches,
-  scenes,
   scenesToFixtureAssignments,
 } from "../../db/schema.ts";
-import Fixture from "../../models/fixture.ts";
-// import Manufacturer from "../../models/manufacturer.ts";
+import { SelectFixture } from "../../db/types/tables.ts";
 import PatchModel from "../../models/patch.ts";
-import Profile from "../../models/profile.ts";
 import useFetchFixtures from "../hooks/useFetchFixtures.ts";
 import useFetchManufacturers from "../hooks/useFetchManufacturers.ts";
 import useFetchPatches from "../hooks/useFetchPatches.ts";
@@ -26,56 +22,24 @@ type ProfileType = {
 };
 
 export default function Patch() {
-  // const [manufacturersState, setManufacturersState] = useState([]);
-  // const [fixturesState, setFixtures] = useState([]);
-  // const [profiles, setProfiles] = useState<ProfileType[]>([]);
   const [fixtureSelection, setFixtureSelection] = useState(0);
-  const [manufacturerSelection, setManufacturerSelection] = useState(null);
-  const [profileSelection, setProfileSelection] = useState<number>(-1);
-  const [selectedChannels, setSelectChannels] = useState([]);
-  // const [patchData, setPatchObjs] = useState([]);
+  const [manufacturerSelection, setManufacturerSelection] = useState<
+    number | null
+  >(null);
+  const [profileSelection, setProfileSelection] = useState<number | null>(null);
+  const [selectedChannels, setSelectChannels] = useState<number[]>([]);
   const [addressTextInput, setAddressTextInput] = useState("");
 
   const SHOW = 1;
 
-  // once manufacturer selected, only fixtures with that manufacturer id are avail
-  const { data: manufacturers, loading: loadingManufacturers } =
-    useFetchManufacturers();
-  const { data: fixtures } = useFetchFixtures();
+  const { data: manufacturers } = useFetchManufacturers();
+  const { data: fixtures } = useFetchFixtures(manufacturerSelection);
   const { data: profiles } = useFetchProfiles(fixtureSelection);
   const { data: sceneIds } = useFetchScenes();
-  const { data: patchData } = useFetchPatches();
+  const { data: patchData, error: patchError } = useFetchPatches();
 
-  // once fixture is selected, only manufacturer with that fixture id are avail, and profiles for that fixture id
-  const fetchFixtures = async (id?: number): Promise<(typeof fixtures)[]> => {
-    const query = new Fixture(db);
-    const response = id
-      ? await query.getByManufacturerId(id)
-      : await query.getAll();
-    return !response ? [] : response;
-  };
-
-  // const fetchPatches = async (id?: number): Promise<(typeof patches)[]> => {
-  //   const query = new PatchModel(db);
-  //   const response = id ? await query.getById(id) : await query.getAll();
-  //   return !response ? [] : response;
-  // };
-
-  // const fetchProfiles = async (): Promise<ProfileType[]> => {
-  //   const query = new Profile(db);
-  //   const response = await query.getByFixtureId(fixtureSelection);
-  //   return !response ? [] : response;
-  // };
-
-  // const fetchScenes = async () =>
-  //   await db
-  //     .selectDistinct({ id: scenes.id })
-  //     .from(scenes)
-  //     .then((res) => res.map((obj) => obj.id));
-
-  const handleManufacturerSelection = (manufacturer) => {
-    setManufacturerSelection(manufacturer.id);
-    fetchFixtures(manufacturer.id).then((res) => setFixtures(res));
+  const handleManufacturerSelection = (manufacturerId: number) => {
+    setManufacturerSelection(manufacturerId);
   };
 
   const batchUpdateScenes = async (fixAssignmentRes: { id: number }[]) => {
@@ -91,7 +55,7 @@ export default function Patch() {
     });
   };
 
-  const handleFixtureSelection = (fixture) => {
+  const handleFixtureSelection = (fixture: SelectFixture) => {
     // update manufacturer
     setManufacturerSelection(fixture.manufacturerId);
     // update profiles available
@@ -107,6 +71,10 @@ export default function Patch() {
   };
 
   const handlePatch = async () => {
+    if (!(profileSelection && fixtureSelection)) {
+      throw new Error("Please select a profile and fixture");
+    }
+
     const endAddress = parseInt(addressTextInput, 10) + profileFootprint - 1;
     const patchPayload = {
       startAddress: parseInt(addressTextInput, 10),
@@ -114,12 +82,6 @@ export default function Patch() {
       fixtureId: fixtureSelection,
       showId: SHOW,
     };
-
-    console.log({ patchPayload });
-    return;
-
-    if (Object.values(patchPayload).some((field) => field === undefined))
-      return;
 
     const channel = selectedChannels[0];
 
@@ -168,56 +130,33 @@ export default function Patch() {
   };
 
   useEffect(() => {
-    // fetchFixtures().then((res) => setFixtures(res));
-    // TODO Work on this
-    fetchPatches().then((res) => {
-      res = res.map((obj) => {
-        const profileChannels = JSON.parse(obj.profileChannels);
-        obj = { ...obj, profileChannels };
-        const endAddress =
-          Object.values(profileChannels).length > 0
-            ? obj.startAddress + Object.values(profileChannels).length - 1
-            : obj.startAddress;
-        return { ...obj, endAddress };
-      });
-
-      setPatchObjs(res);
-    });
-
-    // fetchScenes().then((res) => setSceneIds(res));
-  }, []);
-
-  // useEffect(() => {
-  //   fetchProfiles().then((res) => setProfiles(res));
-  // }, [fixtureSelection]);
-
+    setProfileSelection(-1);
+    setFixtureSelection(-1);
+  }, [manufacturerSelection]);
   useEffect(() => {
-    setProfileSelection(null);
-  }, [manufacturerSelection, fixtureSelection]);
-
-  useEffect(() => {}, [patchData]);
+    setProfileSelection(-1);
+  }, [fixtureSelection]);
 
   return (
     <View className="flex-1 justify-center items-center bg-gray-100">
       <View className="flex-row w-full h-1/2 bg-gray-400 border-gray-300">
         <View className="border-red-400 border-2 p-5 w-1/4">
           <Text className="text-white text-xl">Manufacturer</Text>
-          {!loadingManufacturers &&
-            manufacturers.map((m) => (
-              <Pressable
-                key={m.name}
-                onPress={() => handleManufacturerSelection(m)}>
-                <Text
-                  className={
-                    m.id === manufacturerSelection
-                      ? "text-yellow-400"
-                      : "text-white"
-                  }
-                  key={m.name}>
-                  {m.name}
-                </Text>
-              </Pressable>
-            ))}
+          {manufacturers.map((m) => (
+            <Pressable
+              key={m.name}
+              onPress={() => handleManufacturerSelection(m.id)}>
+              <Text
+                className={
+                  m.id === manufacturerSelection
+                    ? "text-yellow-400"
+                    : "text-white"
+                }
+                key={m.name}>
+                {m.name}
+              </Text>
+            </Pressable>
+          ))}
         </View>
 
         <View className="border-red-400 border-2 p-5 w-1/4">

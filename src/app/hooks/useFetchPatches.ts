@@ -1,6 +1,6 @@
 import useFetchData from "./useFetchData.ts";
 import { db } from "../../db/client.ts";
-import Patch from "../../models/fixture.ts";
+import Patch, { PatchAfterProcess } from "../../models/patch.ts";
 
 export default function useFetchPatches(id?: number) {
   const fetchPatches = async () => {
@@ -8,5 +8,5 @@ export default function useFetchPatches(id?: number) {
     return id ? await query.getById(id) : await query.getAll();
   };
 
-  return useFetchData(fetchPatches, [id]);
+  return useFetchData<PatchAfterProcess>(fetchPatches, [id]);
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export default function useFetchData<T>(
   fetchFunction: () => Promise<T[]>,
@@ -8,21 +8,21 @@ export default function useFetchData<T>(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetchFunction();
-        setData(response || []);
-      } catch (err) {
-        setError(err as Error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await fetchFunction();
+      setData(response || []);
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchFunction]);
 
+  useEffect(() => {
     fetchData();
   }, dependencies);
 
-  return { data, loading, error };
+  return { data, loading, error, setData, refetch: fetchData };
 }
