@@ -7,7 +7,7 @@ import { InsertPatch, SelectPatch, TableNames } from "../db/types/tables.ts";
 
 export type PatchAfterProcess = SelectPatch & { endAddress: number };
 type PatchBeforeProcess = SelectPatch & {
-  profileChannels: string | null;
+  profileChannels?: string | null;
 };
 export default class Patch extends Base<typeof patches, SelectPatch> {
   readonly table = patches;

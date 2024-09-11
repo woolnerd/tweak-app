@@ -113,8 +113,9 @@ export default function Patch() {
     (profileObj) => profileObj.id === profileSelection,
   );
   const profileFootprint = profile
-    ? Object.keys(JSON.parse(profile.channels)).length
-    : 0;
+    ? // either it has a lot of profile channels, or it is a single channel device.
+      Object.keys(JSON.parse(profile.channels)).length
+    : 1;
 
   const buildProfileDisplay = () => {
     if (!profileSelection || !profile) return null;

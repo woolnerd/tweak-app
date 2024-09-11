@@ -43,7 +43,7 @@ export default function LayoutArea({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSceneId]);
 
-  // useUniverseOutput();
+  useUniverseOutput();
 
   useEffect(() => {
     fetchCompositeFixtures()

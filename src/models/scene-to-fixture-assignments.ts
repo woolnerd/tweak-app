@@ -135,9 +135,8 @@ export default class ScenesToFixtureAssignments extends Base<
     assignmentObj: UnparsedCompositeFixtureInfo,
   ): number {
     const profileChannels = JSON.parse(assignmentObj.profileChannels);
-
-    return profileChannels.length > 0
-      ? assignmentObj.startAddress + profileChannels.length - 1
+    return Object.keys(profileChannels).length > 0
+      ? assignmentObj.startAddress + Object.keys(profileChannels).length - 1
       : assignmentObj.startAddress;
   }
 
