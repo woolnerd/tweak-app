@@ -329,7 +329,7 @@ export const seeds: Seeds = {
       ]),
     },
     {
-      fixtureId: 7,
+      fixtureId: 6,
       channels: JSON.stringify({
         1: "Dimmer",
       }),

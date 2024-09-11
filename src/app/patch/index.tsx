@@ -22,7 +22,7 @@ type ProfileType = {
 };
 
 export default function Patch() {
-  const [fixtureSelection, setFixtureSelection] = useState(0);
+  const [fixtureSelection, setFixtureSelection] = useState<number | null>(null);
   const [manufacturerSelection, setManufacturerSelection] = useState<
     number | null
   >(null);
@@ -41,6 +41,7 @@ export default function Patch() {
   const handleManufacturerSelection = (manufacturerId: number) => {
     setManufacturerSelection(manufacturerId);
   };
+  console.log({ fixtureSelection });
 
   const batchUpdateScenes = async (fixAssignmentRes: { id: number }[]) => {
     await db.transaction(async (tx) => {
@@ -108,6 +109,7 @@ export default function Patch() {
       console.log(error);
     }
   };
+  console.log({ profiles });
 
   const profile = profiles.find(
     (profileObj) => profileObj.id === profileSelection,
@@ -131,11 +133,12 @@ export default function Patch() {
   };
 
   useEffect(() => {
-    setProfileSelection(-1);
-    setFixtureSelection(-1);
+    setProfileSelection(null);
+    setFixtureSelection(null);
   }, [manufacturerSelection]);
+
   useEffect(() => {
-    setProfileSelection(-1);
+    setProfileSelection(null);
   }, [fixtureSelection]);
 
   return (
