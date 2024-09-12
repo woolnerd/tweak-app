@@ -1,3 +1,4 @@
+/* eslint-disable drizzle/enforce-delete-with-where */
 import { sql } from "drizzle-orm";
 import { db } from "../src/db/client.ts";
 import * as schema from "../src/db/schema.ts";
