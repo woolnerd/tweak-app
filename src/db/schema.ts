@@ -81,7 +81,9 @@ export const fixtureAssignments = sqliteTable("fixtureAssignments", {
   channel: integer("channel").notNull(),
   fixtureId: integer("fixture_id").notNull(),
   profileId: integer("profile_id").notNull(),
-  patchId: integer("patch_id").notNull(),
+  patchId: integer("patch_id")
+    .notNull()
+    .references(() => patches.id, { onDelete: "cascade" }),
 });
 
 export const fixtureAssignmentRelations = relations(
