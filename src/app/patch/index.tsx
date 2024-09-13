@@ -102,7 +102,7 @@ export default function Patch() {
       throw new Error("Please select a profile and fixture");
     }
 
-    const endAddress = parseInt(addressTextInput, 10) + profileFootprint - 1;
+    // const endAddress = parseInt(addressTextInput, 10) + profileFootprint - 1;
     // const patchPayload = {
     //   startAddress: parseInt(addressTextInput, 10),
     //   profileId: profileSelection,
@@ -112,63 +112,60 @@ export default function Patch() {
 
     // handle multi channels
     // const channel = selectedChannels[0];
-
-    const payLoadWithAddresses = channelObjsToPatch.map((channelObj) => ({
-      startAddress: channelObj.startAddress,
-      endAddress: channelObj.endAddress,
-      channelNum: channelObj.chanNum,
-      profileId: profileSelection,
-      fixtureId: fixtureSelection,
-      showId: SHOW,
-    }));
+    const payLoadWithAddresses = channelObjsToPatch
+      .filter((mixedObjs) => mixedObjs.selected)
+      .map((dataObj) => ({
+        startAddress: dataObj.startAddress,
+        endAddress: dataObj.endAddress,
+        channelNum: dataObj.chanNum,
+        profileId: profileSelection,
+        fixtureId: fixtureSelection,
+        showId: SHOW,
+      }));
 
     // const patchRes = await new PatchModel(db).create(
-      //   patchPayload,
-      //   endAddress,
-      // );
+    //   patchPayload,
+    //   endAddress,
+    // );
 
-      const batchUpdatePatches = async () => {
-        // TODO iterate over the payloads
+    // const batchUpdatePatches = async () => {
+    // TODO iterate over the payloads
 
-        // TODO use id from patch to create a new FixtureAssignment
+    // TODO use id from patch to create a new FixtureAssignment
 
-        try {
+    try {
+      const promises = payLoadWithAddresses.map((patchPayload) =>
+        // TODO create a new patch
+        new PatchModel(db).create(
+          patchPayload,
+          // patchPayload.endAddress,
+        ),
+      );
 
-        const promises = payLoadWithAddresses.map((patchPayload) => {
-          // TODO create a new patch
-          await new PatchModel(db).create(
-            patchPayload,
-            patchPayload.endAddress,
-          );
+      // TODO use id from patch to create a new FixtureAssignment
+      const patchResponses = await Promise.all(promises);
 
+      console.log({ patchResponses });
 
+      // const fixtureAssignmentResponses = patchResponses.map((patchRes) => {
+      //   const channel = patchRes
 
-
-
-          // TODO use id from patch to create a new FixtureAssignment
-          const patchResponses = await Promise.all(promises);
-
-          const fixtureAssignmentResponses = patchResponses.map(patchRes => {
-            await db.transaction(async (tx) =>
-             tx
-               .insert(fixtureAssignments)
-                .values({
-                 // figure out how to get this channel
-                 channel: patchRes.channel,
-                 fixtureId: fixtureSelection,
-                 profileId: profileSelection,
-                 patchId: patchRes.id,
-               })
-               .returning({ id: fixtureAssignments.id }),
-           );
-          })
-        });
-
-        }
-
+      // return db.transaction(async (tx) =>
+      //   tx
+      //     .insert(fixtureAssignments)
+      //     .values({
+      //       // figure out how to get this channel
+      //       channel: patches.channel,
+      //       fixtureId: fixtureSelection,
+      //       profileId: profileSelection,
+      //       patchId: patches.id,
+      //     })
+      //     .returning({ id: fixtureAssignments.id }),
+      // )
+      // });
       // batchUpdateScenes(fixAssignmentRes);
     } catch (error) {
-      console.log(error);
+      console.log("166", error);
     }
   };
 
@@ -267,6 +264,8 @@ export default function Patch() {
   }, [fixtureSelection, fixtures, fixturesLoading]);
 
   useEffect(() => {
+    // TODO we have two needs from this list: Display and Database. For DB creation, we need to remove the unselected.
+
     setChannelObjsToPatch(
       generateChannelList(
         parseInt(addressTextInput, 10),
