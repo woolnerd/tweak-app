@@ -57,14 +57,20 @@ export default function Patch() {
     (assignment) => assignment.channel,
   );
 
-  const batchUpdateScenes = async (fixAssignmentRes: { id: number }[]) => {
+  const batchUpdateScenes = async (
+    fixAssignmentResponses: { id: number }[][],
+  ) => {
     await db.transaction(async (tx) => {
-      const promises = sceneIds.map((id) =>
-        tx.insert(scenesToFixtureAssignments).values({
-          sceneId: id,
-          fixtureAssignmentId: fixAssignmentRes[0].id,
-        }),
-      );
+      const promises = sceneIds.map((sceneId: number) => {
+        const fixturePromises = fixAssignmentResponses.map((response) =>
+          tx.insert(scenesToFixtureAssignments).values({
+            sceneId,
+            fixtureAssignmentId: response[0].id,
+          }),
+        );
+
+        return Promise.all(fixturePromises);
+      });
 
       await Promise.all(promises);
     });
@@ -102,16 +108,6 @@ export default function Patch() {
       throw new Error("Please select a profile and fixture");
     }
 
-    // const endAddress = parseInt(addressTextInput, 10) + profileFootprint - 1;
-    // const patchPayload = {
-    //   startAddress: parseInt(addressTextInput, 10),
-    //   profileId: profileSelection,
-    //   fixtureId: fixtureSelection,
-    //   showId: SHOW,
-    // };
-
-    // handle multi channels
-    // const channel = selectedChannels[0];
     const payLoadWithAddresses = channelObjsToPatch
       .filter((mixedObjs) => mixedObjs.selected)
       .map((dataObj) => ({
@@ -123,49 +119,42 @@ export default function Patch() {
         showId: SHOW,
       }));
 
-    // const patchRes = await new PatchModel(db).create(
-    //   patchPayload,
-    //   endAddress,
-    // );
-
-    // const batchUpdatePatches = async () => {
-    // TODO iterate over the payloads
-
-    // TODO use id from patch to create a new FixtureAssignment
-
     try {
       const promises = payLoadWithAddresses.map((patchPayload) =>
-        // TODO create a new patch
-        new PatchModel(db).create(
-          patchPayload,
-          // patchPayload.endAddress,
-        ),
+        new PatchModel(db).create(patchPayload),
       );
 
-      // TODO use id from patch to create a new FixtureAssignment
       const patchResponses = await Promise.all(promises);
 
       console.log({ patchResponses });
 
-      // const fixtureAssignmentResponses = patchResponses.map((patchRes) => {
-      //   const channel = patchRes
+      const fixtureAssignmentPromises = patchResponses.map((patchRes) => {
+        const channel = payLoadWithAddresses.filter(
+          (payload) => payload.startAddress === patchRes[0].startAddress,
+        )[0].channelNum;
+        return db.transaction(async (tx) =>
+          tx
+            .insert(fixtureAssignments)
+            .values({
+              channel,
+              fixtureId: patchRes[0].fixtureId,
+              profileId: patchRes[0].profileId,
+              patchId: patchRes[0].id,
+            })
+            .returning({ id: fixtureAssignments.id }),
+        );
+      });
 
-      // return db.transaction(async (tx) =>
-      //   tx
-      //     .insert(fixtureAssignments)
-      //     .values({
-      //       // figure out how to get this channel
-      //       channel: patches.channel,
-      //       fixtureId: fixtureSelection,
-      //       profileId: profileSelection,
-      //       patchId: patches.id,
-      //     })
-      //     .returning({ id: fixtureAssignments.id }),
-      // )
-      // });
-      // batchUpdateScenes(fixAssignmentRes);
+      const fixtureAssignmentResponses = await Promise.all(
+        fixtureAssignmentPromises,
+      );
+
+      console.log({ fixtureAssignmentResponses });
+      batchUpdateScenes(fixtureAssignmentResponses);
+      setSelectChannels([]);
+      setAddressTextInput("");
     } catch (error) {
-      console.log("166", error);
+      console.log(error);
     }
   };
 
