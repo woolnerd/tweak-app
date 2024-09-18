@@ -40,11 +40,11 @@ export default function Patch() {
   const { data: fixtures, loading: fixturesLoading } = useFetchFixtures(
     manufacturerSelection,
   );
-  const { data: profiles } = useFetchProfiles(fixtureSelection);
+  const { data: profiles, setData: setProfiles } =
+    useFetchProfiles(fixtureSelection);
   const { data: sceneIds } = useFetchScenes();
   const { data: patchData, error: patchError } = useFetchPatches();
   const { data: fixtureAssignmentsData } = useFetchFixtureAssignments();
-
   const handleManufacturerSelection = (manufacturerId: number) => {
     setManufacturerSelection(manufacturerId);
   };
@@ -85,6 +85,7 @@ export default function Patch() {
       throw new Error("Please select a profile and fixture");
     }
 
+    // extract
     const payLoadWithAddresses = channelObjsToPatch
       .filter((mixedObjs) => mixedObjs.selected)
       .map((dataObj) => ({
@@ -198,18 +199,25 @@ export default function Patch() {
   };
 
   useEffect(() => {
+    if (!fixtureSelection) {
+      setFixtureSelection(null);
+    }
     setProfileSelection(null);
-    setFixtureSelection(null);
-  }, [manufacturerSelection]);
+    setProfiles([]);
+  }, [manufacturerSelection, fixtureSelection, setProfiles]);
 
+  // When changing fixture selection, manufacturer changes as well, and profile selection is cleared.
   useEffect(() => {
     setProfileSelection(null);
-    // TODO first click of fixture selects both fixture and manufacturer
+
     if (!fixturesLoading && fixtureSelection) {
-      setManufacturerSelection(
-        fixtures.find((fixture) => fixture.id === fixtureSelection)!
-          .manufacturerId,
+      const foundFixture = fixtures.find(
+        (fixture) => fixture.id === fixtureSelection,
       );
+
+      if (foundFixture) {
+        setManufacturerSelection(foundFixture.manufacturerId);
+      }
     }
   }, [fixtureSelection, fixtures, fixturesLoading]);
 
@@ -261,7 +269,7 @@ export default function Patch() {
         </View>
         <View className="border-red-400 border-2 p-5 w-1/4">
           <Text className="text-white text-xl">Profile</Text>
-          {!fixtureSelection ? (
+          {profiles.length === 0 ? (
             <Text>Select a Fixture</Text>
           ) : (
             profiles.map((m) => (

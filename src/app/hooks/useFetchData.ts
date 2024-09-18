@@ -22,6 +22,7 @@ export default function useFetchData<T>(
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies);
 
   return { data, loading, error, setData, refetch: fetchData };

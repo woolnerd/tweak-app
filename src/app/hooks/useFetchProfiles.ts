@@ -4,6 +4,7 @@ import Profile, { ProfileProcessed } from "../../models/profile.ts";
 
 export default function useFetchProfiles(fixtureSelection: number | null) {
   const fetchProfiles = async () => {
+    if (!fixtureSelection) return [];
     const query = new Profile(db);
     return await query.getByFixtureId(fixtureSelection);
   };
