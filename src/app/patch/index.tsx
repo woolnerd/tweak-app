@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Pressable, FlatList } from "react-native";
 
+import { payLoadWithAddresses, generateChannelListDisplay } from "./helpers.ts";
+import { ChannelObject, ChannelObjectDisplay } from "./types/index.ts";
 import { db } from "../../db/client.ts";
 import { SelectFixture } from "../../db/types/tables.ts";
 import { ProfileProcessed } from "../../models/profile.ts";
@@ -15,13 +17,6 @@ import useFetchScenes from "../hooks/useFetchScenes.ts";
 
 const CHANNEL_LIST_COUNT = 50;
 
-type ChannelObjectPatch = {
-  startAddress: number;
-  endAddress: number;
-  chanNum: number;
-  selected: boolean;
-};
-
 export default function Patch() {
   const [fixtureSelection, setFixtureSelection] = useState<number | null>(null);
   const [manufacturerSelection, setManufacturerSelection] = useState<
@@ -29,8 +24,8 @@ export default function Patch() {
   >(null);
   const [profileSelection, setProfileSelection] = useState<number | null>(null);
   const [selectedChannels, setSelectChannels] = useState<number[]>([]);
-  const [channelObjsToPatch, setChannelObjsToPatch] = useState<
-    ChannelObjectPatch[]
+  const [channelObjsToDisplay, setChannelObjsToDisplay] = useState<
+    ChannelObjectDisplay[]
   >([]);
   const [addressTextInput, setAddressTextInput] = useState("");
 
@@ -60,9 +55,8 @@ export default function Patch() {
     // update profiles available
   };
 
-  const handleProfileSelection = (profile: ProfileProcessed) => {
+  const handleProfileSelection = (profile: ProfileProcessed) =>
     setProfileSelection(profile.id);
-  };
 
   const handleChannelSelection = (channel: number) => {
     if (channelsInUse.includes(channel)) {
@@ -85,21 +79,14 @@ export default function Patch() {
       throw new Error("Please select a profile and fixture");
     }
 
-    // extract
-    const payLoadWithAddresses = channelObjsToPatch
-      .filter((mixedObjs) => mixedObjs.selected)
-      .map((dataObj) => ({
-        startAddress: dataObj.startAddress,
-        endAddress: dataObj.endAddress,
-        channelNum: dataObj.chanNum,
-        profileId: profileSelection,
-        fixtureId: fixtureSelection,
-        showId: SHOW,
-      }));
-
     try {
       const fixtureAssignmentResponses = await new PatchFixtures(db).create(
-        payLoadWithAddresses,
+        payLoadWithAddresses({
+          showId: SHOW,
+          profileId: profileSelection,
+          fixtureId: fixtureSelection,
+          channelObjsToDisplay,
+        }),
       );
 
       if (fixtureAssignmentResponses) {
@@ -141,62 +128,32 @@ export default function Patch() {
     );
   };
 
-  const channelStyle = (chanNum: number) => {
-    if (channelsInUse.includes(chanNum)) {
+  const channelStyle = (channelNum: number) => {
+    if (channelsInUse.includes(channelNum)) {
       return "text-black-400";
     }
 
-    return selectedChannels.includes(chanNum)
+    return selectedChannels.includes(channelNum)
       ? "text-yellow-400"
       : "text-white";
   };
 
-  const renderChannelDisplay = ({ item }) => (
+  const renderChannelDisplay = ({ item }: { item: ChannelObjectDisplay }) => (
     <View className="flex-row">
       <Pressable
-        key={item.chanNum}
-        onPress={() => handleChannelSelection(item.chanNum)}>
-        <Text className={channelStyle(item.chanNum)}>{item.chanNum}</Text>
+        key={item.channelNum}
+        onPress={() => handleChannelSelection(item.channelNum)}>
+        <Text className={channelStyle(item.channelNum)}>{item.channelNum}</Text>
       </Pressable>
       <Text className="ml-3">
         {item.startAddress &&
         item.endAddress &&
-        selectedChannels.includes(item.chanNum)
+        selectedChannels.includes(item.channelNum)
           ? `${item.startAddress} - ${item.endAddress}`
           : ""}
       </Text>
     </View>
   );
-
-  // extractable
-  const generateChannelList = (firstAddress: number, profileSize: number) => {
-    const channelList = [];
-    let startAddress = firstAddress;
-    let endAddress = profileSize + firstAddress - 1;
-
-    for (let i = 1; i <= CHANNEL_LIST_COUNT; i += 1) {
-      if (
-        selectedChannels.includes(i) &&
-        profileSelection &&
-        addressTextInput
-      ) {
-        channelList.push({
-          chanNum: i,
-          selected: true,
-          startAddress,
-          endAddress,
-        });
-        startAddress += profileSize;
-        endAddress += profileSize;
-      } else {
-        channelList.push({
-          chanNum: i,
-          selected: false,
-        });
-      }
-    }
-    return channelList;
-  };
 
   useEffect(() => {
     if (!fixtureSelection) {
@@ -222,14 +179,15 @@ export default function Patch() {
   }, [fixtureSelection, fixtures, fixturesLoading]);
 
   useEffect(() => {
-    // TODO we have two needs from this list: Display and Database. For DB creation, we need to remove the unselected.
-
-    setChannelObjsToPatch(
-      generateChannelList(
-        parseInt(addressTextInput, 10),
-        profile?.channelCount,
-      ),
-    );
+    const list = generateChannelListDisplay({
+      firstAddress: parseInt(addressTextInput, 10),
+      profileSize: profileFootprint,
+      profileSelection,
+      addressTextInput,
+      selectedChannels,
+      channelListCount: CHANNEL_LIST_COUNT,
+    });
+    setChannelObjsToDisplay(list);
   }, [addressTextInput, profiles]);
 
   return (
@@ -256,13 +214,15 @@ export default function Patch() {
 
         <View className="border-red-400 border-2 p-5 w-1/4">
           <Text className="text-white text-xl">Fixture</Text>
-          {fixtures.map((m) => (
-            <Pressable key={m.name} onPress={() => handleFixtureSelection(m)}>
+          {fixtures.map((fix) => (
+            <Pressable
+              key={fix.name}
+              onPress={() => handleFixtureSelection(fix)}>
               <Text
                 className={
-                  m.id === fixtureSelection ? "text-yellow-400" : "text-white"
+                  fix.id === fixtureSelection ? "text-yellow-400" : "text-white"
                 }>
-                {m.name}
+                {fix.name}
               </Text>
             </Pressable>
           ))}
@@ -272,13 +232,17 @@ export default function Patch() {
           {profiles.length === 0 ? (
             <Text>Select a Fixture</Text>
           ) : (
-            profiles.map((m) => (
-              <Pressable key={m.id} onPress={() => handleProfileSelection(m)}>
+            profiles.map((prof) => (
+              <Pressable
+                key={prof.id}
+                onPress={() => handleProfileSelection(prof)}>
                 <Text
                   className={
-                    m.id === profileSelection ? "text-yellow-400" : "text-white"
+                    prof.id === profileSelection
+                      ? "text-yellow-400"
+                      : "text-white"
                   }>
-                  {m.name}
+                  {prof.name}
                 </Text>
               </Pressable>
             ))
@@ -287,7 +251,7 @@ export default function Patch() {
         <View className="border-red-400 border-2 p-5 w-1/8">
           <Text className="text-white text-xl">Channels</Text>
           <FlatList
-            data={channelObjsToPatch}
+            data={channelObjsToDisplay}
             renderItem={renderChannelDisplay}
           />
         </View>
