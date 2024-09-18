@@ -14,6 +14,7 @@ import useFetchManufacturers from "../hooks/useFetchManufacturers.ts";
 import useFetchPatches from "../hooks/useFetchPatches.ts";
 import useFetchProfiles from "../hooks/useFetchProfiles.ts";
 import useFetchScenes from "../hooks/useFetchScenes.ts";
+import UniverseTable from "../components/UniverseTable/UniverseTable.tsx";
 
 const CHANNEL_LIST_COUNT = 50;
 
@@ -270,8 +271,8 @@ export default function Patch() {
       </View>
 
       <View className="w-full h-1/2 flex-row">
-        <View className="w-1/2 h-full bg-red-500 justify-center items-center">
-          <Text className="text-white">Universe Table</Text>
+        <View className="w-1/2 h-full justify-center items-center">
+          {/* <Text className="text-white">Universe Table</Text>
           <View>
             {patchData.map((patchObj) => (
               <React.Fragment key={patchObj.id}>
@@ -279,7 +280,8 @@ export default function Patch() {
                 <Text>endAddress: {patchObj.endAddress}</Text>
               </React.Fragment>
             ))}
-          </View>
+          </View> */}
+          <UniverseTable patchData={patchData} />
         </View>
 
         <View className="w-1/2 h-full bg-green-500 justify-center items-center">
