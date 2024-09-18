@@ -1,4 +1,4 @@
-import { gte, lte, and, or, eq, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 import Base from "./base.ts";
 import { db } from "../db/client.ts";

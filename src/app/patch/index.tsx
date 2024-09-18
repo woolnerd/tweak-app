@@ -2,14 +2,10 @@ import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Pressable, FlatList } from "react-native";
 
 import { db } from "../../db/client.ts";
-import {
-  fixtureAssignments,
-  scenesToFixtureAssignments,
-  patches,
-} from "../../db/schema.ts";
 import { SelectFixture } from "../../db/types/tables.ts";
-import PatchModel from "../../models/patch.ts";
 import { ProfileProcessed } from "../../models/profile.ts";
+import BatchCreateScenesToFixtureAssignments from "../../services/batch-create-scenes.ts";
+import PatchFixtures from "../../services/patch-fixtures.ts";
 import useFetchFixtureAssignments from "../hooks/useFetchFixtureAssignments.ts";
 import useFetchFixtures from "../hooks/useFetchFixtures.ts";
 import useFetchManufacturers from "../hooks/useFetchManufacturers.ts";
@@ -17,7 +13,7 @@ import useFetchPatches from "../hooks/useFetchPatches.ts";
 import useFetchProfiles from "../hooks/useFetchProfiles.ts";
 import useFetchScenes from "../hooks/useFetchScenes.ts";
 
-const CHANNEL_LIST_COUNT = 200;
+const CHANNEL_LIST_COUNT = 50;
 
 type ChannelObjectPatch = {
   startAddress: number;
@@ -57,25 +53,6 @@ export default function Patch() {
     (assignment) => assignment.channel,
   );
 
-  const batchUpdateScenes = async (
-    fixAssignmentResponses: { id: number }[][],
-  ) => {
-    await db.transaction(async (tx) => {
-      const promises = sceneIds.map((sceneId: number) => {
-        const fixturePromises = fixAssignmentResponses.map((response) =>
-          tx.insert(scenesToFixtureAssignments).values({
-            sceneId,
-            fixtureAssignmentId: response[0].id,
-          }),
-        );
-
-        return Promise.all(fixturePromises);
-      });
-
-      await Promise.all(promises);
-    });
-  };
-
   const handleFixtureSelection = (fixture: SelectFixture) => {
     // update manufacturer
     setFixtureSelection(fixture.id);
@@ -103,7 +80,7 @@ export default function Patch() {
     setSelectChannels([...selectedChannels, channel]);
   };
 
-  const handlePatch = async () => {
+  const handlePatchDB = async () => {
     if (!(profileSelection && fixtureSelection)) {
       throw new Error("Please select a profile and fixture");
     }
@@ -120,42 +97,26 @@ export default function Patch() {
       }));
 
     try {
-      const promises = payLoadWithAddresses.map((patchPayload) =>
-        new PatchModel(db).create(patchPayload),
+      const fixtureAssignmentResponses = await new PatchFixtures(db).create(
+        payLoadWithAddresses,
       );
 
-      const patchResponses = await Promise.all(promises);
-
-      console.log({ patchResponses });
-
-      const fixtureAssignmentPromises = patchResponses.map((patchRes) => {
-        const channel = payLoadWithAddresses.filter(
-          (payload) => payload.startAddress === patchRes[0].startAddress,
-        )[0].channelNum;
-        return db.transaction(async (tx) =>
-          tx
-            .insert(fixtureAssignments)
-            .values({
-              channel,
-              fixtureId: patchRes[0].fixtureId,
-              profileId: patchRes[0].profileId,
-              patchId: patchRes[0].id,
-            })
-            .returning({ id: fixtureAssignments.id }),
+      if (fixtureAssignmentResponses) {
+        await new BatchCreateScenesToFixtureAssignments(db).create(
+          fixtureAssignmentResponses,
+          sceneIds,
         );
-      });
-
-      const fixtureAssignmentResponses = await Promise.all(
-        fixtureAssignmentPromises,
-      );
-
-      console.log({ fixtureAssignmentResponses });
-      batchUpdateScenes(fixtureAssignmentResponses);
-      setSelectChannels([]);
-      setAddressTextInput("");
+      }
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handlePatch = () => {
+    handlePatchDB().then((res) => {
+      setSelectChannels([]);
+      setAddressTextInput("");
+    });
   };
 
   const profile = profiles.find(
