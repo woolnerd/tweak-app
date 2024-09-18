@@ -1,4 +1,4 @@
-import { gte, lte, and, or, eq, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 import Base from "./base.ts";
 import { db } from "../db/client.ts";
@@ -43,10 +43,13 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
     return this.processedData;
   }
 
-  async create(data: InsertPatch, endAddress: number) {
-    if (data.startAddress > endAddress) {
+  async create(
+    data: InsertPatch & { channelNum: number; endAddress: number },
+    // endAddress: number,
+  ) {
+    if (data.startAddress > data.endAddress) {
       throw Error(
-        `Starting address (${data.startAddress}) cannot be greater than ending address (${endAddress}).`,
+        `Starting address (${data.startAddress}) cannot be greater than ending address (${data.endAddress}).`,
       );
     }
 
@@ -54,9 +57,11 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
       throw Error("Starting address must be 1 or greater");
     }
 
+    console.log({ data });
+
     const isOverlap = await this.checkOverlap(
       data.startAddress,
-      endAddress,
+      data.endAddress,
       data.showId,
     );
 
