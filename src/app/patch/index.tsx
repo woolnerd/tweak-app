@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Pressable, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  FlatList,
+  ScrollView,
+} from "react-native";
 
 import { payLoadWithAddresses, generateChannelListDisplay } from "./helpers.ts";
 import { ChannelObject, ChannelObjectDisplay } from "./types/index.ts";
@@ -15,6 +22,9 @@ import useFetchPatches from "../hooks/useFetchPatches.ts";
 import useFetchProfiles from "../hooks/useFetchProfiles.ts";
 import useFetchScenes from "../hooks/useFetchScenes.ts";
 import UniverseTable from "../components/UniverseTable/UniverseTable.tsx";
+import Dropdown from "../components/Dropdowns/Dropdown.tsx";
+import ManufacturerDropdown from "../components/Dropdowns/ManufacturerDropdown/ManufacturerDropdown.tsx";
+import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 
 const CHANNEL_LIST_COUNT = 50;
 
@@ -29,6 +39,7 @@ export default function Patch() {
     ChannelObjectDisplay[]
   >([]);
   const [addressTextInput, setAddressTextInput] = useState("");
+  const { compositeFixturesStore } = useCompositeFixtureStore();
 
   const SHOW = 1;
 
@@ -41,6 +52,12 @@ export default function Patch() {
   const { data: sceneIds } = useFetchScenes();
   const { data: patchData, error: patchError } = useFetchPatches();
   const { data: fixtureAssignmentsData } = useFetchFixtureAssignments();
+  //  top half of patch screen screen is the patch table
+  // this shows channels in use, and empty channels
+  // need a way to jump to channel number whether in use or not
+  // when channel or address is clicked, the universe populates the bottom half
+  // when fixture or manufacturer is selected, the selection table populates the bottom half
+
   const handleManufacturerSelection = (manufacturerId: number) => {
     setManufacturerSelection(manufacturerId);
   };
@@ -192,9 +209,84 @@ export default function Patch() {
   }, [addressTextInput, profiles]);
 
   return (
-    <View className="flex-1 justify-center items-center bg-gray-100">
-      <View className="flex-row w-full h-1/2 bg-gray-400 border-gray-300">
+    <View className="">
+      {/* <View className="flex-row w-full h-1/2 bg-gray-400 border-gray-300"> */}
+      <View className="p-4 bg-gray-900 h-1/2">
+        <ScrollView horizontal>
+          {/* Table Header */}
+          <View className="flex flex-row bg-gray-800 p-2 rounded-md">
+            <Text className="text-white font-bold w-24 text-center">
+              Channels
+            </Text>
+            <Text className="text-white font-bold w-24 text-center">
+              Address
+            </Text>
+            <Text className="text-white font-bold w-40 text-center">
+              Manufacturer
+            </Text>
+            <Text className="text-white font-bold w-32 text-center">
+              Fixture
+            </Text>
+            <Text className="text-white font-bold w-32 text-center">
+              Profile
+            </Text>
+
+            {/* Table Body */}
+            <ScrollView className="h-96">
+              {compositeFixturesStore.map((fixture, index) => (
+                <View
+                  key={index}
+                  className={`flex flex-row p-2 ${index % 2 === 0 ? "bg-gray-700" : "bg-gray-600"}`}>
+                  <Text className="text-white w-24 text-center">
+                    {fixture.channel}
+                  </Text>
+                  <Text className="text-white w-24 text-center">
+                    {fixture.startAddress}
+                  </Text>
+                  <Text className="text-white w-40 text-center">
+                    {"get manufacturer"}
+                  </Text>
+                  <Text className="text-white w-32 text-center">
+                    {fixture.fixtureName}
+                  </Text>
+                  <Text className="text-white w-32 text-center">
+                    {fixture.profileName}
+                  </Text>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        </ScrollView>
+      </View>
+
+      {/* <View className="border-red-400 border-2 p-5 w-1/8">
+          <Text className="text-white text-xl">Channels</Text>
+          <FlatList
+            data={channelObjsToDisplay}
+            renderItem={renderChannelDisplay}
+          />
+        </View>
         <View className="border-red-400 border-2 p-5 w-1/4">
+          <Text className="text-white text-xl">Address</Text>
+          <TextInput
+            value={addressTextInput}
+            placeholder="Enter Address Start"
+            onChangeText={setAddressTextInput}
+            keyboardType="numeric"
+          /> */}
+      {/* <Pressable onPress={handlePatch} className="border-2">
+            <Text className="text-yellow-500 p-5 text-xl">Save Patch</Text>
+          </Pressable>
+        </View> */}
+      {/* <Dropdown
+          selectedItem={manufacturerSelection}
+          onSelect={handleManufacturerSelection}
+          items={manufacturers}
+          getItemKey={(m: (typeof manufacturers)[number]) => m.id}
+          getItemLabel={(item: (typeof manufacturers)[number]) => item.name}
+        /> */}
+
+      {/* <View className="border-red-400 border-2 p-5 w-1/4">
           <Text className="text-white text-xl">Manufacturer</Text>
           {manufacturers.map((m) => (
             <Pressable
@@ -211,9 +303,9 @@ export default function Patch() {
               </Text>
             </Pressable>
           ))}
-        </View>
+        </View> */}
 
-        <View className="border-red-400 border-2 p-5 w-1/4">
+      {/* <View className="border-red-400 border-2 p-5 w-1/4">
           <Text className="text-white text-xl">Fixture</Text>
           {fixtures.map((fix) => (
             <Pressable
@@ -227,8 +319,8 @@ export default function Patch() {
               </Text>
             </Pressable>
           ))}
-        </View>
-        <View className="border-red-400 border-2 p-5 w-1/4">
+        </View> */}
+      {/* <View className="border-red-400 border-2 p-5 w-1/4">
           <Text className="text-white text-xl">Profile</Text>
           {profiles.length === 0 ? (
             <Text>Select a Fixture</Text>
@@ -248,27 +340,8 @@ export default function Patch() {
               </Pressable>
             ))
           )}
-        </View>
-        <View className="border-red-400 border-2 p-5 w-1/8">
-          <Text className="text-white text-xl">Channels</Text>
-          <FlatList
-            data={channelObjsToDisplay}
-            renderItem={renderChannelDisplay}
-          />
-        </View>
-        <View className="border-red-400 border-2 p-5 w-1/4">
-          <Text className="text-white text-xl">Address</Text>
-          <TextInput
-            value={addressTextInput}
-            placeholder="Enter Address Start"
-            onChangeText={setAddressTextInput}
-            keyboardType="numeric"
-          />
-          <Pressable onPress={handlePatch} className="border-2">
-            <Text className="text-yellow-500 p-5 text-xl">Save Patch</Text>
-          </Pressable>
-        </View>
-      </View>
+        </View> */}
+      {/* </View> */}
 
       <View className="w-full h-1/2 flex-row">
         <View className="w-1/2 h-full justify-center items-center">
@@ -283,7 +356,6 @@ export default function Patch() {
           </View> */}
           <UniverseTable patchData={patchData} />
         </View>
-
         <View className="w-1/2 h-full bg-green-500 justify-center items-center">
           <Text className="text-white">Selected Fixture Details</Text>
           <View>{buildProfileDisplay()}</View>
