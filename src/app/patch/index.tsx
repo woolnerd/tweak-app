@@ -25,6 +25,7 @@ import UniverseTable from "../components/UniverseTable/UniverseTable.tsx";
 import Dropdown from "../components/Dropdowns/Dropdown.tsx";
 import ManufacturerDropdown from "../components/Dropdowns/ManufacturerDropdown/ManufacturerDropdown.tsx";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
+import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
 
 const CHANNEL_LIST_COUNT = 50;
 
@@ -38,9 +39,11 @@ export default function Patch() {
   const [channelObjsToDisplay, setChannelObjsToDisplay] = useState<
     ChannelObjectDisplay[]
   >([]);
-  const [addressTextInput, setAddressTextInput] = useState("");
+  const [addressStartSelection, setAddressStartSelection] = useState<
+    number | null
+  >(null);
+  const [showAllChannels, setShowAllChannels] = useState<boolean>(true);
   const { compositeFixturesStore } = useCompositeFixtureStore();
-
   const SHOW = 1;
 
   const { data: manufacturers } = useFetchManufacturers();
@@ -77,10 +80,10 @@ export default function Patch() {
     setProfileSelection(profile.id);
 
   const handleChannelSelection = (channel: number) => {
-    if (channelsInUse.includes(channel)) {
-      alert("Channel is in use");
-      return;
-    }
+    // if (channelsInUse.includes(channel)) {
+    //   alert("Channel is in use");
+    //   return;
+    // }
 
     if (selectedChannels.includes(channel)) {
       setSelectChannels(
@@ -121,7 +124,7 @@ export default function Patch() {
   const handlePatch = () => {
     handlePatchDB().then((res) => {
       setSelectChannels([]);
-      setAddressTextInput("");
+      setAddressStartSelection(null);
     });
   };
 
@@ -173,6 +176,61 @@ export default function Patch() {
     </View>
   );
 
+  const buildPatchRows = () => {
+    const channelCount = 100;
+    const fixtureMap = compositeFixturesStore.reduce(
+      (acc, fixture) => {
+        acc[fixture.channel] = fixture;
+        return acc;
+      },
+      {} as Record<number, ParsedCompositeFixtureInfo>,
+    );
+
+    const patchRows: {
+      channel: number;
+      startAddress: number;
+      manufacturerName: string;
+      fixtureName: string;
+      profileName: string;
+    }[] = [];
+    for (let i = 1; i <= channelCount; i += 1) {
+      if (i in fixtureMap) {
+        patchRows.push(fixtureMap[i]);
+      } else if (showAllChannels) {
+        patchRows.push({
+          channel: i,
+          startAddress: 0,
+          manufacturerName: "",
+          fixtureName: "",
+          profileName: "",
+        });
+      }
+    }
+
+    const sortedList = patchRows.sort((a, b) => a.channel - b.channel);
+
+    return sortedList.map((fixture, index) => (
+      <Pressable
+        key={fixture.channel}
+        className={`flex flex-row p-2 border-2 ${index % 2 === 0 ? "bg-gray-700" : "bg-gray-600"} ${selectedChannels.includes(fixture.channel) ? "border-yellow-600" : ""}`}
+        onPress={() => handleChannelSelection(fixture.channel)}>
+        <Text className="text-white w-24 text-center">{fixture.channel}</Text>
+        <Text className="text-white w-24 text-center">
+          {`${fixture.startAddress} - }`}
+        </Text>
+        <Text className="text-white w-96 text-center">
+          {fixture.manufacturerName}
+        </Text>
+        <Text className="text-white w-96 text-center">
+          {fixture.fixtureName}
+        </Text>
+        <Text className="text-white w-96 text-center">
+          {fixture.profileName}
+        </Text>
+      </Pressable>
+    ));
+  };
+
   useEffect(() => {
     if (!fixtureSelection) {
       setFixtureSelection(null);
@@ -197,66 +255,54 @@ export default function Patch() {
   }, [fixtureSelection, fixtures, fixturesLoading]);
 
   useEffect(() => {
-    const list = generateChannelListDisplay({
-      firstAddress: parseInt(addressTextInput, 10),
-      profileSize: profileFootprint,
-      profileSelection,
-      addressTextInput,
-      selectedChannels,
-      channelListCount: CHANNEL_LIST_COUNT,
-    });
-    setChannelObjsToDisplay(list);
-  }, [addressTextInput, profiles]);
+    if (addressStartSelection) {
+      const list = generateChannelListDisplay({
+        firstAddress: addressStartSelection,
+        profileSize: profileFootprint,
+        profileSelection,
+        addressStartSelection,
+        selectedChannels,
+        channelListCount: CHANNEL_LIST_COUNT,
+      });
+      setChannelObjsToDisplay(list);
+    }
+  }, [addressStartSelection, profiles]);
+
+  console.log({ addressStartSelection });
 
   return (
-    <View className="">
+    <View className="w-full">
       {/* <View className="flex-row w-full h-1/2 bg-gray-400 border-gray-300"> */}
-      <View className="p-4 bg-gray-900 h-1/2">
-        <ScrollView horizontal>
-          {/* Table Header */}
-          <View className="flex flex-row bg-gray-800 p-2 rounded-md">
-            <Text className="text-white font-bold w-24 text-center">
-              Channels
-            </Text>
-            <Text className="text-white font-bold w-24 text-center">
-              Address
-            </Text>
-            <Text className="text-white font-bold w-40 text-center">
-              Manufacturer
-            </Text>
-            <Text className="text-white font-bold w-32 text-center">
-              Fixture
-            </Text>
-            <Text className="text-white font-bold w-32 text-center">
-              Profile
-            </Text>
+      <View className=" bg-gray-900 h-1/2 w-full">
+        <View className="p-4 bg-gray-900 w-full">
+          <ScrollView horizontal className="w-full">
+            <View>
+              {/* Table Header */}
+              <View className="flex flex-row bg-gray-800 p-2 rounded-md">
+                <Text className="text-white font-bold w-24 text-center">
+                  Channels
+                </Text>
+                <Text className="text-white font-bold w-24 text-center">
+                  Address
+                </Text>
+                <Text className="text-white font-bold w-96 text-center">
+                  Manufacturer
+                </Text>
+                <Text className="text-white font-bold w-96 text-center">
+                  Fixture
+                </Text>
+                <Text className="text-white font-bold w-96 text-center">
+                  Profile
+                </Text>
+              </View>
 
-            {/* Table Body */}
-            <ScrollView className="h-96">
-              {compositeFixturesStore.map((fixture, index) => (
-                <View
-                  key={index}
-                  className={`flex flex-row p-2 ${index % 2 === 0 ? "bg-gray-700" : "bg-gray-600"}`}>
-                  <Text className="text-white w-24 text-center">
-                    {fixture.channel}
-                  </Text>
-                  <Text className="text-white w-24 text-center">
-                    {fixture.startAddress}
-                  </Text>
-                  <Text className="text-white w-40 text-center">
-                    {"get manufacturer"}
-                  </Text>
-                  <Text className="text-white w-32 text-center">
-                    {fixture.fixtureName}
-                  </Text>
-                  <Text className="text-white w-32 text-center">
-                    {fixture.profileName}
-                  </Text>
-                </View>
-              ))}
-            </ScrollView>
-          </View>
-        </ScrollView>
+              {/* Table Body */}
+              <ScrollView className="h-full">
+                {compositeFixturesStore && buildPatchRows()}
+              </ScrollView>
+            </View>
+          </ScrollView>
+        </View>
       </View>
 
       {/* <View className="border-red-400 border-2 p-5 w-1/8">
@@ -278,13 +324,6 @@ export default function Patch() {
             <Text className="text-yellow-500 p-5 text-xl">Save Patch</Text>
           </Pressable>
         </View> */}
-      {/* <Dropdown
-          selectedItem={manufacturerSelection}
-          onSelect={handleManufacturerSelection}
-          items={manufacturers}
-          getItemKey={(m: (typeof manufacturers)[number]) => m.id}
-          getItemLabel={(item: (typeof manufacturers)[number]) => item.name}
-        /> */}
 
       {/* <View className="border-red-400 border-2 p-5 w-1/4">
           <Text className="text-white text-xl">Manufacturer</Text>
@@ -344,7 +383,7 @@ export default function Patch() {
       {/* </View> */}
 
       <View className="w-full h-1/2 flex-row">
-        <View className="w-1/2 h-full justify-center items-center">
+        <View className="w-1/2 h-full justify-center items-center  bg-gray-900 ">
           {/* <Text className="text-white">Universe Table</Text>
           <View>
             {patchData.map((patchObj) => (
@@ -354,11 +393,43 @@ export default function Patch() {
               </React.Fragment>
             ))}
           </View> */}
-          <UniverseTable patchData={patchData} />
+
+          <UniverseTable
+            patchData={patchData}
+            handleAddressSelection={setAddressStartSelection}
+          />
         </View>
-        <View className="w-1/2 h-full bg-green-500 justify-center items-center">
-          <Text className="text-white">Selected Fixture Details</Text>
-          <View>{buildProfileDisplay()}</View>
+        <View className="w-1/2 h-full bg-green-500 justify-center items-center flex-row">
+          <View>
+            <Text className="text-white">Selected Fixture Details</Text>
+            <View>{buildProfileDisplay()}</View>
+            <Pressable onPress={() => setShowAllChannels(!showAllChannels)}>
+              <Text className="text-yellow-400 bg-slate-500 p-5">
+                {showAllChannels ? "Only Channels in Use" : "Show All Channels"}
+              </Text>
+            </Pressable>
+          </View>
+          <Dropdown
+            selectedItem={manufacturerSelection}
+            onSelect={handleManufacturerSelection}
+            items={manufacturers}
+            getItemKey={(m: (typeof manufacturers)[number]) => m.id}
+            getItemLabel={(item: (typeof manufacturers)[number]) => item.name}
+          />
+          <Dropdown
+            selectedItem={fixtureSelection}
+            onSelect={handleFixtureSelection}
+            items={fixtures}
+            getItemKey={(fix: (typeof fixtures)[number]) => fix.id}
+            getItemLabel={(item: (typeof fixtures)[number]) => item.name}
+          />
+          <Dropdown
+            selectedItem={profileSelection}
+            onSelect={handleProfileSelection}
+            items={profiles}
+            getItemKey={(prof: (typeof profiles)[number]) => prof.id}
+            getItemLabel={(item: (typeof profiles)[number]) => item.name}
+          />
         </View>
       </View>
     </View>

@@ -25,7 +25,7 @@ export const generateChannelListDisplay = (args: {
   firstAddress: number;
   profileSize: number;
   profileSelection: number | null;
-  addressTextInput: string;
+  addressStartSelection: number;
   selectedChannels: number[];
   channelListCount: number;
 }) => {
@@ -33,7 +33,7 @@ export const generateChannelListDisplay = (args: {
     firstAddress,
     profileSize,
     profileSelection,
-    addressTextInput,
+    addressStartSelection,
     selectedChannels,
     channelListCount,
   } = args;
@@ -43,7 +43,11 @@ export const generateChannelListDisplay = (args: {
   let endAddress = profileSize + firstAddress - 1;
 
   for (let i = 1; i <= channelListCount; i += 1) {
-    if (selectedChannels.includes(i) && profileSelection && addressTextInput) {
+    if (
+      selectedChannels.includes(i) &&
+      profileSelection &&
+      addressStartSelection
+    ) {
       channelList.push({
         channelNum: i,
         selected: true,

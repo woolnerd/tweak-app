@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native";
 import { styled } from "nativewind";
 
 type PatchObject = {
@@ -10,9 +10,13 @@ type PatchObject = {
 
 type Props = {
   patchData: PatchObject[];
+  handleAddressSelection: (address: number) => void;
 };
 
-const UniverseTable: React.FC<Props> = ({ patchData }) => {
+const UniverseTable: React.FC<Props> = ({
+  patchData,
+  handleAddressSelection,
+}) => {
   const universeChannels = Array.from({ length: 512 }, (_, i) => i + 1);
 
   const isAddressTaken = (channel: number): boolean =>
@@ -28,13 +32,18 @@ const UniverseTable: React.FC<Props> = ({ patchData }) => {
         <ScrollView horizontal={false}>
           <View className="flex flex-wrap flex-row">
             {universeChannels.map((channel) => (
-              <View
+              <Pressable
                 key={channel}
                 className={`w-8 h-6 m-0.5 flex justify-center items-center rounded-md ${
                   isAddressTaken(channel) ? "bg-black" : "bg-green-500"
-                }`}>
+                }`}
+                onPress={
+                  !isAddressTaken(channel)
+                    ? () => handleAddressSelection(channel)
+                    : () => alert("taken")
+                }>
                 <Text className="text-white">{channel}</Text>
-              </View>
+              </Pressable>
             ))}
           </View>
         </ScrollView>

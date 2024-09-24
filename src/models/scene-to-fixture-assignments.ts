@@ -12,6 +12,7 @@ import {
   scenesToFixtureAssignments,
   profiles,
   patches,
+  manufacturers,
 } from "../db/schema.ts";
 import { QueryKeys } from "../db/types/database.ts";
 import {
@@ -50,6 +51,7 @@ export default class ScenesToFixtureAssignments extends Base<
           startAddress: patches.startAddress,
           colorTempLow: fixtures.colorTempRangeLow,
           colorTempHigh: fixtures.colorTempRangeHigh,
+          manufacturerName: manufacturers.name,
         })
         .from(fixtureAssignments)
         .leftJoin(fixtures, eq(fixtures.id, fixtureAssignments.fixtureId))
@@ -62,6 +64,7 @@ export default class ScenesToFixtureAssignments extends Base<
         )
         .leftJoin(profiles, eq(fixtureAssignments.profileId, profiles.id))
         .leftJoin(patches, eq(fixtureAssignments.patchId, patches.id))
+        .leftJoin(manufacturers, eq(fixtures.manufacturerId, manufacturers.id))
         .where(
           // turn this checkoff while cache is being set aside for work later
           // and(

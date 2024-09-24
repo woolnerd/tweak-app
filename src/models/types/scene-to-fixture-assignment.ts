@@ -8,6 +8,7 @@ interface CompositeFixtureInfo {
   startAddress: number;
   colorTempLow: number;
   colorTempHigh: number;
+  manufacturerName: string;
 }
 
 type ProfileDescription = string;
