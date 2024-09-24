@@ -199,13 +199,23 @@ export default function Patch() {
       } else if (showAllChannels) {
         patchRows.push({
           channel: i,
-          startAddress: 0,
-          manufacturerName: "",
-          fixtureName: "",
-          profileName: "",
+          startAddress: selectedChannels.includes(i)
+            ? addressStartSelection
+            : 0,
+          manufacturerName: manufacturerSelection
+            ? manufacturerSelection.name
+            : "",
+          fixtureName: fixtureSelection
+            ? fixtures.find((fix) => fix.id === fixtureSelection)?.name
+            : "",
+          profileName: profileSelection
+            ? profiles.find((prof) => prof.id === profileSelection)?.name
+            : "",
         });
       }
     }
+
+    console.log({ fixtureSelection });
 
     const sortedList = patchRows.sort((a, b) => a.channel - b.channel);
 
