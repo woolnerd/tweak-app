@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Pressable, ScrollView } from "react-native";
 
-type DropdownProps<T> = {
+type DropdownProps<T extends { id: number }> = {
   items: T[];
   onSelect: (item: T) => void;
-  selectedItem: T | null;
+  selectedItem: number | null;
   placeholder?: string;
-  getItemKey: (item: T) => string; // Function to get the unique key
+  getItemKey: (item: T) => string | number; // Function to get the unique key
   getItemLabel: (item: T) => string; // Function to get the label for display
 };
 
@@ -48,7 +48,7 @@ const Dropdown = <T extends unknown>({
               onPress={() => onSelect(item)}>
               <Text
                 className={
-                  selectedItem && getItemKey(selectedItem) === getItemKey(item)
+                  selectedItem && selectedItem === getItemKey(item)
                     ? "text-yellow-400 font-bold"
                     : "text-white"
                 }>

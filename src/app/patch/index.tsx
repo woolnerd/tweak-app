@@ -61,8 +61,12 @@ export default function Patch() {
   // when channel or address is clicked, the universe populates the bottom half
   // when fixture or manufacturer is selected, the selection table populates the bottom half
 
-  const handleManufacturerSelection = (manufacturerId: number) => {
-    setManufacturerSelection(manufacturerId);
+  const handleManufacturerSelection = (
+    manufacturer: (typeof manufacturers)[number],
+  ) => {
+    console.log("handlemanfact");
+
+    setManufacturerSelection(manufacturer.id);
   };
 
   const channelsInUse = fixtureAssignmentsData.map(
@@ -121,6 +125,8 @@ export default function Patch() {
     }
   };
 
+  console.log({ manufacturerSelection });
+
   const handlePatch = () => {
     handlePatchDB().then((res) => {
       setSelectChannels([]);
@@ -149,35 +155,35 @@ export default function Patch() {
     );
   };
 
-  const channelStyle = (channelNum: number) => {
-    if (channelsInUse.includes(channelNum)) {
-      return "text-black-400";
-    }
+  // const channelStyle = (channelNum: number) => {
+  //   if (channelsInUse.includes(channelNum)) {
+  //     return "text-black-400";
+  //   }
 
-    return selectedChannels.includes(channelNum)
-      ? "text-yellow-400"
-      : "text-white";
-  };
+  //   return selectedChannels.includes(channelNum)
+  //     ? "text-yellow-400"
+  //     : "text-white";
+  // };
 
-  const renderChannelDisplay = ({ item }: { item: ChannelObjectDisplay }) => (
-    <View className="flex-row">
-      <Pressable
-        key={item.channelNum}
-        onPress={() => handleChannelSelection(item.channelNum)}>
-        <Text className={channelStyle(item.channelNum)}>{item.channelNum}</Text>
-      </Pressable>
-      <Text className="ml-3">
-        {item.startAddress &&
-        item.endAddress &&
-        selectedChannels.includes(item.channelNum)
-          ? `${item.startAddress} - ${item.endAddress}`
-          : ""}
-      </Text>
-    </View>
-  );
+  // const renderChannelDisplay = ({ item }: { item: ChannelObjectDisplay }) => (
+  //   <View className="flex-row">
+  //     <Pressable
+  //       key={item.channelNum}
+  //       onPress={() => handleChannelSelection(item.channelNum)}>
+  //       <Text className={channelStyle(item.channelNum)}>{item.channelNum}</Text>
+  //     </Pressable>
+  //     <Text className="ml-3">
+  //       {item.startAddress &&
+  //       item.endAddress &&
+  //       selectedChannels.includes(item.channelNum)
+  //         ? `${item.startAddress} - ${item.endAddress}`
+  //         : ""}
+  //     </Text>
+  //   </View>
+  // );
 
-  const buildPatchRows = () => {
-    const channelCount = 100;
+  const buildPatchRowData = () => {
+    const channelCount = 30;
     const fixtureMap = compositeFixturesStore.reduce(
       (acc, fixture) => {
         acc[fixture.channel] = fixture;
@@ -203,7 +209,8 @@ export default function Patch() {
             ? addressStartSelection
             : 0,
           manufacturerName: manufacturerSelection
-            ? manufacturerSelection.name
+            ? manufacturers.find((manuf) => manuf.id === manufacturerSelection)
+                ?.name
             : "",
           fixtureName: fixtureSelection
             ? fixtures.find((fix) => fix.id === fixtureSelection)?.name
@@ -217,9 +224,11 @@ export default function Patch() {
 
     console.log({ fixtureSelection });
 
-    const sortedList = patchRows.sort((a, b) => a.channel - b.channel);
+    return patchRows.sort((a, b) => a.channel - b.channel);
+  };
 
-    return sortedList.map((fixture, index) => (
+  const buildPatchRowDisplay = () =>
+    buildPatchRowData().map((fixture, index) => (
       <Pressable
         key={fixture.channel}
         className={`flex flex-row p-2 border-2 ${index % 2 === 0 ? "bg-gray-700" : "bg-gray-600"} ${selectedChannels.includes(fixture.channel) ? "border-yellow-600" : ""}`}
@@ -239,7 +248,6 @@ export default function Patch() {
         </Text>
       </Pressable>
     ));
-  };
 
   useEffect(() => {
     if (!fixtureSelection) {
@@ -252,8 +260,7 @@ export default function Patch() {
   // When changing fixture selection, manufacturer changes as well, and profile selection is cleared.
   useEffect(() => {
     setProfileSelection(null);
-
-    if (!fixturesLoading && fixtureSelection) {
+    if (fixtureSelection) {
       const foundFixture = fixtures.find(
         (fixture) => fixture.id === fixtureSelection,
       );
@@ -262,7 +269,7 @@ export default function Patch() {
         setManufacturerSelection(foundFixture.manufacturerId);
       }
     }
-  }, [fixtureSelection, fixtures, fixturesLoading]);
+  }, [fixtureSelection, fixtures]);
 
   useEffect(() => {
     if (addressStartSelection) {
@@ -308,7 +315,7 @@ export default function Patch() {
 
               {/* Table Body */}
               <ScrollView className="h-full">
-                {compositeFixturesStore && buildPatchRows()}
+                {compositeFixturesStore && buildPatchRowDisplay()}
               </ScrollView>
             </View>
           </ScrollView>
@@ -404,15 +411,16 @@ export default function Patch() {
             ))}
           </View> */}
 
-          <UniverseTable
+          {/* <UniverseTable
             patchData={patchData}
             handleAddressSelection={setAddressStartSelection}
-          />
+            profileSelected={profileSelection}
+          /> */}
         </View>
         <View className="w-1/2 h-full bg-green-500 justify-center items-center flex-row">
           <View>
             <Text className="text-white">Selected Fixture Details</Text>
-            <View>{buildProfileDisplay()}</View>
+            {/* <View>{buildProfileDisplay()}</View> */}
             <Pressable onPress={() => setShowAllChannels(!showAllChannels)}>
               <Text className="text-yellow-400 bg-slate-500 p-5">
                 {showAllChannels ? "Only Channels in Use" : "Show All Channels"}
