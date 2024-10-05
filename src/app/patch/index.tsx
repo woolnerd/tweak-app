@@ -200,7 +200,7 @@ export default function Patch() {
     );
 
     const patchRows: {
-      channel: number;
+      channelNum: number;
       startAddress: number;
       endAddress: number;
       manufacturerName: string;
@@ -211,12 +211,12 @@ export default function Patch() {
     for (let i = 1; i <= channelCount; i += 1) {
       // channel selection overrides patch display V
       if (i in fixtureMap && !selectedChannels.includes(i)) {
-        patchRows.push(fixtureMap[i]);
+        patchRows.push({ ...fixtureMap[i], channelNum: fixtureMap[i].channel });
       } else if (showAllChannels) {
         if (selectedChannels.includes(i)) addressGroup += 1;
         patchRows.push({
-          channel: i,
-          toPatch: true,
+          channelNum: i,
+          selected: selectedChannels.includes(i),
           startAddress: selectedChannels.includes(i)
             ? addressGroup * profileFootprint + addressStartSelection
             : 0,
@@ -244,19 +244,19 @@ export default function Patch() {
       }
     }
 
-    return patchRows.sort((a, b) => a.channel - b.channel);
+    return patchRows.sort((a, b) => a.channelNum - b.channelNum);
   };
 
   const buildPatchRowDisplay = () =>
     buildPatchRowData().map((fixture, index) => (
       <Pressable
-        key={fixture.channel}
-        className={`flex flex-row p-2 border-2 ${index % 2 === 0 ? "bg-gray-700" : "bg-gray-600"} ${selectedChannels.includes(fixture.channel) ? "border-yellow-600" : ""}`}
-        onPress={() => handleChannelSelection(fixture.channel)}>
+        key={fixture.channelNum}
+        className={`flex flex-row p-2 border-2 ${index % 2 === 0 ? "bg-gray-700" : "bg-gray-600"} ${selectedChannels.includes(fixture.channelNum) ? "border-yellow-600" : ""}`}
+        onPress={() => handleChannelSelection(fixture.channelNum)}>
         <Text
           className="text-white w-24 text-center"
           onPress={handleAddressOrChannelColumnClick}>
-          {fixture.channel}
+          {fixture.channelNum}
         </Text>
         <Text
           className="text-white w-24 text-center"
@@ -307,20 +307,19 @@ export default function Patch() {
   }, [fixtureSelection, fixtures]);
 
   useEffect(() => {
-    if (addressStartSelection) {
-      // const list = generateChannelListDisplay({
-      //   firstAddress: addressStartSelection,
-      //   profileSize: profileFootprint,
-      //   profileSelection,
-      //   addressStartSelection,
-      //   selectedChannels,
-      //   channelListCount: CHANNEL_LIST_COUNT,
-      // });
-      // setChannelObjsToDisplay(list);
-    }
-  }, [addressStartSelection, profiles]);
-
-  console.log({ addressStartSelection });
+    // if (addressStartSelection) {
+    // const list = generateChannelListDisplay({
+    //   firstAddress: addressStartSelection,
+    //   profileSize: profileFootprint,
+    //   profileSelection,
+    //   addressStartSelection,
+    //   selectedChannels,
+    //   channelListCount: CHANNEL_LIST_COUNT,
+    // });
+    const list = buildPatchRowData();
+    setChannelObjsToDisplay(list);
+    // }
+  }, [addressStartSelection, profiles, selectedChannels]);
 
   return (
     <View className="w-full">
@@ -448,7 +447,7 @@ export default function Patch() {
 
           {profileSelection && showDMXUniverseTable && (
             <UniverseTable
-              patchData={buildPatchRowData()}
+              patchData={channelObjsToDisplay}
               handleAddressSelection={setAddressStartSelection}
               profileSelected={profileSelection}
             />
@@ -462,6 +461,9 @@ export default function Patch() {
               <Text className="text-yellow-400 bg-slate-500 p-5">
                 {showAllChannels ? "Only Channels in Use" : "Show All Channels"}
               </Text>
+            </Pressable>
+            <Pressable onPress={handlePatch}>
+              <Text className="text-yellow-400 bg-slate-500 p-5">Patch</Text>
             </Pressable>
           </View>
           <Dropdown

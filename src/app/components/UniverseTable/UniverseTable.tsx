@@ -1,12 +1,11 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
-import { styled } from "nativewind";
 
 type PatchObject = {
   id: string;
   startAddress: number;
   endAddress: number;
-  toPatch: boolean;
+  selected: boolean;
 };
 
 type Props = {
@@ -40,7 +39,7 @@ const UniverseTable: React.FC<Props> = ({
       (patchObj) =>
         channel >= patchObj.startAddress &&
         channel <= patchObj.endAddress &&
-        patchObj.toPatch,
+        patchObj.selected,
     );
 
   return (
@@ -54,7 +53,7 @@ const UniverseTable: React.FC<Props> = ({
                 key={channel}
                 className={`w-8 h-6 m-0.5 flex justify-center items-center rounded-md
                   ${isAddressTaken(channel) ? "bg-black" : "bg-green-500"}
-                ${toHighlight(channel) ? "bg-orange-400" : ""}`}
+                ${toHighlight(channel) ? "bg-fuchsia-500" : ""}`}
                 onPress={() => handlePress(channel)}>
                 <Text className="text-white">{channel}</Text>
               </Pressable>
