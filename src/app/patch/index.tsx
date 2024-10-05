@@ -23,7 +23,6 @@ import useFetchProfiles from "../hooks/useFetchProfiles.ts";
 import useFetchScenes from "../hooks/useFetchScenes.ts";
 import UniverseTable from "../components/UniverseTable/UniverseTable.tsx";
 import Dropdown from "../components/Dropdowns/Dropdown.tsx";
-import ManufacturerDropdown from "../components/Dropdowns/ManufacturerDropdown/ManufacturerDropdown.tsx";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
 
@@ -42,6 +41,9 @@ export default function Patch() {
   const [addressStartSelection, setAddressStartSelection] = useState<
     number | null
   >(null);
+  const [showDMXUniverseTable, setShowDMXUniverseTable] =
+    useState<boolean>(false);
+  const [showProfileSelector, setShowProfileSelector] = useState<boolean>(true);
   const [showAllChannels, setShowAllChannels] = useState<boolean>(true);
   const { compositeFixturesStore } = useCompositeFixtureStore();
   const SHOW = 1;
@@ -64,8 +66,6 @@ export default function Patch() {
   const handleManufacturerSelection = (
     manufacturer: (typeof manufacturers)[number],
   ) => {
-    console.log("handlemanfact");
-
     setManufacturerSelection(manufacturer.id);
   };
 
@@ -99,6 +99,15 @@ export default function Patch() {
     setSelectChannels([...selectedChannels, channel]);
   };
 
+  const handleAddressOrChannelColumnClick = () => {
+    setShowDMXUniverseTable(true);
+    setShowProfileSelector(false);
+  };
+  const handleHideDMXTable = () => {
+    setShowDMXUniverseTable(false);
+    setShowProfileSelector(true);
+  };
+
   const handlePatchDB = async () => {
     if (!(profileSelection && fixtureSelection)) {
       throw new Error("Please select a profile and fixture");
@@ -124,8 +133,6 @@ export default function Patch() {
       console.log(error);
     }
   };
-
-  console.log({ manufacturerSelection });
 
   const handlePatch = () => {
     handlePatchDB().then((res) => {
@@ -183,7 +190,7 @@ export default function Patch() {
   // );
 
   const buildPatchRowData = () => {
-    const channelCount = 30;
+    const channelCount = 100;
     const fixtureMap = compositeFixturesStore.reduce(
       (acc, fixture) => {
         acc[fixture.channel] = fixture;
@@ -195,34 +202,47 @@ export default function Patch() {
     const patchRows: {
       channel: number;
       startAddress: number;
+      endAddress: number;
       manufacturerName: string;
       fixtureName: string;
       profileName: string;
     }[] = [];
+    let addressGroup = -1;
     for (let i = 1; i <= channelCount; i += 1) {
-      if (i in fixtureMap) {
+      // channel selection overrides patch display V
+      if (i in fixtureMap && !selectedChannels.includes(i)) {
         patchRows.push(fixtureMap[i]);
       } else if (showAllChannels) {
+        if (selectedChannels.includes(i)) addressGroup += 1;
         patchRows.push({
           channel: i,
+          toPatch: true,
           startAddress: selectedChannels.includes(i)
-            ? addressStartSelection
+            ? addressGroup * profileFootprint + addressStartSelection
             : 0,
-          manufacturerName: manufacturerSelection
-            ? manufacturers.find((manuf) => manuf.id === manufacturerSelection)
-                ?.name
-            : "",
-          fixtureName: fixtureSelection
-            ? fixtures.find((fix) => fix.id === fixtureSelection)?.name
-            : "",
-          profileName: profileSelection
-            ? profiles.find((prof) => prof.id === profileSelection)?.name
-            : "",
+          endAddress: selectedChannels.includes(i)
+            ? addressGroup * profileFootprint -
+              1 +
+              addressStartSelection +
+              profileFootprint
+            : 0,
+          manufacturerName:
+            manufacturerSelection && selectedChannels.includes(i)
+              ? manufacturers.find(
+                  (manuf) => manuf.id === manufacturerSelection,
+                )?.name
+              : "",
+          fixtureName:
+            fixtureSelection && selectedChannels.includes(i)
+              ? fixtures.find((fix) => fix.id === fixtureSelection)?.name
+              : "",
+          profileName:
+            profileSelection && selectedChannels.includes(i)
+              ? profiles.find((prof) => prof.id === profileSelection)?.name
+              : "",
         });
       }
     }
-
-    console.log({ fixtureSelection });
 
     return patchRows.sort((a, b) => a.channel - b.channel);
   };
@@ -233,17 +253,32 @@ export default function Patch() {
         key={fixture.channel}
         className={`flex flex-row p-2 border-2 ${index % 2 === 0 ? "bg-gray-700" : "bg-gray-600"} ${selectedChannels.includes(fixture.channel) ? "border-yellow-600" : ""}`}
         onPress={() => handleChannelSelection(fixture.channel)}>
-        <Text className="text-white w-24 text-center">{fixture.channel}</Text>
-        <Text className="text-white w-24 text-center">
-          {`${fixture.startAddress} - }`}
+        <Text
+          className="text-white w-24 text-center"
+          onPress={handleAddressOrChannelColumnClick}>
+          {fixture.channel}
         </Text>
-        <Text className="text-white w-96 text-center">
+        <Text
+          className="text-white w-24 text-center"
+          onPress={handleAddressOrChannelColumnClick}>
+          {`${fixture.startAddress} - ${fixture.endAddress}`}
+        </Text>
+        <Text
+          className="text-white w-96 text-center"
+          // onPress={handleHideDMXTable}
+        >
           {fixture.manufacturerName}
         </Text>
-        <Text className="text-white w-96 text-center">
+        <Text
+          className="text-white w-96 text-center"
+          // onPress={handleHideDMXTable}
+        >
           {fixture.fixtureName}
         </Text>
-        <Text className="text-white w-96 text-center">
+        <Text
+          className="text-white w-96 text-center"
+          // onPress={handleHideDMXTable}
+        >
           {fixture.profileName}
         </Text>
       </Pressable>
@@ -273,15 +308,15 @@ export default function Patch() {
 
   useEffect(() => {
     if (addressStartSelection) {
-      const list = generateChannelListDisplay({
-        firstAddress: addressStartSelection,
-        profileSize: profileFootprint,
-        profileSelection,
-        addressStartSelection,
-        selectedChannels,
-        channelListCount: CHANNEL_LIST_COUNT,
-      });
-      setChannelObjsToDisplay(list);
+      // const list = generateChannelListDisplay({
+      //   firstAddress: addressStartSelection,
+      //   profileSize: profileFootprint,
+      //   profileSelection,
+      //   addressStartSelection,
+      //   selectedChannels,
+      //   channelListCount: CHANNEL_LIST_COUNT,
+      // });
+      // setChannelObjsToDisplay(list);
     }
   }, [addressStartSelection, profiles]);
 
@@ -411,11 +446,13 @@ export default function Patch() {
             ))}
           </View> */}
 
-          {/* <UniverseTable
-            patchData={patchData}
-            handleAddressSelection={setAddressStartSelection}
-            profileSelected={profileSelection}
-          /> */}
+          {profileSelection && showDMXUniverseTable && (
+            <UniverseTable
+              patchData={buildPatchRowData()}
+              handleAddressSelection={setAddressStartSelection}
+              profileSelected={profileSelection}
+            />
+          )}
         </View>
         <View className="w-1/2 h-full bg-green-500 justify-center items-center flex-row">
           <View>
@@ -433,6 +470,7 @@ export default function Patch() {
             items={manufacturers}
             getItemKey={(m: (typeof manufacturers)[number]) => m.id}
             getItemLabel={(item: (typeof manufacturers)[number]) => item.name}
+            name="Manufacturer"
           />
           <Dropdown
             selectedItem={fixtureSelection}
@@ -440,6 +478,7 @@ export default function Patch() {
             items={fixtures}
             getItemKey={(fix: (typeof fixtures)[number]) => fix.id}
             getItemLabel={(item: (typeof fixtures)[number]) => item.name}
+            name="Fixture"
           />
           <Dropdown
             selectedItem={profileSelection}
@@ -447,6 +486,7 @@ export default function Patch() {
             items={profiles}
             getItemKey={(prof: (typeof profiles)[number]) => prof.id}
             getItemLabel={(item: (typeof profiles)[number]) => item.name}
+            name="Profile"
           />
         </View>
       </View>

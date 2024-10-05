@@ -21,13 +21,16 @@ export function payLoadWithAddresses(args: {
     }));
 }
 
-export const generateChannelListDisplay = (args: {
+export const generateChannelListDisplay = <
+  T extends { channel: number },
+>(args: {
   firstAddress: number;
   profileSize: number;
   profileSelection: number | null;
   addressStartSelection: number;
   selectedChannels: number[];
   channelListCount: number;
+  fixtureList: T[];
 }) => {
   const {
     firstAddress,
@@ -36,32 +39,44 @@ export const generateChannelListDisplay = (args: {
     addressStartSelection,
     selectedChannels,
     channelListCount,
+    fixtureList,
   } = args;
 
-  const channelList = [];
+  const patchRows: {
+    channelNum: number;
+    startAddress: number;
+    manufacturerName: string;
+    fixtureName: string;
+    profileName: string;
+  }[] = [];
   let startAddress = firstAddress;
   let endAddress = profileSize + firstAddress - 1;
 
+  const fixtureMap = fixtureList.reduce(
+    (acc, fixture) => {
+      acc[fixture.channel] = fixture;
+      return acc;
+    },
+    {} as Record<number, T>,
+  );
+  // we take our compositeFixtureData
+  // add endAddress
+  // add ProfileName
+
   for (let i = 1; i <= channelListCount; i += 1) {
-    if (
-      selectedChannels.includes(i) &&
-      profileSelection &&
-      addressStartSelection
-    ) {
-      channelList.push({
-        channelNum: i,
-        selected: true,
-        startAddress,
+    if (i in fixtureMap && profileSelection && addressStartSelection) {
+      const patchInfo = fixtureMap[i];
+      patchRows.push({
+        channelNum: patchInfo.channel,
         endAddress,
       });
       startAddress += profileSize;
       endAddress += profileSize;
     } else {
-      channelList.push({
+      patchRows.push({
         channelNum: i,
-        selected: false,
       });
     }
   }
-  return channelList;
+  return patchRows;
 };

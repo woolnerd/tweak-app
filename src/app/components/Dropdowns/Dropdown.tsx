@@ -7,7 +7,8 @@ type DropdownProps<T extends { id: number }> = {
   selectedItem: number | null;
   placeholder?: string;
   getItemKey: (item: T) => string | number; // Function to get the unique key
-  getItemLabel: (item: T) => string; // Function to get the label for display
+  getItemLabel: (item: T) => string;
+  name: string; // Function to get the label for display
 };
 
 const Dropdown = <T extends unknown>({
@@ -17,6 +18,7 @@ const Dropdown = <T extends unknown>({
   placeholder = "Search...",
   getItemKey,
   getItemLabel,
+  name,
 }: DropdownProps<T>) => {
   const [searchText, setSearchText] = useState("");
 
@@ -27,7 +29,7 @@ const Dropdown = <T extends unknown>({
 
   return (
     <View className="border-red-400 border-2 p-5 max-w-md mx-auto">
-      <Text className="text-white text-xl mb-2">Select Item</Text>
+      <Text className="text-white text-xl mb-2">Select {name}</Text>
 
       {/* Search Input */}
       <TextInput
