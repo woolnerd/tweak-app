@@ -28,7 +28,7 @@ const Dropdown = <T extends unknown>({
   );
 
   return (
-    <View className="border-red-400 border-2 p-5 max-w-md mx-auto">
+    <View className="border-red-400 border-2 p-5 max-w-md mx-auto w-56 m-5 h-80">
       <Text className="text-white text-xl mb-2">Select {name}</Text>
 
       {/* Search Input */}

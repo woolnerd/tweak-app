@@ -6,7 +6,9 @@ import {
   Pressable,
   FlatList,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
+import { Svg, Path } from "react-native-svg";
 
 import { payLoadWithAddresses, generateChannelListDisplay } from "./helpers.ts";
 import { ChannelObject, ChannelObjectDisplay } from "./types/index.ts";
@@ -25,6 +27,8 @@ import UniverseTable from "../components/UniverseTable/UniverseTable.tsx";
 import Dropdown from "../components/Dropdowns/Dropdown.tsx";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
+import FixtureAssignment from "../../models/fixture-assignment.ts";
+import PatchModel from "../../models/patch.ts";
 
 const CHANNEL_LIST_COUNT = 50;
 
@@ -84,10 +88,10 @@ export default function Patch() {
     setProfileSelection(profile.id);
 
   const handleChannelSelection = (channel: number) => {
-    // if (channelsInUse.includes(channel)) {
-    //   alert("Channel is in use");
-    //   return;
-    // }
+    if (channelsInUse.includes(channel)) {
+      alert("Channel is in use. To repatch channel, please first delete.");
+      return;
+    }
 
     if (selectedChannels.includes(channel)) {
       setSelectChannels(
@@ -130,6 +134,7 @@ export default function Patch() {
         );
       }
     } catch (error) {
+      alert(error);
       console.log(error);
     }
   };
@@ -139,6 +144,11 @@ export default function Patch() {
       setSelectChannels([]);
       setAddressStartSelection(null);
     });
+  };
+
+  const handleDeleteFixtureAssignment = async (id: number) => {
+    const response = await new FixtureAssignment(db).delete(id);
+    await new PatchModel(db).delete(response[0].patchId);
   };
 
   const profile = profiles.find(
@@ -231,15 +241,15 @@ export default function Patch() {
               ? manufacturers.find(
                   (manuf) => manuf.id === manufacturerSelection,
                 )?.name
-              : "",
+              : "-",
           fixtureName:
             fixtureSelection && selectedChannels.includes(i)
               ? fixtures.find((fix) => fix.id === fixtureSelection)?.name
-              : "",
+              : "-",
           profileName:
             profileSelection && selectedChannels.includes(i)
               ? profiles.find((prof) => prof.id === profileSelection)?.name
-              : "",
+              : "-",
         });
       }
     }
@@ -261,7 +271,9 @@ export default function Patch() {
         <Text
           className="text-white w-24 text-center"
           onPress={handleAddressOrChannelColumnClick}>
-          {`${fixture.startAddress} - ${fixture.endAddress}`}
+          {fixture.startAddress > 0
+            ? `${fixture.startAddress} - ${fixture.endAddress}`
+            : "-"}
         </Text>
         <Text
           className="text-white w-96 text-center"
@@ -276,11 +288,34 @@ export default function Patch() {
           {fixture.fixtureName}
         </Text>
         <Text
-          className="text-white w-96 text-center"
+          className="text-white w-80 text-center"
           // onPress={handleHideDMXTable}
         >
           {fixture.profileName}
         </Text>
+        <TouchableOpacity
+          onPress={() =>
+            handleDeleteFixtureAssignment(
+              fixtureAssignmentsData.find(
+                (fixtureData) => fixtureData.channel === fixture.channel,
+              )?.id,
+            )
+          }
+          className="p-0.5 bg-gray-300 hover:bg-red-500 active:bg-red-700">
+          <Svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+            className="w-6 h-6 text-black">
+            <Path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </Svg>
+        </TouchableOpacity>
       </Pressable>
     ));
 
@@ -434,7 +469,7 @@ export default function Patch() {
       {/* </View> */}
 
       <View className="w-full h-1/2 flex-row">
-        <View className="w-1/2 h-full justify-center items-center  bg-gray-900 ">
+        <View className="w-1/3 h-full justify-center items-center  bg-gray-900 ">
           {/* <Text className="text-white">Universe Table</Text>
           <View>
             {patchData.map((patchObj) => (
@@ -453,43 +488,47 @@ export default function Patch() {
             />
           )}
         </View>
-        <View className="w-1/2 h-full bg-green-500 justify-center items-center flex-row">
-          <View>
-            <Text className="text-white">Selected Fixture Details</Text>
-            {/* <View>{buildProfileDisplay()}</View> */}
+        <View className="w-2/3 h-full bg-slate-600 justify-center items-center flex-col">
+          <View className="flex-row">
+            {/* <Text className="text-white m-2">Selected Fixture Details</Text>
+            <View>{buildProfileDisplay()}</View> */}
             <Pressable onPress={() => setShowAllChannels(!showAllChannels)}>
-              <Text className="text-yellow-400 bg-slate-500 p-5">
+              <Text className="text-yellow-400 bg-slate-500 p-5 m-2">
                 {showAllChannels ? "Only Channels in Use" : "Show All Channels"}
               </Text>
             </Pressable>
             <Pressable onPress={handlePatch}>
-              <Text className="text-yellow-400 bg-slate-500 p-5">Patch</Text>
+              <Text className="text-yellow-400 bg-slate-500 p-5 m-2">
+                Patch
+              </Text>
             </Pressable>
           </View>
-          <Dropdown
-            selectedItem={manufacturerSelection}
-            onSelect={handleManufacturerSelection}
-            items={manufacturers}
-            getItemKey={(m: (typeof manufacturers)[number]) => m.id}
-            getItemLabel={(item: (typeof manufacturers)[number]) => item.name}
-            name="Manufacturer"
-          />
-          <Dropdown
-            selectedItem={fixtureSelection}
-            onSelect={handleFixtureSelection}
-            items={fixtures}
-            getItemKey={(fix: (typeof fixtures)[number]) => fix.id}
-            getItemLabel={(item: (typeof fixtures)[number]) => item.name}
-            name="Fixture"
-          />
-          <Dropdown
-            selectedItem={profileSelection}
-            onSelect={handleProfileSelection}
-            items={profiles}
-            getItemKey={(prof: (typeof profiles)[number]) => prof.id}
-            getItemLabel={(item: (typeof profiles)[number]) => item.name}
-            name="Profile"
-          />
+          <View className="flex-row justify-between">
+            <Dropdown
+              selectedItem={manufacturerSelection}
+              onSelect={handleManufacturerSelection}
+              items={manufacturers}
+              getItemKey={(m: (typeof manufacturers)[number]) => m.id}
+              getItemLabel={(item: (typeof manufacturers)[number]) => item.name}
+              name="Manufacturer"
+            />
+            <Dropdown
+              selectedItem={fixtureSelection}
+              onSelect={handleFixtureSelection}
+              items={fixtures}
+              getItemKey={(fix: (typeof fixtures)[number]) => fix.id}
+              getItemLabel={(item: (typeof fixtures)[number]) => item.name}
+              name="Fixture"
+            />
+            <Dropdown
+              selectedItem={profileSelection}
+              onSelect={handleProfileSelection}
+              items={profiles}
+              getItemKey={(prof: (typeof profiles)[number]) => prof.id}
+              getItemLabel={(item: (typeof profiles)[number]) => item.name}
+              name="Profile"
+            />
+          </View>
         </View>
       </View>
     </View>
