@@ -90,6 +90,8 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
       )
       .leftJoin(profiles, eq(this.table.profileId, profiles.id));
 
+    console.log({ overlappingPatches });
+
     return overlappingPatches.length > 0;
   }
 
