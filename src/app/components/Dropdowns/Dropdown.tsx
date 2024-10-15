@@ -15,7 +15,7 @@ const Dropdown = <T extends unknown>({
   items,
   onSelect,
   selectedItem,
-  placeholder = "Search...",
+  placeholder = "Search..",
   getItemKey,
   getItemLabel,
   name,

@@ -75,7 +75,7 @@ export const profilesRelations = relations(profiles, ({ one, many }) => ({
   fixtureAssignments: many(fixtureAssignments),
   patches: many(patches),
 }));
-
+// rename to snakecase
 export const fixtureAssignments = sqliteTable("fixtureAssignments", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   channel: integer("channel").notNull(),

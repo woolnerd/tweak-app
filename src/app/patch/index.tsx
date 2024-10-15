@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -31,6 +31,14 @@ import FixtureAssignment from "../../models/fixture-assignment.ts";
 import PatchModel from "../../models/patch.ts";
 
 const CHANNEL_LIST_COUNT = 50;
+type PatchRowData = {
+  channelNum: number;
+  startAddress: number;
+  endAddress: number;
+  manufacturerName: string;
+  fixtureName: string;
+  profileName: string;
+};
 
 export default function Patch() {
   const [fixtureSelection, setFixtureSelection] = useState<number | null>(null);
@@ -61,6 +69,7 @@ export default function Patch() {
   const { data: sceneIds } = useFetchScenes();
   const { data: patchData, error: patchError } = useFetchPatches();
   const { data: fixtureAssignmentsData } = useFetchFixtureAssignments();
+  const tester = useRef(1);
   //  top half of patch screen screen is the patch table
   // this shows channels in use, and empty channels
   // need a way to jump to channel number whether in use or not
@@ -72,6 +81,8 @@ export default function Patch() {
   ) => {
     setManufacturerSelection(manufacturer.id);
   };
+
+  console.log((tester.current += 1));
 
   const channelsInUse = fixtureAssignmentsData.map(
     (assignment) => assignment.channel,
@@ -146,7 +157,13 @@ export default function Patch() {
     });
   };
 
-  const handleDeleteFixtureAssignment = async (id: number) => {
+  const handleDeleteFixtureAssignment = async (fixture: PatchRowData) => {
+    const id = fixtureAssignmentsData.find(
+      (fixtureData) => fixtureData.channel === fixture.channelNum,
+    )?.id;
+
+    if (!id) throw new Error("Channel Id not found");
+
     const response = await new FixtureAssignment(db).delete(id);
     await new PatchModel(db).delete(response[0].patchId);
   };
@@ -202,22 +219,19 @@ export default function Patch() {
   const buildPatchRowData = () => {
     const channelCount = 100;
     const fixtureMap = compositeFixturesStore.reduce(
-      (acc, fixture) => {
+      (acc: Record<number, ParsedCompositeFixtureInfo>, fixture) => {
         acc[fixture.channel] = fixture;
         return acc;
       },
-      {} as Record<number, ParsedCompositeFixtureInfo>,
+      {},
     );
 
-    const patchRows: {
-      channelNum: number;
-      startAddress: number;
-      endAddress: number;
-      manufacturerName: string;
-      fixtureName: string;
-      profileName: string;
-    }[] = [];
+    const patchRows: PatchRowData[] = [];
+
     let addressGroup = -1;
+
+    // if (!addressStartSelection) return [];
+
     for (let i = 1; i <= channelCount; i += 1) {
       // channel selection overrides patch display V
       if (i in fixtureMap && !selectedChannels.includes(i)) {
@@ -294,13 +308,7 @@ export default function Patch() {
           {fixture.profileName}
         </Text>
         <TouchableOpacity
-          onPress={() =>
-            handleDeleteFixtureAssignment(
-              fixtureAssignmentsData.find(
-                (fixtureData) => fixtureData.channel === fixture.channel,
-              )?.id,
-            )
-          }
+          onPress={() => handleDeleteFixtureAssignment(fixture)}
           className="p-0.5 bg-gray-300 hover:bg-red-500 active:bg-red-700">
           <Svg
             xmlns="http://www.w3.org/2000/svg"
@@ -319,13 +327,21 @@ export default function Patch() {
       </Pressable>
     ));
 
+  // useEffect(() => {
+  //   if (!fixtureSelection) {
+  //     setFixtureSelection(null);
+  //   }
+  //   setProfileSelection(null);
+  //   setProfiles([]);
+  // }, [manufacturerSelection, fixtureSelection, setProfiles]);
+
   useEffect(() => {
-    if (!fixtureSelection) {
-      setFixtureSelection(null);
-    }
+    // if (!fixtureSelection) {
+    setFixtureSelection(null);
+    // }
     setProfileSelection(null);
-    setProfiles([]);
-  }, [manufacturerSelection, fixtureSelection, setProfiles]);
+    // setProfiles([]);
+  }, [manufacturerSelection]);
 
   // When changing fixture selection, manufacturer changes as well, and profile selection is cleared.
   useEffect(() => {
@@ -490,8 +506,8 @@ export default function Patch() {
         </View>
         <View className="w-2/3 h-full bg-slate-600 justify-center items-center flex-col">
           <View className="flex-row">
-            {/* <Text className="text-white m-2">Selected Fixture Details</Text>
-            <View>{buildProfileDisplay()}</View> */}
+            <Text className="text-white m-2">Selected Fixture Details</Text>
+            <View>{buildProfileDisplay()}</View>
             <Pressable onPress={() => setShowAllChannels(!showAllChannels)}>
               <Text className="text-yellow-400 bg-slate-500 p-5 m-2">
                 {showAllChannels ? "Only Channels in Use" : "Show All Channels"}
