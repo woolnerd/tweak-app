@@ -11,7 +11,7 @@ type PatchObject = {
 type Props = {
   patchData: PatchObject[];
   handleAddressSelection: (address: number) => void;
-  profileSelected: boolean;
+  profileSelected: number;
 };
 
 const UniverseTable: React.FC<Props> = ({

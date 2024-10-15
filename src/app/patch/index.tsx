@@ -41,18 +41,15 @@ type PatchRowData = {
 };
 
 export default function Patch() {
-  const [fixtureSelection, setFixtureSelection] = useState<number | null>(null);
-  const [manufacturerSelection, setManufacturerSelection] = useState<
-    number | null
-  >(null);
-  const [profileSelection, setProfileSelection] = useState<number | null>(null);
+  const [fixtureSelection, setFixtureSelection] = useState<number>(0);
+  const [manufacturerSelection, setManufacturerSelection] = useState<number>(0);
+  const [profileSelection, setProfileSelection] = useState<number>(0);
   const [selectedChannels, setSelectChannels] = useState<number[]>([]);
   const [channelObjsToDisplay, setChannelObjsToDisplay] = useState<
     ChannelObjectDisplay[]
   >([]);
-  const [addressStartSelection, setAddressStartSelection] = useState<
-    number | null
-  >(null);
+  const [addressStartSelection, setAddressStartSelection] =
+    useState<number>(-1);
   const [showDMXUniverseTable, setShowDMXUniverseTable] =
     useState<boolean>(false);
   const [showProfileSelector, setShowProfileSelector] = useState<boolean>(true);
@@ -91,7 +88,7 @@ export default function Patch() {
   const handleFixtureSelection = (fixture: SelectFixture) => {
     // update manufacturer
     setFixtureSelection(fixture.id);
-    setManufacturerSelection(fixture.manufacturerId);
+    setManufacturerSelection(fixture.manufacturerId ?? 0);
     // update profiles available
   };
 
@@ -153,7 +150,7 @@ export default function Patch() {
   const handlePatch = () => {
     handlePatchDB().then((res) => {
       setSelectChannels([]);
-      setAddressStartSelection(null);
+      setAddressStartSelection(0);
     });
   };
 
@@ -189,35 +186,10 @@ export default function Patch() {
     );
   };
 
-  // const channelStyle = (channel: number) => {
-  //   if (channelsInUse.includes(channel)) {
-  //     return "text-black-400";
-  //   }
-
-  //   return selectedChannels.includes(channel)
-  //     ? "text-yellow-400"
-  //     : "text-white";
-  // };
-
-  // const renderChannelDisplay = ({ item }: { item: ChannelObjectDisplay }) => (
-  //   <View className="flex-row">
-  //     <Pressable
-  //       key={item.channel}
-  //       onPress={() => handleChannelSelection(item.channel)}>
-  //       <Text className={channelStyle(item.channel)}>{item.channel}</Text>
-  //     </Pressable>
-  //     <Text className="ml-3">
-  //       {item.startAddress &&
-  //       item.endAddress &&
-  //       selectedChannels.includes(item.channel)
-  //         ? `${item.startAddress} - ${item.endAddress}`
-  //         : ""}
-  //     </Text>
-  //   </View>
-  // );
-
   const buildPatchRowData = () => {
-    const channelCount = 100;
+    const CHANNEL_COUNT = 50;
+    const patchRows: PatchRowData[] = [];
+    let addressGroup = -1;
     const fixtureMap = compositeFixturesStore.reduce(
       (acc: Record<number, ParsedCompositeFixtureInfo>, fixture) => {
         acc[fixture.channel] = fixture;
@@ -226,45 +198,64 @@ export default function Patch() {
       {},
     );
 
-    const patchRows: PatchRowData[] = [];
+    function createAddress(channel: number, calc: number) {
+      return selectedChannels.includes(channel) ? calc : 0;
+    }
 
-    let addressGroup = -1;
+    const startAddressCalc =
+      addressGroup * profileFootprint + addressStartSelection;
+
+    const endAddressCalc =
+      addressGroup * profileFootprint -
+      1 +
+      addressStartSelection +
+      profileFootprint;
+
+    function handleFieldSelectionName(
+      channel: number,
+      list: { id: number; name: string }[],
+      selection: number,
+    ) {
+      const name = list.find((item) => item.id === selection)?.name;
+
+      return selection && selectedChannels.includes(channel) && name
+        ? name
+        : "-";
+    }
+
+    function buildChannelObject(channel: number) {
+      return {
+        channel,
+        selected: selectedChannels.includes(channel),
+        startAddress: createAddress(channel, startAddressCalc),
+        endAddress: createAddress(channel, endAddressCalc),
+        manufacturerName: handleFieldSelectionName(
+          channel,
+          manufacturers,
+          manufacturerSelection,
+        ),
+        fixtureName: handleFieldSelectionName(
+          channel,
+          fixtures,
+          fixtureSelection,
+        ),
+        profileName: handleFieldSelectionName(
+          channel,
+          profiles,
+          profileSelection,
+        ),
+      };
+    }
 
     // if (!addressStartSelection) return [];
 
-    for (let i = 1; i <= channelCount; i += 1) {
+    for (let channel = 1; channel <= CHANNEL_COUNT; channel += 1) {
       // channel selection overrides patch display V
-      if (i in fixtureMap && !selectedChannels.includes(i)) {
-        patchRows.push(fixtureMap[i]);
+      if (channel in fixtureMap && !selectedChannels.includes(channel)) {
+        patchRows.push(fixtureMap[channel]);
       } else if (showAllChannels) {
-        if (selectedChannels.includes(i)) addressGroup += 1;
-        patchRows.push({
-          channel: i,
-          selected: selectedChannels.includes(i),
-          startAddress: selectedChannels.includes(i)
-            ? addressGroup * profileFootprint + addressStartSelection
-            : 0,
-          endAddress: selectedChannels.includes(i)
-            ? addressGroup * profileFootprint -
-              1 +
-              addressStartSelection +
-              profileFootprint
-            : 0,
-          manufacturerName:
-            manufacturerSelection && selectedChannels.includes(i)
-              ? manufacturers.find(
-                  (manuf) => manuf.id === manufacturerSelection,
-                )?.name
-              : "-",
-          fixtureName:
-            fixtureSelection && selectedChannels.includes(i)
-              ? fixtures.find((fix) => fix.id === fixtureSelection)?.name
-              : "-",
-          profileName:
-            profileSelection && selectedChannels.includes(i)
-              ? profiles.find((prof) => prof.id === profileSelection)?.name
-              : "-",
-        });
+        if (selectedChannels.includes(channel)) addressGroup += 1;
+        patchRows.push(buildChannelObject(channel));
       }
     }
 
@@ -311,7 +302,6 @@ export default function Patch() {
           onPress={() => handleDeleteFixtureAssignment(fixture)}
           className="p-0.5 bg-gray-300 hover:bg-red-500 active:bg-red-700">
           <Svg
-            xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth={2}
@@ -337,22 +327,22 @@ export default function Patch() {
 
   useEffect(() => {
     // if (!fixtureSelection) {
-    setFixtureSelection(null);
+    setFixtureSelection(0);
     // }
-    setProfileSelection(null);
+    setProfileSelection(0);
     // setProfiles([]);
   }, [manufacturerSelection]);
 
   // When changing fixture selection, manufacturer changes as well, and profile selection is cleared.
   useEffect(() => {
-    setProfileSelection(null);
+    setProfileSelection(0);
     if (fixtureSelection) {
       const foundFixture = fixtures.find(
         (fixture) => fixture.id === fixtureSelection,
       );
 
       if (foundFixture) {
-        setManufacturerSelection(foundFixture.manufacturerId);
+        setManufacturerSelection(foundFixture.manufacturerId ?? 0);
       }
     }
   }, [fixtureSelection, fixtures]);
@@ -409,7 +399,7 @@ export default function Patch() {
 
       <View className="w-full h-1/2 flex-row">
         <View className="w-1/3 h-full justify-center items-center  bg-gray-900 ">
-          {profileSelection && showDMXUniverseTable && (
+          {showDMXUniverseTable && (
             <UniverseTable
               patchData={channelObjsToDisplay}
               handleAddressSelection={setAddressStartSelection}
