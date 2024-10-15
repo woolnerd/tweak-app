@@ -32,7 +32,7 @@ import PatchModel from "../../models/patch.ts";
 
 const CHANNEL_LIST_COUNT = 50;
 type PatchRowData = {
-  channelNum: number;
+  channel: number;
   startAddress: number;
   endAddress: number;
   manufacturerName: string;
@@ -159,7 +159,7 @@ export default function Patch() {
 
   const handleDeleteFixtureAssignment = async (fixture: PatchRowData) => {
     const id = fixtureAssignmentsData.find(
-      (fixtureData) => fixtureData.channel === fixture.channelNum,
+      (fixtureData) => fixtureData.channel === fixture.channel,
     )?.id;
 
     if (!id) throw new Error("Channel Id not found");
@@ -189,12 +189,12 @@ export default function Patch() {
     );
   };
 
-  // const channelStyle = (channelNum: number) => {
-  //   if (channelsInUse.includes(channelNum)) {
+  // const channelStyle = (channel: number) => {
+  //   if (channelsInUse.includes(channel)) {
   //     return "text-black-400";
   //   }
 
-  //   return selectedChannels.includes(channelNum)
+  //   return selectedChannels.includes(channel)
   //     ? "text-yellow-400"
   //     : "text-white";
   // };
@@ -202,14 +202,14 @@ export default function Patch() {
   // const renderChannelDisplay = ({ item }: { item: ChannelObjectDisplay }) => (
   //   <View className="flex-row">
   //     <Pressable
-  //       key={item.channelNum}
-  //       onPress={() => handleChannelSelection(item.channelNum)}>
-  //       <Text className={channelStyle(item.channelNum)}>{item.channelNum}</Text>
+  //       key={item.channel}
+  //       onPress={() => handleChannelSelection(item.channel)}>
+  //       <Text className={channelStyle(item.channel)}>{item.channel}</Text>
   //     </Pressable>
   //     <Text className="ml-3">
   //       {item.startAddress &&
   //       item.endAddress &&
-  //       selectedChannels.includes(item.channelNum)
+  //       selectedChannels.includes(item.channel)
   //         ? `${item.startAddress} - ${item.endAddress}`
   //         : ""}
   //     </Text>
@@ -235,11 +235,11 @@ export default function Patch() {
     for (let i = 1; i <= channelCount; i += 1) {
       // channel selection overrides patch display V
       if (i in fixtureMap && !selectedChannels.includes(i)) {
-        patchRows.push({ ...fixtureMap[i], channelNum: fixtureMap[i].channel });
+        patchRows.push(fixtureMap[i]);
       } else if (showAllChannels) {
         if (selectedChannels.includes(i)) addressGroup += 1;
         patchRows.push({
-          channelNum: i,
+          channel: i,
           selected: selectedChannels.includes(i),
           startAddress: selectedChannels.includes(i)
             ? addressGroup * profileFootprint + addressStartSelection
@@ -268,19 +268,19 @@ export default function Patch() {
       }
     }
 
-    return patchRows.sort((a, b) => a.channelNum - b.channelNum);
+    return patchRows.sort((a, b) => a.channel - b.channel);
   };
 
   const buildPatchRowDisplay = () =>
     buildPatchRowData().map((fixture, index) => (
       <Pressable
-        key={fixture.channelNum}
-        className={`flex flex-row p-2 border-2 ${index % 2 === 0 ? "bg-gray-700" : "bg-gray-600"} ${selectedChannels.includes(fixture.channelNum) ? "border-yellow-600" : ""}`}
-        onPress={() => handleChannelSelection(fixture.channelNum)}>
+        key={fixture.channel}
+        className={`flex flex-row p-2 border-2 ${index % 2 === 0 ? "bg-gray-700" : "bg-gray-600"} ${selectedChannels.includes(fixture.channel) ? "border-yellow-600" : ""}`}
+        onPress={() => handleChannelSelection(fixture.channel)}>
         <Text
           className="text-white w-24 text-center"
           onPress={handleAddressOrChannelColumnClick}>
-          {fixture.channelNum}
+          {fixture.channel}
         </Text>
         <Text
           className="text-white w-24 text-center"
@@ -407,95 +407,8 @@ export default function Patch() {
         </View>
       </View>
 
-      {/* <View className="border-red-400 border-2 p-5 w-1/8">
-          <Text className="text-white text-xl">Channels</Text>
-          <FlatList
-            data={channelObjsToDisplay}
-            renderItem={renderChannelDisplay}
-          />
-        </View>
-        <View className="border-red-400 border-2 p-5 w-1/4">
-          <Text className="text-white text-xl">Address</Text>
-          <TextInput
-            value={addressTextInput}
-            placeholder="Enter Address Start"
-            onChangeText={setAddressTextInput}
-            keyboardType="numeric"
-          /> */}
-      {/* <Pressable onPress={handlePatch} className="border-2">
-            <Text className="text-yellow-500 p-5 text-xl">Save Patch</Text>
-          </Pressable>
-        </View> */}
-
-      {/* <View className="border-red-400 border-2 p-5 w-1/4">
-          <Text className="text-white text-xl">Manufacturer</Text>
-          {manufacturers.map((m) => (
-            <Pressable
-              key={m.name}
-              onPress={() => handleManufacturerSelection(m.id)}>
-              <Text
-                className={
-                  m.id === manufacturerSelection
-                    ? "text-yellow-400"
-                    : "text-white"
-                }
-                key={m.name}>
-                {m.name}
-              </Text>
-            </Pressable>
-          ))}
-        </View> */}
-
-      {/* <View className="border-red-400 border-2 p-5 w-1/4">
-          <Text className="text-white text-xl">Fixture</Text>
-          {fixtures.map((fix) => (
-            <Pressable
-              key={fix.name}
-              onPress={() => handleFixtureSelection(fix)}>
-              <Text
-                className={
-                  fix.id === fixtureSelection ? "text-yellow-400" : "text-white"
-                }>
-                {fix.name}
-              </Text>
-            </Pressable>
-          ))}
-        </View> */}
-      {/* <View className="border-red-400 border-2 p-5 w-1/4">
-          <Text className="text-white text-xl">Profile</Text>
-          {profiles.length === 0 ? (
-            <Text>Select a Fixture</Text>
-          ) : (
-            profiles.map((prof) => (
-              <Pressable
-                key={prof.id}
-                onPress={() => handleProfileSelection(prof)}>
-                <Text
-                  className={
-                    prof.id === profileSelection
-                      ? "text-yellow-400"
-                      : "text-white"
-                  }>
-                  {prof.name}
-                </Text>
-              </Pressable>
-            ))
-          )}
-        </View> */}
-      {/* </View> */}
-
       <View className="w-full h-1/2 flex-row">
         <View className="w-1/3 h-full justify-center items-center  bg-gray-900 ">
-          {/* <Text className="text-white">Universe Table</Text>
-          <View>
-            {patchData.map((patchObj) => (
-              <React.Fragment key={patchObj.id}>
-                <Text>StartAddres: {patchObj.startAddress}</Text>
-                <Text>endAddress: {patchObj.endAddress}</Text>
-              </React.Fragment>
-            ))}
-          </View> */}
-
           {profileSelection && showDMXUniverseTable && (
             <UniverseTable
               patchData={channelObjsToDisplay}
@@ -507,7 +420,7 @@ export default function Patch() {
         <View className="w-2/3 h-full bg-slate-600 justify-center items-center flex-col">
           <View className="flex-row">
             <Text className="text-white m-2">Selected Fixture Details</Text>
-            <View>{buildProfileDisplay()}</View>
+            {/* <View>{buildProfileDisplay()}</View> */}
             <Pressable onPress={() => setShowAllChannels(!showAllChannels)}>
               <Text className="text-yellow-400 bg-slate-500 p-5 m-2">
                 {showAllChannels ? "Only Channels in Use" : "Show All Channels"}

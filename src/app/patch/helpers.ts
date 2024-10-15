@@ -14,7 +14,7 @@ export function payLoadWithAddresses(args: {
     .map((dataObj) => ({
       startAddress: dataObj.startAddress as number,
       endAddress: dataObj.endAddress as number,
-      channelNum: dataObj.channelNum,
+      channel: dataObj.channel,
       profileId,
       fixtureId,
       showId,
@@ -43,7 +43,7 @@ export const generateChannelListDisplay = <
   } = args;
 
   const patchRows: {
-    channelNum: number;
+    channel: number;
     startAddress: number;
     manufacturerName: string;
     fixtureName: string;
@@ -67,14 +67,14 @@ export const generateChannelListDisplay = <
     if (i in fixtureMap && profileSelection && addressStartSelection) {
       const patchInfo = fixtureMap[i];
       patchRows.push({
-        channelNum: patchInfo.channel,
+        channel: patchInfo.channel,
         endAddress,
       });
       startAddress += profileSize;
       endAddress += profileSize;
     } else {
       patchRows.push({
-        channelNum: i,
+        channel: i,
       });
     }
   }

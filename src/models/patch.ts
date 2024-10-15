@@ -43,7 +43,7 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
     return this.processedData;
   }
 
-  async create(data: InsertPatch & { channelNum: number; endAddress: number }) {
+  async create(data: InsertPatch & { channel: number; endAddress: number }) {
     console.log({ data });
 
     if (data.startAddress > data.endAddress) {

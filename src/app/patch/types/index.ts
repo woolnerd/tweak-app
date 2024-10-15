@@ -1,7 +1,7 @@
 export type ChannelObject = {
   startAddress: number;
   endAddress: number;
-  channelNum: number;
+  channel: number;
   selected: boolean;
 };
 
