@@ -22,10 +22,11 @@ import UniverseTable from "../components/UniverseTable/UniverseTable.tsx";
 import useFetchFixtureAssignments from "../hooks/useFetchFixtureAssignments.ts";
 import useFetchFixtures from "../hooks/useFetchFixtures.ts";
 import useFetchManufacturers from "../hooks/useFetchManufacturers.ts";
-import useFetchPatches from "../hooks/useFetchPatches.ts";
 import useFetchProfiles from "../hooks/useFetchProfiles.ts";
 import useFetchScenes from "../hooks/useFetchScenes.ts";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
+import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
+import ScenesToFixtureAssignments from "../../models/scene-to-fixture-assignments.ts";
 
 export default function Patch() {
   const [fixtureSelection, setFixtureSelection] = useState<number>(0);
@@ -42,6 +43,9 @@ export default function Patch() {
   const [showProfileSelector, setShowProfileSelector] = useState<boolean>(true);
   const [showAllChannels, setShowAllChannels] = useState<boolean>(true);
   const { compositeFixturesStore } = useCompositeFixtureStore();
+  const [compositeFixtures, setCompositeFixtures] = useState<
+    ParsedCompositeFixtureInfo[]
+  >(compositeFixturesStore);
   const SHOW = 1;
 
   const { data: manufacturers } = useFetchManufacturers();
@@ -52,7 +56,10 @@ export default function Patch() {
     useFetchProfiles(fixtureSelection);
   const { data: sceneIds } = useFetchScenes();
   // const { data: patchData, error: patchError } = useFetchPatches();
-  const { data: fixtureAssignmentsData } = useFetchFixtureAssignments();
+  const {
+    data: fixtureAssignmentsData,
+    refetch: refetchFixtureAssignmentData,
+  } = useFetchFixtureAssignments();
   const tester = useRef(1);
   //  top half of patch screen screen is the patch table
   // this shows channels in use, and empty channels
@@ -136,10 +143,21 @@ export default function Patch() {
   };
 
   const handlePatch = () => {
-    handlePatchDB().then((res) => {
-      setSelectChannels([]);
-      setAddressStartSelection(0);
-    });
+    handlePatchDB()
+      .then((res) => {
+        setSelectChannels([]);
+        setAddressStartSelection(0);
+      })
+      .then((_) =>
+        new ScenesToFixtureAssignments(db).getCompositeFixtureInfo(
+          1,
+          new Set(channelsInUse),
+        ),
+      )
+      .then((res) => {
+        setCompositeFixtures(res);
+        refetchFixtureAssignmentData();
+      });
   };
 
   const handleDeleteFixtureAssignment = async (fixture: PatchRowData) => {
@@ -150,7 +168,19 @@ export default function Patch() {
     if (!id) throw new Error("Channel Id not found");
 
     const response = await new FixtureAssignment(db).delete(id);
-    await new PatchModel(db).delete(response[0].patchId);
+
+    try {
+      await new PatchModel(db)
+        .delete(response[0].patchId)
+        .then((_) => {
+          new ScenesToFixtureAssignments(db)
+            .getCompositeFixtureInfo(1, new Set())
+            .then((res) => setCompositeFixtures(res));
+        })
+        .then((_) => refetchFixtureAssignmentData());
+    } catch (err) {
+      alert(err);
+    }
   };
 
   const profile = profiles.find(
@@ -171,7 +201,7 @@ export default function Patch() {
   };
 
   const patchRowData = buildPatchRowData({
-    compositeFixturesStore,
+    compositeFixturesStore: compositeFixtures,
     selectedChannels,
     addressStartSelection,
     profile,
@@ -263,9 +293,7 @@ export default function Patch() {
 
   useEffect(() => {
     setChannelObjsToDisplay(patchRowData);
-  }, [addressStartSelection, profiles, selectedChannels]);
-
-  console.log({ addressStartSelection });
+  }, [addressStartSelection, profiles, selectedChannels, compositeFixtures]);
 
   return (
     <View className="w-full">
@@ -292,7 +320,7 @@ export default function Patch() {
                 </Text>
               </View>
               <ScrollView className="h-full">
-                {compositeFixturesStore.length > 0 && buildPatchRowDisplay()}
+                {compositeFixtures.length > 0 && buildPatchRowDisplay()}
               </ScrollView>
             </View>
           </ScrollView>
@@ -315,7 +343,7 @@ export default function Patch() {
         <View className="w-2/3 h-full bg-slate-600 justify-center items-center flex-col">
           <View className="flex-row">
             <Text className="text-white m-2">Selected Fixture Details</Text>
-            <View>{buildProfileDisplay()}</View>
+            {/* <View>{buildProfileDisplay()}</View> */}
             <Pressable onPress={() => setShowAllChannels(!showAllChannels)}>
               <Text className="text-yellow-400 bg-slate-500 p-5 m-2">
                 {showAllChannels ? "Only Channels in Use" : "Show All Channels"}

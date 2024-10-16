@@ -30,8 +30,6 @@ export default class ScenesToFixtureAssignments extends Base<
 
   private fetchedData: UnparsedCompositeFixtureInfo[];
 
-  private caldEndAddress: number;
-
   async getCompositeFixtureInfo(
     sceneId: number,
     selectedFixtureChannels: Set<number>,
