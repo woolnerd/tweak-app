@@ -173,18 +173,18 @@ export default function Patch() {
       Object.keys(JSON.parse(profile.channels)).length
     : 1;
 
-  const buildProfileDisplay = () => {
-    if (!profileSelection || !profile) return null;
+  // const buildProfileDisplay = () => {
+  //   if (!profileSelection || !profile) return null;
 
-    return (
-      <React.Fragment key={profile.id}>
-        <Text>Name: {profile.name}</Text>
-        <Text>Channel Count: {profile.channelCount}</Text>
-        <Text>Channels: {profile.channels}</Text>
-        <Text>16Bit: {profile.is16Bit ? "yes" : "no"}</Text>
-      </React.Fragment>
-    );
-  };
+  //   return (
+  //     <React.Fragment key={profile.id}>
+  //       <Text>Name: {profile.name}</Text>
+  //       <Text>Channel Count: {profile.channelCount}</Text>
+  //       <Text>Channels: {profile.channels}</Text>
+  //       <Text>16Bit: {profile.is16Bit ? "yes" : "no"}</Text>
+  //     </React.Fragment>
+  //   );
+  // };
 
   const buildPatchRowData = () => {
     const CHANNEL_COUNT = 50;
@@ -202,10 +202,10 @@ export default function Patch() {
       return selectedChannels.includes(channel) ? calc : 0;
     }
 
-    const startAddressCalc =
+    const startAddressCalc = (addressGrp: number) =>
       addressGroup * profileFootprint + addressStartSelection;
 
-    const endAddressCalc =
+    const endAddressCalc = (addressGrp: number) =>
       addressGroup * profileFootprint -
       1 +
       addressStartSelection +
@@ -223,12 +223,12 @@ export default function Patch() {
         : "-";
     }
 
-    function buildChannelObject(channel: number) {
+    function buildChannelObject(channel: number, addressGrp: number) {
       return {
         channel,
         selected: selectedChannels.includes(channel),
-        startAddress: createAddress(channel, startAddressCalc),
-        endAddress: createAddress(channel, endAddressCalc),
+        startAddress: createAddress(channel, startAddressCalc(addressGroup)),
+        endAddress: createAddress(channel, endAddressCalc(addressGroup)),
         manufacturerName: handleFieldSelectionName(
           channel,
           manufacturers,
@@ -244,6 +244,7 @@ export default function Patch() {
           profiles,
           profileSelection,
         ),
+        addressGroup,
       };
     }
 
@@ -255,10 +256,12 @@ export default function Patch() {
         patchRows.push(fixtureMap[channel]);
       } else if (showAllChannels) {
         if (selectedChannels.includes(channel)) addressGroup += 1;
-        patchRows.push(buildChannelObject(channel));
+
+        patchRows.push(buildChannelObject(channel, addressGroup));
       }
     }
 
+    // debugger;
     return patchRows.sort((a, b) => a.channel - b.channel);
   };
 
@@ -362,6 +365,8 @@ export default function Patch() {
     // }
   }, [addressStartSelection, profiles, selectedChannels]);
 
+  console.log({ addressStartSelection });
+
   return (
     <View className="w-full">
       {/* <View className="flex-row w-full h-1/2 bg-gray-400 border-gray-300"> */}
@@ -390,7 +395,7 @@ export default function Patch() {
 
               {/* Table Body */}
               <ScrollView className="h-full">
-                {compositeFixturesStore && buildPatchRowDisplay()}
+                {compositeFixturesStore.length > 0 && buildPatchRowDisplay()}
               </ScrollView>
             </View>
           </ScrollView>
@@ -399,13 +404,16 @@ export default function Patch() {
 
       <View className="w-full h-1/2 flex-row">
         <View className="w-1/3 h-full justify-center items-center  bg-gray-900 ">
-          {showDMXUniverseTable && (
-            <UniverseTable
-              patchData={channelObjsToDisplay}
-              handleAddressSelection={setAddressStartSelection}
-              profileSelected={profileSelection}
-            />
-          )}
+          {
+            // profileSelection &&
+            showDMXUniverseTable && (
+              <UniverseTable
+                patchData={channelObjsToDisplay}
+                handleAddressSelection={setAddressStartSelection}
+                profileSelected={profileSelection}
+              />
+            )
+          }
         </View>
         <View className="w-2/3 h-full bg-slate-600 justify-center items-center flex-col">
           <View className="flex-row">
