@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Svg, Path } from "react-native-svg";
 
-import { payLoadWithAddresses, generateChannelListDisplay } from "./helpers.ts";
+import { payLoadWithAddresses, buildPatchRowData } from "./helpers.ts";
 import { ChannelObject, ChannelObjectDisplay } from "./types/index.ts";
 import { db } from "../../db/client.ts";
 import { SelectFixture } from "../../db/types/tables.ts";
@@ -30,7 +30,7 @@ import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-
 import FixtureAssignment from "../../models/fixture-assignment.ts";
 import PatchModel from "../../models/patch.ts";
 
-const CHANNEL_LIST_COUNT = 50;
+// const CHANNEL_LIST_COUNT = 50;
 type PatchRowData = {
   channel: number;
   startAddress: number;
@@ -168,10 +168,10 @@ export default function Patch() {
   const profile = profiles.find(
     (profileObj) => profileObj.id === profileSelection,
   );
-  const profileFootprint = profile
-    ? // either it has a lot of profile channels, or it is a single channel device.
-      Object.keys(JSON.parse(profile.channels)).length
-    : 1;
+  // const profileFootprint = profile
+  //   ? // either it has a lot of profile channels, or it is a single channel device.
+  //     Object.keys(JSON.parse(profile.channels)).length
+  //   : 1;
 
   // const buildProfileDisplay = () => {
   //   if (!profileSelection || !profile) return null;
@@ -186,87 +186,101 @@ export default function Patch() {
   //   );
   // };
 
-  const buildPatchRowData = () => {
-    const CHANNEL_COUNT = 50;
-    const patchRows: PatchRowData[] = [];
-    let addressGroup = -1;
-    const fixtureMap = compositeFixturesStore.reduce(
-      (acc: Record<number, ParsedCompositeFixtureInfo>, fixture) => {
-        acc[fixture.channel] = fixture;
-        return acc;
-      },
-      {},
-    );
+  // const buildPatchRowData = () => {
+  //   const CHANNEL_COUNT = 50;
+  //   const patchRows: PatchRowData[] = [];
+  //   let fixtureOffset = -1;
+  //   const fixtureMap = compositeFixturesStore.reduce(
+  //     (acc: Record<number, ParsedCompositeFixtureInfo>, fixture) => {
+  //       acc[fixture.channel] = fixture;
+  //       return acc;
+  //     },
+  //     {},
+  //   );
 
-    function createAddress(channel: number, calc: number) {
-      return selectedChannels.includes(channel) ? calc : 0;
-    }
+  //   function createAddress(channel: number, calc: number) {
+  //     return selectedChannels.includes(channel) ? calc : 0;
+  //   }
 
-    const startAddressCalc = (addressGrp: number) =>
-      addressGroup * profileFootprint + addressStartSelection;
+  //   const startAddressCalc = (addressGrp: number) =>
+  //     fixtureOffset * profileFootprint + addressStartSelection;
 
-    const endAddressCalc = (addressGrp: number) =>
-      addressGroup * profileFootprint -
-      1 +
-      addressStartSelection +
-      profileFootprint;
+  //   const endAddressCalc = (addressGrp: number) =>
+  //     fixtureOffset * profileFootprint -
+  //     1 +
+  //     addressStartSelection +
+  //     profileFootprint;
 
-    function handleFieldSelectionName(
-      channel: number,
-      list: { id: number; name: string }[],
-      selection: number,
-    ) {
-      const name = list.find((item) => item.id === selection)?.name;
+  //   function handleFieldSelectionName(
+  //     channel: number,
+  //     list: { id: number; name: string }[],
+  //     selection: number,
+  //   ) {
+  //     const name = list.find((item) => item.id === selection)?.name;
 
-      return selection && selectedChannels.includes(channel) && name
-        ? name
-        : "-";
-    }
+  //     return selection && selectedChannels.includes(channel) && name
+  //       ? name
+  //       : "-";
+  //   }
 
-    function buildChannelObject(channel: number, addressGrp: number) {
-      return {
-        channel,
-        selected: selectedChannels.includes(channel),
-        startAddress: createAddress(channel, startAddressCalc(addressGroup)),
-        endAddress: createAddress(channel, endAddressCalc(addressGroup)),
-        manufacturerName: handleFieldSelectionName(
-          channel,
-          manufacturers,
-          manufacturerSelection,
-        ),
-        fixtureName: handleFieldSelectionName(
-          channel,
-          fixtures,
-          fixtureSelection,
-        ),
-        profileName: handleFieldSelectionName(
-          channel,
-          profiles,
-          profileSelection,
-        ),
-        addressGroup,
-      };
-    }
+  //   function buildChannelObject(channel: number, addressGrp: number) {
+  //     return {
+  //       channel,
+  //       selected: selectedChannels.includes(channel),
+  //       startAddress: createAddress(channel, startAddressCalc(fixtureOffset)),
+  //       endAddress: createAddress(channel, endAddressCalc(fixtureOffset)),
+  //       manufacturerName: handleFieldSelectionName(
+  //         channel,
+  //         manufacturers,
+  //         manufacturerSelection,
+  //       ),
+  //       fixtureName: handleFieldSelectionName(
+  //         channel,
+  //         fixtures,
+  //         fixtureSelection,
+  //       ),
+  //       profileName: handleFieldSelectionName(
+  //         channel,
+  //         profiles,
+  //         profileSelection,
+  //       ),
+  //       fixtureOffset,
+  //     };
+  //   }
 
-    // if (!addressStartSelection) return [];
+  //   for (let channel = 1; channel <= CHANNEL_COUNT; channel += 1) {
+  //     const channelIsSelected = selectedChannels.includes(channel);
 
-    for (let channel = 1; channel <= CHANNEL_COUNT; channel += 1) {
-      // channel selection overrides patch display V
-      if (channel in fixtureMap && !selectedChannels.includes(channel)) {
-        patchRows.push(fixtureMap[channel]);
-      } else if (showAllChannels) {
-        if (selectedChannels.includes(channel)) addressGroup += 1;
+  //     if (channelIsSelected) {
+  //       fixtureOffset += 1;
+  //     }
 
-        patchRows.push(buildChannelObject(channel, addressGroup));
-      }
-    }
+  //     if (channel in fixtureMap && !channelIsSelected) {
+  //       patchRows.push(fixtureMap[channel]);
+  //     } else if (showAllChannels) {
+  //       patchRows.push(buildChannelObject(channel, fixtureOffset));
+  //     }
+  //   }
 
-    // debugger;
-    return patchRows.sort((a, b) => a.channel - b.channel);
-  };
+  //   return patchRows.sort((a, b) => a.channel - b.channel);
+  // };
+
+  const patchRowData = buildPatchRowData({
+    compositeFixturesStore,
+    selectedChannels,
+    addressStartSelection,
+    profile,
+    manufacturers,
+    manufacturerSelection,
+    fixtures,
+    fixtureSelection,
+    profiles,
+    profileSelection,
+    showAllChannels,
+  });
 
   const buildPatchRowDisplay = () =>
-    buildPatchRowData().map((fixture, index) => (
+    patchRowData.map((fixture, index) => (
       <Pressable
         key={fixture.channel}
         className={`flex flex-row p-2 border-2 ${index % 2 === 0 ? "bg-gray-700" : "bg-gray-600"} ${selectedChannels.includes(fixture.channel) ? "border-yellow-600" : ""}`}
@@ -351,18 +365,8 @@ export default function Patch() {
   }, [fixtureSelection, fixtures]);
 
   useEffect(() => {
-    // if (addressStartSelection) {
-    // const list = generateChannelListDisplay({
-    //   firstAddress: addressStartSelection,
-    //   profileSize: profileFootprint,
-    //   profileSelection,
-    //   addressStartSelection,
-    //   selectedChannels,
-    //   channelListCount: CHANNEL_LIST_COUNT,
-    // });
-    const list = buildPatchRowData();
-    setChannelObjsToDisplay(list);
-    // }
+    // const list = buildPatchRowData();
+    setChannelObjsToDisplay(patchRowData);
   }, [addressStartSelection, profiles, selectedChannels]);
 
   console.log({ addressStartSelection });

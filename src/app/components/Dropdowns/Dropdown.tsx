@@ -5,7 +5,7 @@ type DropdownProps<T extends { id: number }> = {
   items: T[];
   onSelect: (item: T) => void;
   selectedItem: number | null;
-  placeholder?: string;
+  placeholder: string;
   getItemKey: (item: T) => string | number; // Function to get the unique key
   getItemLabel: (item: T) => string;
   name: string; // Function to get the label for display
@@ -15,7 +15,7 @@ const Dropdown = <T extends unknown>({
   items,
   onSelect,
   selectedItem,
-  placeholder = "Search..",
+  placeholder = "Search...",
   getItemKey,
   getItemLabel,
   name,
