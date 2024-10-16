@@ -2,43 +2,30 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
-  TextInput,
   Pressable,
-  FlatList,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
 import { Svg, Path } from "react-native-svg";
 
 import { payLoadWithAddresses, buildPatchRowData } from "./helpers.ts";
-import { ChannelObject, ChannelObjectDisplay } from "./types/index.ts";
+import { PatchRowData } from "./types/index.ts";
 import { db } from "../../db/client.ts";
 import { SelectFixture } from "../../db/types/tables.ts";
+import FixtureAssignment from "../../models/fixture-assignment.ts";
+import PatchModel from "../../models/patch.ts";
 import { ProfileProcessed } from "../../models/profile.ts";
 import BatchCreateScenesToFixtureAssignments from "../../services/batch-create-scenes.ts";
 import PatchFixtures from "../../services/patch-fixtures.ts";
+import Dropdown from "../components/Dropdowns/Dropdown.tsx";
+import UniverseTable from "../components/UniverseTable/UniverseTable.tsx";
 import useFetchFixtureAssignments from "../hooks/useFetchFixtureAssignments.ts";
 import useFetchFixtures from "../hooks/useFetchFixtures.ts";
 import useFetchManufacturers from "../hooks/useFetchManufacturers.ts";
 import useFetchPatches from "../hooks/useFetchPatches.ts";
 import useFetchProfiles from "../hooks/useFetchProfiles.ts";
 import useFetchScenes from "../hooks/useFetchScenes.ts";
-import UniverseTable from "../components/UniverseTable/UniverseTable.tsx";
-import Dropdown from "../components/Dropdowns/Dropdown.tsx";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
-import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
-import FixtureAssignment from "../../models/fixture-assignment.ts";
-import PatchModel from "../../models/patch.ts";
-
-// const CHANNEL_LIST_COUNT = 50;
-type PatchRowData = {
-  channel: number;
-  startAddress: number;
-  endAddress: number;
-  manufacturerName: string;
-  fixtureName: string;
-  profileName: string;
-};
 
 export default function Patch() {
   const [fixtureSelection, setFixtureSelection] = useState<number>(0);
@@ -46,7 +33,7 @@ export default function Patch() {
   const [profileSelection, setProfileSelection] = useState<number>(0);
   const [selectedChannels, setSelectChannels] = useState<number[]>([]);
   const [channelObjsToDisplay, setChannelObjsToDisplay] = useState<
-    ChannelObjectDisplay[]
+    PatchRowData[]
   >([]);
   const [addressStartSelection, setAddressStartSelection] =
     useState<number>(-1);
@@ -64,7 +51,7 @@ export default function Patch() {
   const { data: profiles, setData: setProfiles } =
     useFetchProfiles(fixtureSelection);
   const { data: sceneIds } = useFetchScenes();
-  const { data: patchData, error: patchError } = useFetchPatches();
+  // const { data: patchData, error: patchError } = useFetchPatches();
   const { data: fixtureAssignmentsData } = useFetchFixtureAssignments();
   const tester = useRef(1);
   //  top half of patch screen screen is the patch table
@@ -115,6 +102,7 @@ export default function Patch() {
     setShowDMXUniverseTable(true);
     setShowProfileSelector(false);
   };
+
   const handleHideDMXTable = () => {
     setShowDMXUniverseTable(false);
     setShowProfileSelector(true);
@@ -168,102 +156,19 @@ export default function Patch() {
   const profile = profiles.find(
     (profileObj) => profileObj.id === profileSelection,
   );
-  // const profileFootprint = profile
-  //   ? // either it has a lot of profile channels, or it is a single channel device.
-  //     Object.keys(JSON.parse(profile.channels)).length
-  //   : 1;
 
-  // const buildProfileDisplay = () => {
-  //   if (!profileSelection || !profile) return null;
+  const buildProfileDisplay = () => {
+    if (!profileSelection || !profile) return null;
 
-  //   return (
-  //     <React.Fragment key={profile.id}>
-  //       <Text>Name: {profile.name}</Text>
-  //       <Text>Channel Count: {profile.channelCount}</Text>
-  //       <Text>Channels: {profile.channels}</Text>
-  //       <Text>16Bit: {profile.is16Bit ? "yes" : "no"}</Text>
-  //     </React.Fragment>
-  //   );
-  // };
-
-  // const buildPatchRowData = () => {
-  //   const CHANNEL_COUNT = 50;
-  //   const patchRows: PatchRowData[] = [];
-  //   let fixtureOffset = -1;
-  //   const fixtureMap = compositeFixturesStore.reduce(
-  //     (acc: Record<number, ParsedCompositeFixtureInfo>, fixture) => {
-  //       acc[fixture.channel] = fixture;
-  //       return acc;
-  //     },
-  //     {},
-  //   );
-
-  //   function createAddress(channel: number, calc: number) {
-  //     return selectedChannels.includes(channel) ? calc : 0;
-  //   }
-
-  //   const startAddressCalc = (addressGrp: number) =>
-  //     fixtureOffset * profileFootprint + addressStartSelection;
-
-  //   const endAddressCalc = (addressGrp: number) =>
-  //     fixtureOffset * profileFootprint -
-  //     1 +
-  //     addressStartSelection +
-  //     profileFootprint;
-
-  //   function handleFieldSelectionName(
-  //     channel: number,
-  //     list: { id: number; name: string }[],
-  //     selection: number,
-  //   ) {
-  //     const name = list.find((item) => item.id === selection)?.name;
-
-  //     return selection && selectedChannels.includes(channel) && name
-  //       ? name
-  //       : "-";
-  //   }
-
-  //   function buildChannelObject(channel: number, addressGrp: number) {
-  //     return {
-  //       channel,
-  //       selected: selectedChannels.includes(channel),
-  //       startAddress: createAddress(channel, startAddressCalc(fixtureOffset)),
-  //       endAddress: createAddress(channel, endAddressCalc(fixtureOffset)),
-  //       manufacturerName: handleFieldSelectionName(
-  //         channel,
-  //         manufacturers,
-  //         manufacturerSelection,
-  //       ),
-  //       fixtureName: handleFieldSelectionName(
-  //         channel,
-  //         fixtures,
-  //         fixtureSelection,
-  //       ),
-  //       profileName: handleFieldSelectionName(
-  //         channel,
-  //         profiles,
-  //         profileSelection,
-  //       ),
-  //       fixtureOffset,
-  //     };
-  //   }
-
-  //   for (let channel = 1; channel <= CHANNEL_COUNT; channel += 1) {
-  //     const channelIsSelected = selectedChannels.includes(channel);
-
-  //     if (channelIsSelected) {
-  //       fixtureOffset += 1;
-  //     }
-
-  //     if (channel in fixtureMap && !channelIsSelected) {
-  //       patchRows.push(fixtureMap[channel]);
-  //     } else if (showAllChannels) {
-  //       patchRows.push(buildChannelObject(channel, fixtureOffset));
-  //     }
-  //   }
-
-  //   return patchRows.sort((a, b) => a.channel - b.channel);
-  // };
+    return (
+      <React.Fragment key={profile.id}>
+        <Text>Name: {profile.name}</Text>
+        <Text>Channel Count: {profile.channelCount}</Text>
+        <Text>Channels: {profile.channels}</Text>
+        <Text>16Bit: {profile.is16Bit ? "yes" : "no"}</Text>
+      </React.Fragment>
+    );
+  };
 
   const patchRowData = buildPatchRowData({
     compositeFixturesStore,
@@ -334,14 +239,6 @@ export default function Patch() {
       </Pressable>
     ));
 
-  // useEffect(() => {
-  //   if (!fixtureSelection) {
-  //     setFixtureSelection(null);
-  //   }
-  //   setProfileSelection(null);
-  //   setProfiles([]);
-  // }, [manufacturerSelection, fixtureSelection, setProfiles]);
-
   useEffect(() => {
     // if (!fixtureSelection) {
     setFixtureSelection(0);
@@ -365,7 +262,6 @@ export default function Patch() {
   }, [fixtureSelection, fixtures]);
 
   useEffect(() => {
-    // const list = buildPatchRowData();
     setChannelObjsToDisplay(patchRowData);
   }, [addressStartSelection, profiles, selectedChannels]);
 
@@ -378,7 +274,6 @@ export default function Patch() {
         <View className="p-4 bg-gray-900 w-full">
           <ScrollView horizontal className="w-full">
             <View>
-              {/* Table Header */}
               <View className="flex flex-row bg-gray-800 p-2 rounded-md">
                 <Text className="text-white font-bold w-24 text-center">
                   Channels
@@ -396,8 +291,6 @@ export default function Patch() {
                   Profile
                 </Text>
               </View>
-
-              {/* Table Body */}
               <ScrollView className="h-full">
                 {compositeFixturesStore.length > 0 && buildPatchRowDisplay()}
               </ScrollView>
@@ -422,7 +315,7 @@ export default function Patch() {
         <View className="w-2/3 h-full bg-slate-600 justify-center items-center flex-col">
           <View className="flex-row">
             <Text className="text-white m-2">Selected Fixture Details</Text>
-            {/* <View>{buildProfileDisplay()}</View> */}
+            <View>{buildProfileDisplay()}</View>
             <Pressable onPress={() => setShowAllChannels(!showAllChannels)}>
               <Text className="text-yellow-400 bg-slate-500 p-5 m-2">
                 {showAllChannels ? "Only Channels in Use" : "Show All Channels"}
@@ -442,6 +335,7 @@ export default function Patch() {
               getItemKey={(m: (typeof manufacturers)[number]) => m.id}
               getItemLabel={(item: (typeof manufacturers)[number]) => item.name}
               name="Manufacturer"
+              placeholder="Search Manufacturers..."
             />
             <Dropdown
               selectedItem={fixtureSelection}
@@ -450,6 +344,7 @@ export default function Patch() {
               getItemKey={(fix: (typeof fixtures)[number]) => fix.id}
               getItemLabel={(item: (typeof fixtures)[number]) => item.name}
               name="Fixture"
+              placeholder="Search Fixtures..."
             />
             <Dropdown
               selectedItem={profileSelection}
@@ -458,6 +353,7 @@ export default function Patch() {
               getItemKey={(prof: (typeof profiles)[number]) => prof.id}
               getItemLabel={(item: (typeof profiles)[number]) => item.name}
               name="Profile"
+              placeholder="Search Profiles..."
             />
           </View>
         </View>

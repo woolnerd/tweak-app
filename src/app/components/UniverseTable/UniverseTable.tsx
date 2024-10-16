@@ -1,15 +1,10 @@
 import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 
-type PatchObject = {
-  id: string;
-  startAddress: number;
-  endAddress: number;
-  selected: boolean;
-};
+import { PatchRowData } from "../../patch/types/index.ts";
 
 type Props = {
-  patchData: PatchObject[];
+  patchData: PatchRowData[];
   handleAddressSelection: (address: number) => void;
   profileSelected: number;
 };

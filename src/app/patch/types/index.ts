@@ -1,9 +1,9 @@
-import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import {
   SelectManufacturer,
   SelectFixture,
   SelectProfile,
 } from "../../../db/types/tables.ts";
+import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 
 export type ChannelObject = {
   startAddress: number;
@@ -20,20 +20,14 @@ export type ChannelObjectDisplay = Omit<
   startAddress?: number;
 };
 
-export type ChannelObjectPatch = Omit<ChannelObject, "selected"> & {
-  fixtureId: number;
-  showId: number;
-  profileId: number;
-};
-
 export type PatchRowData = {
+  selected: boolean;
   channel: number;
   startAddress: number;
   endAddress: number;
   manufacturerName: string;
   fixtureName: string;
   profileName: string;
-  selected: boolean;
 };
 
 export type BuildPatchRowDataArgs = {
@@ -50,4 +44,4 @@ export type BuildPatchRowDataArgs = {
   showAllChannels: boolean;
 };
 
-export type FixtureMap = Record<number, ParsedCompositeFixtureInfo>;
+export type FixtureMap = Record<number, PatchRowData>;

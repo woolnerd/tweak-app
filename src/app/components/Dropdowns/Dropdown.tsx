@@ -6,23 +6,22 @@ type DropdownProps<T extends { id: number }> = {
   onSelect: (item: T) => void;
   selectedItem: number | null;
   placeholder: string;
-  getItemKey: (item: T) => string | number; // Function to get the unique key
+  getItemKey: (item: T) => string | number;
   getItemLabel: (item: T) => string;
-  name: string; // Function to get the label for display
+  name: string;
 };
 
-const Dropdown = <T extends unknown>({
+const Dropdown = <T extends { id: number }>({
   items,
   onSelect,
   selectedItem,
-  placeholder = "Search...",
+  name,
+  placeholder,
   getItemKey,
   getItemLabel,
-  name,
 }: DropdownProps<T>) => {
   const [searchText, setSearchText] = useState("");
 
-  // Filter items based on search text
   const filteredItems = items.filter((item) =>
     getItemLabel(item).toLowerCase().includes(searchText.toLowerCase()),
   );
@@ -31,7 +30,6 @@ const Dropdown = <T extends unknown>({
     <View className="border-red-400 border-2 p-5 max-w-md mx-auto w-56 m-5 h-80">
       <Text className="text-white text-xl mb-2">Select {name}</Text>
 
-      {/* Search Input */}
       <TextInput
         className="border border-gray-500 rounded-md p-2 mb-4 text-white bg-gray-800"
         placeholder={placeholder}
@@ -40,7 +38,6 @@ const Dropdown = <T extends unknown>({
         onChangeText={setSearchText}
       />
 
-      {/* Item List */}
       <ScrollView className="max-h-60 border border-gray-700 rounded-md">
         {filteredItems.length > 0 ? (
           filteredItems.map((item) => (

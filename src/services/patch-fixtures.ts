@@ -28,9 +28,9 @@ export default class PatchFixtures {
       const patchResponses = await Promise.all(promises);
 
       const fixtureAssignmentPromises = patchResponses.map((patchRes) => {
-        const channel = payLoadWithAddresses.filter(
+        const { channel } = payLoadWithAddresses.filter(
           (payload) => payload.startAddress === patchRes[0].startAddress,
-        )[0].channel;
+        )[0];
         return this.db.transaction(async (tx) =>
           tx
             .insert(fixtureAssignments)

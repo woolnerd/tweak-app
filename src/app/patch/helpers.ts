@@ -1,10 +1,10 @@
-import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
 import {
   PatchRowData,
   BuildPatchRowDataArgs,
   ChannelObjectDisplay,
   FixtureMap,
 } from "./types/index.ts";
+import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
 
 // eslint-disable-next-line import/prefer-default-export
 export function payLoadWithAddresses(args: {
@@ -42,11 +42,19 @@ export const buildPatchRowData = (args: BuildPatchRowDataArgs) => {
     showAllChannels,
   } = args;
   const CHANNEL_COUNT = 50;
-  const patchRows: (PatchRowData | ParsedCompositeFixtureInfo)[] = [];
+  const patchRows: PatchRowData[] = [];
   let fixtureOffset = -1;
   const fixtureMap = compositeFixturesStore.reduce(
     (acc: FixtureMap, fixture) => {
-      acc[fixture.channel] = fixture;
+      acc[fixture.channel] = {
+        channel: fixture.channel,
+        manufacturerName: fixture.manufacturerName,
+        fixtureName: fixture.fixtureName,
+        profileName: fixture.profileName,
+        startAddress: fixture.startAddress,
+        endAddress: fixture.endAddress,
+        selected: false,
+      };
       return acc;
     },
     {},
