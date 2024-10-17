@@ -15,6 +15,8 @@ import { SelectFixture } from "../../db/types/tables.ts";
 import FixtureAssignment from "../../models/fixture-assignment.ts";
 import PatchModel from "../../models/patch.ts";
 import { ProfileProcessed } from "../../models/profile.ts";
+import ScenesToFixtureAssignments from "../../models/scene-to-fixture-assignments.ts";
+import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
 import BatchCreateScenesToFixtureAssignments from "../../services/batch-create-scenes.ts";
 import PatchFixtures from "../../services/patch-fixtures.ts";
 import Dropdown from "../components/Dropdowns/Dropdown.tsx";
@@ -25,8 +27,6 @@ import useFetchManufacturers from "../hooks/useFetchManufacturers.ts";
 import useFetchProfiles from "../hooks/useFetchProfiles.ts";
 import useFetchScenes from "../hooks/useFetchScenes.ts";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
-import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
-import ScenesToFixtureAssignments from "../../models/scene-to-fixture-assignments.ts";
 
 export default function Patch() {
   const [fixtureSelection, setFixtureSelection] = useState<number>(0);
@@ -41,6 +41,7 @@ export default function Patch() {
   const [showDMXUniverseTable, setShowDMXUniverseTable] =
     useState<boolean>(false);
   const [showProfileSelector, setShowProfileSelector] = useState<boolean>(true);
+  const [selectManThruFix, setSelectManThruFix] = useState<boolean>(false);
   const [showAllChannels, setShowAllChannels] = useState<boolean>(true);
   const { compositeFixturesStore } = useCompositeFixtureStore();
   const [compositeFixtures, setCompositeFixtures] = useState<
@@ -70,7 +71,10 @@ export default function Patch() {
   const handleManufacturerSelection = (
     manufacturer: (typeof manufacturers)[number],
   ) => {
-    setManufacturerSelection(manufacturer.id);
+    setManufacturerSelection(
+      manufacturer.id === manufacturerSelection ? 0 : manufacturer.id,
+    );
+    setSelectManThruFix(false);
   };
 
   console.log((tester.current += 1));
@@ -79,15 +83,21 @@ export default function Patch() {
     (assignment) => assignment.channel,
   );
 
+  const removeChannelFromState = (channel: number) =>
+    setSelectChannels(
+      selectedChannels.filter((channelInState) => channelInState !== channel),
+    );
+
   const handleFixtureSelection = (fixture: SelectFixture) => {
     // update manufacturer
-    setFixtureSelection(fixture.id);
+    setFixtureSelection(fixture.id === fixtureSelection ? 0 : fixture.id);
     setManufacturerSelection(fixture.manufacturerId ?? 0);
+    setSelectManThruFix(true);
     // update profiles available
   };
 
   const handleProfileSelection = (profile: ProfileProcessed) =>
-    setProfileSelection(profile.id);
+    setProfileSelection(profile.id === profileSelection ? 0 : profile.id);
 
   const handleChannelSelection = (channel: number) => {
     if (channelsInUse.includes(channel)) {
@@ -96,9 +106,7 @@ export default function Patch() {
     }
 
     if (selectedChannels.includes(channel)) {
-      setSelectChannels(
-        selectedChannels.filter((channelInState) => channelInState !== channel),
-      );
+      removeChannelFromState(channel);
       return;
     }
 
@@ -250,32 +258,26 @@ export default function Patch() {
         >
           {fixture.profileName}
         </Text>
-        <TouchableOpacity
-          onPress={() => handleDeleteFixtureAssignment(fixture)}
-          className="p-0.5 bg-gray-300 hover:bg-red-500 active:bg-red-700">
-          <Svg
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-            className="w-6 h-6 text-black">
-            <Path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </Svg>
-        </TouchableOpacity>
+        {channelsInUse.includes(fixture.channel) && (
+          <TouchableOpacity
+            onPress={() => handleDeleteFixtureAssignment(fixture)}
+            className="p-0.5 bg-gray-300 hover:bg-red-500 active:bg-red-700">
+            <Svg
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="w-4 h-4 text-black">
+              <Path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </Svg>
+          </TouchableOpacity>
+        )}
       </Pressable>
     ));
-
-  useEffect(() => {
-    // if (!fixtureSelection) {
-    setFixtureSelection(0);
-    // }
-    setProfileSelection(0);
-    // setProfiles([]);
-  }, [manufacturerSelection]);
 
   // When changing fixture selection, manufacturer changes as well, and profile selection is cleared.
   useEffect(() => {
@@ -290,6 +292,14 @@ export default function Patch() {
       }
     }
   }, [fixtureSelection, fixtures]);
+
+  useEffect(() => {
+    if (!selectManThruFix) {
+      setFixtureSelection(0);
+    }
+    setProfileSelection(0);
+    setSelectManThruFix(false);
+  }, [manufacturerSelection]);
 
   useEffect(() => {
     setChannelObjsToDisplay(patchRowData);
