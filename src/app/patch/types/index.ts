@@ -30,8 +30,7 @@ export type PatchRowData = {
   profileName: string;
 };
 
-export type BuildPatchRowDataArgs = {
-  compositeFixturesStore: ParsedCompositeFixtureInfo[];
+interface BasePatchObjArgs {
   selectedChannels: number[];
   addressStartSelection: number;
   manufacturers: SelectManufacturer[];
@@ -41,7 +40,14 @@ export type BuildPatchRowDataArgs = {
   fixtureSelection: number;
   profileSelection: number;
   profile?: SelectProfile;
+}
+export interface BuildPatchRowDataArgs extends BasePatchObjArgs {
+  compositeFixturesStore: ParsedCompositeFixtureInfo[];
   showAllChannels: boolean;
-};
+}
+export interface BuildChannelObjectArgs extends BasePatchObjArgs {
+  channel: number;
+  profileFootprint: number;
+}
 
 export type FixtureMap = Record<number, PatchRowData>;

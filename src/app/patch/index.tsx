@@ -220,6 +220,24 @@ export default function Patch() {
     showAllChannels,
   });
 
+  console.log({
+    args: {
+      compositeFixturesStore: compositeFixtures,
+      selectedChannels,
+      addressStartSelection,
+      profile,
+      manufacturers,
+      manufacturerSelection,
+      fixtures,
+      fixtureSelection,
+      profiles,
+      profileSelection,
+      showAllChannels,
+    },
+  });
+
+  console.log({ patchRowData });
+
   const buildPatchRowDisplay = () =>
     patchRowData.map((fixture, index) => (
       <Pressable
