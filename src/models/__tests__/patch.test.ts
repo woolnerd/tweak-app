@@ -57,6 +57,7 @@ describe("Patch", () => {
 
     expect(mockDb.insert).toHaveBeenCalledWith(expect.anything());
     expect(mockDb.insert({} as any).values).toHaveBeenCalledWith({
+      channel: 1,
       startAddress: 1,
       fixtureId: 1,
       profileId: 1,

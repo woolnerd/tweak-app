@@ -42,7 +42,7 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
     return this.processedData;
   }
 
-  async create(data: InsertPatch & { channel?: number; endAddress?: number }) {
+  async create(data: InsertPatch & { channel: number; endAddress?: number }) {
     // console.log({ data });
     if (!data.endAddress) {
       throw new Error("No end address found");
@@ -68,7 +68,6 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
       throw new Error("Address overlaps with current patch address in show");
     }
 
-    delete data.channel;
     delete data.endAddress;
 
     return await this.db.insert(patches).values(data).returning();

@@ -1,7 +1,7 @@
-import { ManualFixtureState } from "../../app/components/Fixture/types/Fixture.ts";
-import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
-import { ActionObject } from "../command-line/types/command-line-types.ts";
-import { ProfileTarget } from "../types/buttons.ts";
+import { ActionObject } from "./command-line/types/command-line-types.ts";
+import { ProfileTarget } from "./types/buttons.ts";
+import { ManualFixtureState } from "../app/components/Fixture/types/Fixture.ts";
+import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 
 export const profile = { 1: "DIMMER" };
 export const fixture: ParsedCompositeFixtureInfo = {
@@ -20,7 +20,7 @@ export const fixture: ParsedCompositeFixtureInfo = {
   sceneId: 1,
   startAddress: 1,
   endAddress: 10,
-  title: "test",
+  manufacturerName: "Manufacturer A",
   fixtureName: "fixture1",
   fixtureNotes: "test notes",
   colorTempHigh: 10000,
@@ -51,7 +51,7 @@ export const fixtureColorTemp: ParsedCompositeFixtureInfo = {
   sceneId: 1,
   startAddress: 1,
   endAddress: 10,
-  title: "test",
+  manufacturerName: "Manufacturer B",
   fixtureName: "fixture1",
   fixtureNotes: "test notes",
   colorTempHigh: 10000,
