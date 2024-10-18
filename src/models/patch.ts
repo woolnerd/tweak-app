@@ -43,10 +43,9 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
     return this.processedData;
   }
 
-  async create(
-    data: InsertPatch & { channelNum: number; endAddress: number },
-    // endAddress: number,
-  ) {
+  async create(data: InsertPatch & { channel: number; endAddress: number }) {
+    console.log({ data });
+
     if (data.startAddress > data.endAddress) {
       throw Error(
         `Starting address (${data.startAddress}) cannot be greater than ending address (${data.endAddress}).`,
@@ -56,8 +55,6 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
     if (data.startAddress < this.MIN_START_ADDRESS) {
       throw Error("Starting address must be 1 or greater");
     }
-
-    console.log({ data });
 
     const isOverlap = await this.checkOverlap(
       data.startAddress,
@@ -82,17 +79,18 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
       .select()
       .from(patches)
       .where(
-        sql`NOT (
-        ${endAddressForCheck} < ${this.table.startAddress} OR
-        ${startAddressForCheck} > (
-          ${this.table.startAddress} + (
-            SELECT COUNT(*)
-            FROM json_each(${profiles.channels})
-          ) - ${OFFSET_BY_ONE}
-        )
-      ) AND ${this.table.showId} = ${showIdForCheck}`,
+        sql`${startAddressForCheck} <= (
+                ${this.table.startAddress} + (
+                  SELECT COUNT(*)
+                  FROM json_each(${profiles.channels})
+                ) - ${OFFSET_BY_ONE}
+              )
+              AND ${endAddressForCheck} >= ${this.table.startAddress}
+              AND ${this.table.showId} = ${showIdForCheck}`,
       )
       .leftJoin(profiles, eq(this.table.profileId, profiles.id));
+
+    console.log({ overlappingPatches });
 
     return overlappingPatches.length > 0;
   }
