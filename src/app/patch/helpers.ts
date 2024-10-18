@@ -6,7 +6,6 @@ import {
 } from "./types/index.ts";
 import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
 
-// eslint-disable-next-line import/prefer-default-export
 export function payLoadWithAddresses(args: {
   showId: number;
   profileId: number;
@@ -43,7 +42,6 @@ export const buildPatchRowData = (args: BuildPatchRowDataArgs) => {
   } = args;
   const CHANNEL_COUNT = 50;
   const patchRows: PatchRowData[] = [];
-  let fixtureOffset = -1;
   const fixtureMap = compositeFixturesStore.reduce(
     (acc: FixtureMap, fixture) => {
       acc[fixture.channel] = {
@@ -53,7 +51,7 @@ export const buildPatchRowData = (args: BuildPatchRowDataArgs) => {
         profileName: fixture.profileName,
         startAddress: fixture.startAddress,
         endAddress: fixture.endAddress,
-        selected: false,
+        selected: selectedChannels.includes(fixture.channel),
       };
       return acc;
     },
@@ -69,10 +67,10 @@ export const buildPatchRowData = (args: BuildPatchRowDataArgs) => {
       Object.keys(JSON.parse(profile.channels)).length
     : 1;
 
-  const startAddressCalc = (addressGrp: number) =>
+  const startAddressCalc = (fixtureOffset: number) =>
     fixtureOffset * profileFootprint + addressStartSelection;
 
-  const endAddressCalc = (addressGrp: number) =>
+  const endAddressCalc = (fixtureOffset: number) =>
     fixtureOffset * profileFootprint -
     1 +
     addressStartSelection +
@@ -88,12 +86,15 @@ export const buildPatchRowData = (args: BuildPatchRowDataArgs) => {
     return selection && selectedChannels.includes(channel) && name ? name : "-";
   }
 
-  function buildChannelObject(channel: number, addressGrp: number) {
+  function buildChannelObject(channel: number) {
+    const channelIndex = selectedChannels.findIndex(
+      (selected) => selected === channel,
+    );
     return {
       channel,
       selected: selectedChannels.includes(channel),
-      startAddress: createAddress(channel, startAddressCalc(fixtureOffset)),
-      endAddress: createAddress(channel, endAddressCalc(fixtureOffset)),
+      startAddress: createAddress(channel, startAddressCalc(channelIndex)),
+      endAddress: createAddress(channel, endAddressCalc(channelIndex)),
       manufacturerName: handleFieldSelectionName(
         channel,
         manufacturers,
@@ -109,21 +110,16 @@ export const buildPatchRowData = (args: BuildPatchRowDataArgs) => {
         profiles,
         profileSelection,
       ),
-      fixtureOffset,
     };
   }
 
   for (let channel = 1; channel <= CHANNEL_COUNT; channel += 1) {
     const channelIsSelected = selectedChannels.includes(channel);
 
-    if (channelIsSelected) {
-      fixtureOffset += 1;
-    }
-
     if (channel in fixtureMap && !channelIsSelected) {
       patchRows.push(fixtureMap[channel]);
     } else if (showAllChannels) {
-      patchRows.push(buildChannelObject(channel, fixtureOffset));
+      patchRows.push(buildChannelObject(channel));
     }
   }
 

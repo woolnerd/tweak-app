@@ -31,6 +31,7 @@ module.exports = {
       { allowShortCircuit: true, allowTernary: true },
     ],
     "no-return-await": "off",
+    "react/require-default-props": "off",
   },
   plugins: ["drizzle"],
 };

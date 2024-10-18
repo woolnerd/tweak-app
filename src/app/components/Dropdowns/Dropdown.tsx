@@ -5,7 +5,7 @@ type DropdownProps<T extends { id: number }> = {
   items: T[];
   onSelect: (item: T) => void;
   selectedItem: number | null;
-  placeholder: string;
+  placeholder?: string;
   getItemKey: (item: T) => string | number;
   getItemLabel: (item: T) => string;
   name: string;
@@ -16,7 +16,7 @@ const Dropdown = <T extends { id: number }>({
   onSelect,
   selectedItem,
   name,
-  placeholder,
+  placeholder = "Search...",
   getItemKey,
   getItemLabel,
 }: DropdownProps<T>) => {

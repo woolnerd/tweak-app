@@ -36,8 +36,7 @@ export default function Patch() {
   const [channelObjsToDisplay, setChannelObjsToDisplay] = useState<
     PatchRowData[]
   >([]);
-  const [addressStartSelection, setAddressStartSelection] =
-    useState<number>(-1);
+  const [addressStartSelection, setAddressStartSelection] = useState<number>(1);
   const [showDMXUniverseTable, setShowDMXUniverseTable] =
     useState<boolean>(false);
   const [showProfileSelector, setShowProfileSelector] = useState<boolean>(true);
@@ -56,7 +55,6 @@ export default function Patch() {
   const { data: profiles, setData: setProfiles } =
     useFetchProfiles(fixtureSelection);
   const { data: sceneIds } = useFetchScenes();
-  // const { data: patchData, error: patchError } = useFetchPatches();
   const {
     data: fixtureAssignmentsData,
     refetch: refetchFixtureAssignmentData,
@@ -143,6 +141,7 @@ export default function Patch() {
           fixtureAssignmentResponses,
           sceneIds,
         );
+        setAddressStartSelection(1);
       }
     } catch (error) {
       alert(error);
@@ -153,8 +152,7 @@ export default function Patch() {
   const handlePatch = () => {
     handlePatchDB()
       .then((res) => {
-        setSelectChannels([]);
-        setAddressStartSelection(0);
+        setAddressStartSelection(1);
       })
       .then((_) =>
         new ScenesToFixtureAssignments(db).getCompositeFixtureInfo(
@@ -302,8 +300,33 @@ export default function Patch() {
   }, [manufacturerSelection]);
 
   useEffect(() => {
-    setChannelObjsToDisplay(patchRowData);
-  }, [addressStartSelection, profiles, selectedChannels, compositeFixtures]);
+    const updatedPatchRowData = buildPatchRowData({
+      compositeFixturesStore: compositeFixtures,
+      selectedChannels,
+      addressStartSelection,
+      profile,
+      manufacturers,
+      manufacturerSelection,
+      fixtures,
+      fixtureSelection,
+      profiles,
+      profileSelection,
+      showAllChannels,
+    });
+    setChannelObjsToDisplay(updatedPatchRowData);
+  }, [
+    selectedChannels,
+    compositeFixtures,
+    addressStartSelection,
+    profile,
+    manufacturers,
+    manufacturerSelection,
+    fixtures,
+    fixtureSelection,
+    profiles,
+    profileSelection,
+    showAllChannels,
+  ]);
 
   return (
     <View className="w-full">
@@ -339,16 +362,13 @@ export default function Patch() {
 
       <View className="w-full h-1/2 flex-row">
         <View className="w-1/3 h-full justify-center items-center  bg-gray-900 ">
-          {
-            // profileSelection &&
-            showDMXUniverseTable && (
-              <UniverseTable
-                patchData={channelObjsToDisplay}
-                handleAddressSelection={setAddressStartSelection}
-                profileSelected={profileSelection}
-              />
-            )
-          }
+          {(!!profileSelection || showDMXUniverseTable) && (
+            <UniverseTable
+              patchData={channelObjsToDisplay}
+              handleAddressSelection={setAddressStartSelection}
+              profileSelected={profileSelection}
+            />
+          )}
         </View>
         <View className="w-2/3 h-full bg-slate-600 justify-center items-center flex-col">
           <View className="flex-row">
