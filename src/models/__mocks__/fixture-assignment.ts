@@ -43,37 +43,33 @@ export const mockDeleteDb: Database = {
 };
 
 export const mockInsertFixtureAssignment: InsertFixtureAssignment = {
-  title: "Test Assignment",
   channel: 1,
-  value: 50,
   fixtureId: 1,
   profileId: 1,
+  patchId: 1,
 };
 
 export const mockFixtureAssignment: SelectFixtureAssignment = {
   id: 1,
-  title: "Test Fixture Assignment",
   channel: 10,
-  value: 255,
   fixtureId: 1,
   profileId: 1,
+  patchId: 1,
 };
 
 export const mockFixtureAssignmentArray: SelectFixtureAssignment[] = [
   {
     id: 1,
-    title: "Assignment 1",
     channel: 1,
-    value: 50,
     fixtureId: 1,
     profileId: 1,
+    patchId: 1,
   },
   {
     id: 2,
-    title: "Assignment 2",
     channel: 2,
-    value: 60,
     fixtureId: 2,
     profileId: 2,
+    patchId: 1,
   },
 ];

@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 export const dbMock = {
   insert: jest.fn().mockReturnThis(),
   values: jest.fn().mockReturnThis(),
