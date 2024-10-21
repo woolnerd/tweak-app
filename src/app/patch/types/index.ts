@@ -29,7 +29,9 @@ export type PatchRowData = {
   profileName: string;
 };
 
-export type FixtureDataForPatch = Omit<PatchRowData, "selected">;
+export type FixtureDataForPatch = Omit<PatchRowData, "selected"> & {
+  fixtureAssignmentId: number;
+};
 
 interface BasePatchObjArgs {
   selectedChannels: number[];

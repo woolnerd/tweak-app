@@ -62,30 +62,23 @@ export default class PatchFixtures {
     }
   }
 
-  getFixtureDataForPatch = async (): Promise<FixtureDataForPatch[] | void> => {
-    try {
-      return await this.db
-        .select({
-          channel: fixtureAssignments.channel,
-          profileName: profiles.name,
-          fixtureName: fixtures.name,
-          manufacturerName: manufacturers.name,
-          startAddress: patches.startAddress,
-          endAddress: sql<number>`${patches.startAddress} + (
+  getFixtureDataForPatch = async (): Promise<FixtureDataForPatch[]> =>
+    await this.db
+      .select({
+        fixtureAssignmentId: fixtureAssignments.id,
+        channel: fixtureAssignments.channel,
+        profileName: profiles.name,
+        fixtureName: fixtures.name,
+        manufacturerName: manufacturers.name,
+        startAddress: patches.startAddress,
+        endAddress: sql<number>`${patches.startAddress} + (
             SELECT COUNT(*) AS channelCount
             FROM json_each(${profiles.channels})
           ) - ${OFFSET_BY_ONE}`,
-        })
-        .from(fixtureAssignments)
-        .innerJoin(fixtures, eq(fixtureAssignments.fixtureId, fixtures.id))
-        .innerJoin(profiles, eq(fixtureAssignments.profileId, profiles.id))
-        .innerJoin(patches, eq(fixtureAssignments.patchId, patches.id))
-        .innerJoin(
-          manufacturers,
-          eq(fixtures.manufacturerId, manufacturers.id),
-        );
-    } catch (error) {
-      return this.handleError(error);
-    }
-  };
+      })
+      .from(fixtureAssignments)
+      .innerJoin(fixtures, eq(fixtureAssignments.fixtureId, fixtures.id))
+      .innerJoin(profiles, eq(fixtureAssignments.profileId, profiles.id))
+      .innerJoin(patches, eq(fixtureAssignments.patchId, patches.id))
+      .innerJoin(manufacturers, eq(fixtures.manufacturerId, manufacturers.id));
 }

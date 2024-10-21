@@ -4,6 +4,7 @@ import {
   BuildChannelObjectArgs,
   ChannelObjectDisplay,
   FixtureMap,
+  FixtureDataForPatch,
 } from "./types/index.ts";
 import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
 
@@ -206,10 +207,10 @@ export const buildChannelObject = (args: BuildChannelObjectArgs) => {
 };
 
 export function buildFixtureMap(
-  compositeFixturesStore: ParsedCompositeFixtureInfo[],
+  patchFixtureData: FixtureDataForPatch[],
   selectedChannels: number[],
 ) {
-  return compositeFixturesStore.reduce((acc: FixtureMap, fixture) => {
+  return patchFixtureData.reduce((acc: FixtureMap, fixture) => {
     acc[fixture.channel] = {
       channel: fixture.channel,
       manufacturerName: fixture.manufacturerName,

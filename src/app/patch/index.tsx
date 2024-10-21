@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -19,19 +19,15 @@ import { SelectFixture } from "../../db/types/tables.ts";
 import FixtureAssignment from "../../models/fixture-assignment.ts";
 import PatchModel from "../../models/patch.ts";
 import { ProfileProcessed } from "../../models/profile.ts";
-import ScenesToFixtureAssignments from "../../models/scene-to-fixture-assignments.ts";
-import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
 import BatchCreateScenesToFixtureAssignments from "../../services/batch-create-scenes.ts";
 import PatchFixtures from "../../services/patch-fixtures.ts";
 import Dropdown from "../components/Dropdowns/Dropdown.tsx";
 import UniverseTable from "../components/UniverseTable/UniverseTable.tsx";
-import useFetchFixtureAssignments from "../hooks/useFetchFixtureAssignments.ts";
 import useFetchFixtures from "../hooks/useFetchFixtures.ts";
 import useFetchManufacturers from "../hooks/useFetchManufacturers.ts";
+import useFetchPatchFixtures from "../hooks/useFetchPatchFixtures.ts";
 import useFetchProfiles from "../hooks/useFetchProfiles.ts";
 import useFetchScenes from "../hooks/useFetchScenes.ts";
-import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
-import useFetchPatchFixtures from "../hooks/useFetchPatchFixtures.ts";
 
 export default function Patch() {
   const [fixtureSelection, setFixtureSelection] = useState<number>(0);
@@ -47,30 +43,16 @@ export default function Patch() {
   const [showProfileSelector, setShowProfileSelector] = useState<boolean>(true);
   const [selectManThruFix, setSelectManThruFix] = useState<boolean>(false);
   const [showAllChannels, setShowAllChannels] = useState<boolean>(true);
-  const { compositeFixturesStore } = useCompositeFixtureStore();
-  const [compositeFixtures, setCompositeFixtures] = useState<
-    ParsedCompositeFixtureInfo[]
-  >(compositeFixturesStore);
+
   const SHOW = 1;
 
   const { data: manufacturers } = useFetchManufacturers();
-  const { data: fixtures, loading: fixturesLoading } = useFetchFixtures(
-    manufacturerSelection,
-  );
-  const { data: profiles, setData: setProfiles } =
-    useFetchProfiles(fixtureSelection);
+  const { data: fixtures } = useFetchFixtures(manufacturerSelection);
+  const { data: profiles } = useFetchProfiles(fixtureSelection);
   const { data: sceneIds } = useFetchScenes();
-  const {
-    data: fixtureAssignmentsData,
-    refetch: refetchFixtureAssignmentData,
-  } = useFetchFixtureAssignments();
-  const { data: patchFixturesData } = useFetchPatchFixtures();
-  const tester = useRef(1);
-  //  top half of patch screen screen is the patch table
-  // this shows channels in use, and empty channels
-  // need a way to jump to channel number whether in use or not
-  // when channel or address is clicked, the universe populates the bottom half
-  // when fixture or manufacturer is selected, the selection table populates the bottom half
+
+  const { data: patchFixturesData, refetch: refetchPatchFixtureData } =
+    useFetchPatchFixtures();
 
   const handleManufacturerSelection = (
     manufacturer: (typeof manufacturers)[number],
@@ -81,10 +63,7 @@ export default function Patch() {
     setSelectManThruFix(false);
   };
 
-  console.log((tester.current += 1));
-  console.log({ patchFixturesData });
-
-  const channelsInUse = fixtureAssignmentsData.map(
+  const channelsInUse = patchFixturesData.map(
     (assignment) => assignment.channel,
   );
 
@@ -160,23 +139,15 @@ export default function Patch() {
     handlePatchDB()
       .then((res) => {
         setAddressStartSelection(1);
+        setSelectChannels([]);
       })
-      .then((_) =>
-        new ScenesToFixtureAssignments(db).getCompositeFixtureInfo(
-          1,
-          new Set(channelsInUse),
-        ),
-      )
-      .then((res) => {
-        setCompositeFixtures(res);
-        refetchFixtureAssignmentData();
-      });
+      .then(refetchPatchFixtureData);
   };
 
   const handleDeleteFixtureAssignment = async (fixture: PatchRowData) => {
-    const id = fixtureAssignmentsData.find(
+    const id = patchFixturesData.find(
       (fixtureData) => fixtureData.channel === fixture.channel,
-    )?.id;
+    )?.fixtureAssignmentId;
 
     if (!id) throw new Error("Channel Id not found");
 
@@ -185,12 +156,7 @@ export default function Patch() {
     try {
       await new PatchModel(db)
         .delete(response[0].patchId)
-        .then((_) => {
-          new ScenesToFixtureAssignments(db)
-            .getCompositeFixtureInfo(1, new Set())
-            .then((res) => setCompositeFixtures(res));
-        })
-        .then((_) => refetchFixtureAssignmentData());
+        .then(refetchPatchFixtureData);
     } catch (err) {
       alert(err);
     }
@@ -214,7 +180,7 @@ export default function Patch() {
   };
 
   const patchRowData = buildPatchRowData({
-    fixtureMap: buildFixtureMap(compositeFixturesStore, selectedChannels),
+    fixtureMap: buildFixtureMap(patchFixturesData, selectedChannels),
     selectedChannels,
     addressStartSelection,
     profile,
@@ -229,7 +195,7 @@ export default function Patch() {
 
   console.log({
     args: {
-      fixtureMap: buildFixtureMap(compositeFixturesStore, selectedChannels),
+      fixtureMap: buildFixtureMap(patchFixturesData, selectedChannels),
 
       selectedChannels,
       addressStartSelection,
@@ -243,8 +209,6 @@ export default function Patch() {
       showAllChannels,
     },
   });
-
-  console.log({ patchRowData });
 
   const buildPatchRowDisplay = () =>
     patchRowData.map((fixture, index) => (
@@ -327,7 +291,7 @@ export default function Patch() {
 
   useEffect(() => {
     const updatedPatchRowData = buildPatchRowData({
-      fixtureMap: buildFixtureMap(compositeFixturesStore, selectedChannels),
+      fixtureMap: buildFixtureMap(patchFixturesData, selectedChannels),
       selectedChannels,
       addressStartSelection,
       profile,
@@ -342,7 +306,7 @@ export default function Patch() {
     setChannelObjsToDisplay(updatedPatchRowData);
   }, [
     selectedChannels,
-    compositeFixtures,
+    patchFixturesData,
     addressStartSelection,
     profile,
     manufacturers,
@@ -352,7 +316,7 @@ export default function Patch() {
     profiles,
     profileSelection,
     showAllChannels,
-    compositeFixturesStore,
+    // compositeFixturesStore,
   ]);
 
   return (
@@ -380,7 +344,7 @@ export default function Patch() {
                 </Text>
               </View>
               <ScrollView className="h-full">
-                {compositeFixtures.length > 0 && buildPatchRowDisplay()}
+                {patchFixturesData.length > 0 && buildPatchRowDisplay()}
               </ScrollView>
             </View>
           </ScrollView>
