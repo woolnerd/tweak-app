@@ -5,77 +5,128 @@ import {
   buildChannelObject,
   buildFixtureMap,
 } from "../helpers.ts";
-import { BuildPatchRowDataArgs } from "../types/index.ts";
+import {
+  BuildChannelObjectArgs,
+  BuildPatchRowDataArgs,
+} from "../types/index.ts";
+
+describe("buildChannelObject", () => {
+  const manufacturers = [
+    { id: 1, name: "Manufacturer A", notes: "A notes", website: "A.com" },
+    { id: 2, name: "Manufacturer B", notes: "B notes", website: "B.com" },
+  ];
+
+  const fixtures = [
+    {
+      id: 1,
+      name: "Fixture A",
+      notes: "A notes",
+      manufacturerId: 1,
+      colorTempRangeHigh: 10000,
+      colorTempRangeLow: 2800,
+    },
+    {
+      id: 2,
+      name: "Fixture B",
+      notes: "B notes",
+      manufacturerId: 1,
+      colorTempRangeHigh: 10000,
+      colorTempRangeLow: 2800,
+    },
+  ];
+
+  const profiles = [
+    {
+      id: 1,
+      name: "Profile A",
+      channels: JSON.stringify({
+        1: "Channel 1",
+        2: "Channel 2",
+        3: "Channel 3",
+      }),
+      fixtureId: 1,
+      channelPairs16Bit: JSON.stringify([]),
+    },
+  ];
+
+  const selectedChannel: BuildChannelObjectArgs = {
+    channel: 1,
+    selectedChannels: [1, 2, 3],
+    addressStartSelection: 1,
+    profileFootprint: 20,
+    manufacturers,
+    manufacturerSelection: 1,
+    fixtures,
+    fixtureSelection: 1,
+    profiles,
+    profileSelection: 1,
+  };
+
+  const unselectedChannel: BuildChannelObjectArgs = {
+    channel: 10,
+    selectedChannels: [1, 2, 3],
+    addressStartSelection: 1,
+    profileFootprint: 20,
+    manufacturers,
+    manufacturerSelection: 1,
+    fixtures,
+    fixtureSelection: 1,
+    profiles,
+    profileSelection: 1,
+  };
+
+  expect(buildChannelObject(selectedChannel)).toEqual({
+    channel: 1,
+    selected: true,
+    startAddress: 1,
+    endAddress: 20,
+    manufacturerName: "Manufacturer A",
+    fixtureName: "Fixture A",
+    profileName: "Profile A",
+  });
+
+  expect(buildChannelObject(unselectedChannel)).toEqual({
+    channel: 10,
+    selected: false,
+    startAddress: 0,
+    endAddress: 0,
+    manufacturerName: "-",
+    fixtureName: "-",
+    profileName: "-",
+  });
+});
 
 describe("buildPatchRowData", () => {
   const fixtureMap = buildFixtureMap(
     [
       {
         channel: 1,
-        values: [[1, 128]],
-        channelPairs16Bit: [],
-        colorTempHigh: 10000,
-        colorTempLow: 2800,
-        endAddress: 60,
-        fixtureAssignmentId: 3,
+        endAddress: 20,
+        fixtureAssignmentId: 1,
         fixtureName: "S60",
-        fixtureNotes: "test",
-        is16Bit: true,
         manufacturerName: "Arri",
-        profileChannels: {
-          1: "Dimmer",
-          2: "Dimmer fine",
-          3: "Color Temp",
-          4: "Color Temp fine",
-          5: "Green/Magenta Point",
-          6: "Green/Magenta Point fine",
-          7: "Crossfade color",
-          8: "Crossfade color fine",
-          9: "Red intensity",
-          10: "Red intensity fine",
-        },
         profileName: "mode 6",
-        sceneId: 1,
-        startAddress: 41,
+        startAddress: 1,
       },
       {
         channel: 2,
-        values: [[1, 128]],
-        channelPairs16Bit: [],
-        colorTempHigh: 10000,
-        colorTempLow: 2800,
         endAddress: 60,
-        fixtureAssignmentId: 3,
+        fixtureAssignmentId: 21,
         fixtureName: "S60",
-        fixtureNotes: "test",
-        is16Bit: true,
         manufacturerName: "Arri",
-        profileChannels: {
-          1: "Dimmer",
-          2: "Dimmer fine",
-          3: "Color Temp",
-          4: "Color Temp fine",
-          5: "Green/Magenta Point",
-          6: "Green/Magenta Point fine",
-          7: "Crossfade color",
-          8: "Crossfade color fine",
-          9: "Red intensity",
-          10: "Red intensity fine",
-        },
         profileName: "mode 6",
-        sceneId: 1,
         startAddress: 41,
       },
     ],
-    [1, 2, 3],
+    [1, 2],
   );
 
   test("builds patch row data for selected channels", () => {
-    console.log({ fixtureMap });
+    // console.log({ fixtureMap });
 
     const args: BuildPatchRowDataArgs = {
       fixtureMap,
-      selectedChannels: [1],
+      selectedChannels: [1, 2],
       addressStartSelection: 5,
       manufacturers: [
         { id: 1, name: "Manufacturer A", notes: "A notes", website: "A.com" },
@@ -143,12 +194,12 @@ describe("buildPatchRowData", () => {
       },
       {
         channel: 2,
-        selected: false,
-        startAddress: 0,
-        endAddress: 0,
-        manufacturerName: "-",
-        fixtureName: "-",
-        profileName: "-",
+        selected: true,
+        startAddress: 41,
+        endAddress: 60,
+        manufacturerName: "Arri",
+        fixtureName: "S60",
+        profileName: "mode 6",
       },
     ]);
   });
@@ -200,6 +251,7 @@ describe("buildPatchRowData", () => {
           id: 1,
           name: "Manufacturer A",
           website: "A website",
+          notes: "Manuf notes",
         },
       ],
       manufacturerSelection: 1,
@@ -231,7 +283,7 @@ describe("buildPatchRowData", () => {
 
   test("handles non-selected channels correctly when showAllChannels is true", () => {
     const args = {
-      compositeFixturesStore: [],
+      fixtureMap,
       selectedChannels: [],
       addressStartSelection: 5,
       manufacturers: [],

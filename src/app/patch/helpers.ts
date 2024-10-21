@@ -263,7 +263,6 @@ export const buildPatchRowData = (args: BuildPatchRowDataArgs) => {
           fixtureSelection,
           profiles,
           profileSelection,
-          fixtureMap,
         }),
       );
     }

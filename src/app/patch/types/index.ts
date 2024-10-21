@@ -43,10 +43,10 @@ interface BasePatchObjArgs {
   fixtureSelection: number;
   profileSelection: number;
   profile?: SelectProfile;
-  fixtureMap: Record<number, PatchRowData>;
 }
 export interface BuildPatchRowDataArgs extends BasePatchObjArgs {
   showAllChannels: boolean;
+  fixtureMap: Record<number, PatchRowData>;
 }
 export interface BuildChannelObjectArgs extends BasePatchObjArgs {
   channel: number;

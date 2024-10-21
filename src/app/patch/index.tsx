@@ -316,7 +316,6 @@ export default function Patch() {
     profiles,
     profileSelection,
     showAllChannels,
-    // compositeFixturesStore,
   ]);
 
   return (
