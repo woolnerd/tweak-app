@@ -193,23 +193,6 @@ export default function Patch() {
     showAllChannels,
   });
 
-  console.log({
-    args: {
-      fixtureMap: buildFixtureMap(patchFixturesData, selectedChannels),
-
-      selectedChannels,
-      addressStartSelection,
-      profile,
-      manufacturers,
-      manufacturerSelection,
-      fixtures,
-      fixtureSelection,
-      profiles,
-      profileSelection,
-      showAllChannels,
-    },
-  });
-
   const buildPatchRowDisplay = () =>
     patchRowData.map((fixture, index) => (
       <Pressable

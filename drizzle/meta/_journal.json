@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1715359184665,
-      "tag": "0000_pink_blob",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1725803281279,
-      "tag": "0001_sparkling_thor_girl",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1725907965613,
-      "tag": "0002_silent_captain_universe",
+      "when": 1729544613667,
+      "tag": "0000_famous_shadowcat",
       "breakpoints": true
     }
   ]
