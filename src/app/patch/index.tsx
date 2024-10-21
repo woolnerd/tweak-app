@@ -8,7 +8,11 @@ import {
 } from "react-native";
 import { Svg, Path } from "react-native-svg";
 
-import { payLoadWithAddresses, buildPatchRowData } from "./helpers.ts";
+import {
+  payLoadWithAddresses,
+  buildPatchRowData,
+  buildFixtureMap,
+} from "./helpers.ts";
 import { PatchRowData } from "./types/index.ts";
 import { db } from "../../db/client.ts";
 import { SelectFixture } from "../../db/types/tables.ts";
@@ -27,6 +31,7 @@ import useFetchManufacturers from "../hooks/useFetchManufacturers.ts";
 import useFetchProfiles from "../hooks/useFetchProfiles.ts";
 import useFetchScenes from "../hooks/useFetchScenes.ts";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
+import useFetchPatchFixtures from "../hooks/useFetchPatchFixtures.ts";
 
 export default function Patch() {
   const [fixtureSelection, setFixtureSelection] = useState<number>(0);
@@ -59,6 +64,7 @@ export default function Patch() {
     data: fixtureAssignmentsData,
     refetch: refetchFixtureAssignmentData,
   } = useFetchFixtureAssignments();
+  const { data: patchFixturesData } = useFetchPatchFixtures();
   const tester = useRef(1);
   //  top half of patch screen screen is the patch table
   // this shows channels in use, and empty channels
@@ -76,6 +82,7 @@ export default function Patch() {
   };
 
   console.log((tester.current += 1));
+  console.log({ patchFixturesData });
 
   const channelsInUse = fixtureAssignmentsData.map(
     (assignment) => assignment.channel,
@@ -207,7 +214,7 @@ export default function Patch() {
   };
 
   const patchRowData = buildPatchRowData({
-    compositeFixturesStore: compositeFixtures,
+    fixtureMap: buildFixtureMap(compositeFixturesStore, selectedChannels),
     selectedChannels,
     addressStartSelection,
     profile,
@@ -222,7 +229,8 @@ export default function Patch() {
 
   console.log({
     args: {
-      compositeFixturesStore: compositeFixtures,
+      fixtureMap: buildFixtureMap(compositeFixturesStore, selectedChannels),
+
       selectedChannels,
       addressStartSelection,
       profile,
@@ -319,7 +327,7 @@ export default function Patch() {
 
   useEffect(() => {
     const updatedPatchRowData = buildPatchRowData({
-      compositeFixturesStore: compositeFixtures,
+      fixtureMap: buildFixtureMap(compositeFixturesStore, selectedChannels),
       selectedChannels,
       addressStartSelection,
       profile,
@@ -344,6 +352,7 @@ export default function Patch() {
     profiles,
     profileSelection,
     showAllChannels,
+    compositeFixturesStore,
   ]);
 
   return (

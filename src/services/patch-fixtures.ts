@@ -1,4 +1,13 @@
-import { fixtureAssignments } from "../db/schema.ts";
+import { eq, sql } from "drizzle-orm";
+
+import { FixtureDataForPatch } from "../app/patch/types/index.ts";
+import {
+  fixtureAssignments,
+  fixtures,
+  profiles,
+  manufacturers,
+  patches,
+} from "../db/schema.ts";
 import { Database } from "../db/types/database.ts";
 import { InsertPatch } from "../db/types/tables.ts";
 import PatchModel from "../models/patch.ts";
@@ -8,6 +17,8 @@ type PatchCreationObjects = (InsertPatch & {
   channel: number;
   endAddress: number;
 })[];
+
+const OFFSET_BY_ONE = 1;
 
 export default class PatchFixtures {
   protected db: Database;
@@ -50,4 +61,31 @@ export default class PatchFixtures {
       return this.handleError(error);
     }
   }
+
+  getFixtureDataForPatch = async (): Promise<FixtureDataForPatch[] | void> => {
+    try {
+      return await this.db
+        .select({
+          channel: fixtureAssignments.channel,
+          profileName: profiles.name,
+          fixtureName: fixtures.name,
+          manufacturerName: manufacturers.name,
+          startAddress: patches.startAddress,
+          endAddress: sql<number>`${patches.startAddress} + (
+            SELECT COUNT(*) AS channelCount
+            FROM json_each(${profiles.channels})
+          ) - ${OFFSET_BY_ONE}`,
+        })
+        .from(fixtureAssignments)
+        .innerJoin(fixtures, eq(fixtureAssignments.fixtureId, fixtures.id))
+        .innerJoin(profiles, eq(fixtureAssignments.profileId, profiles.id))
+        .innerJoin(patches, eq(fixtureAssignments.patchId, patches.id))
+        .innerJoin(
+          manufacturers,
+          eq(fixtures.manufacturerId, manufacturers.id),
+        );
+    } catch (error) {
+      return this.handleError(error);
+    }
+  };
 }

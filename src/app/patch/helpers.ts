@@ -5,6 +5,7 @@ import {
   ChannelObjectDisplay,
   FixtureMap,
 } from "./types/index.ts";
+import { ParsedCompositeFixtureInfo } from "../../models/types/scene-to-fixture-assignment.ts";
 
 export function payLoadWithAddresses(args: {
   showId: number;
@@ -204,9 +205,27 @@ export const buildChannelObject = (args: BuildChannelObjectArgs) => {
   };
 };
 
+export function buildFixtureMap(
+  compositeFixturesStore: ParsedCompositeFixtureInfo[],
+  selectedChannels: number[],
+) {
+  return compositeFixturesStore.reduce((acc: FixtureMap, fixture) => {
+    acc[fixture.channel] = {
+      channel: fixture.channel,
+      manufacturerName: fixture.manufacturerName,
+      fixtureName: fixture.fixtureName,
+      profileName: fixture.profileName,
+      startAddress: fixture.startAddress,
+      endAddress: fixture.endAddress,
+      selected: selectedChannels.includes(fixture.channel),
+    };
+    return acc;
+  }, {});
+}
+
 export const buildPatchRowData = (args: BuildPatchRowDataArgs) => {
   const {
-    compositeFixturesStore,
+    fixtureMap,
     selectedChannels,
     addressStartSelection,
     profile,
@@ -220,26 +239,10 @@ export const buildPatchRowData = (args: BuildPatchRowDataArgs) => {
   } = args;
 
   const CHANNEL_COUNT = 50;
-  const patchRows = [];
+  const patchRows: PatchRowData[] = [];
   const profileFootprint = profile
     ? Object.keys(JSON.parse(profile.channels)).length
     : 1;
-
-  const fixtureMap = compositeFixturesStore.reduce(
-    (acc: FixtureMap, fixture) => {
-      acc[fixture.channel] = {
-        channel: fixture.channel,
-        manufacturerName: fixture.manufacturerName,
-        fixtureName: fixture.fixtureName,
-        profileName: fixture.profileName,
-        startAddress: fixture.startAddress,
-        endAddress: fixture.endAddress,
-        selected: selectedChannels.includes(fixture.channel),
-      };
-      return acc;
-    },
-    {},
-  );
 
   for (let channel = 1; channel <= CHANNEL_COUNT; channel += 1) {
     const channelIsSelected = selectedChannels.includes(channel);
@@ -259,6 +262,7 @@ export const buildPatchRowData = (args: BuildPatchRowDataArgs) => {
           fixtureSelection,
           profiles,
           profileSelection,
+          fixtureMap,
         }),
       );
     }
