@@ -5,7 +5,6 @@ import {
   screen,
   fireEvent,
   userEvent,
-  waitFor,
 } from "@testing-library/react-native";
 import React, { createRef } from "react";
 

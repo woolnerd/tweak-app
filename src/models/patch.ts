@@ -1,7 +1,6 @@
 import { eq, sql } from "drizzle-orm";
 
 import Base from "./base.ts";
-import { db } from "../db/client.ts";
 import { patches, profiles } from "../db/schema.ts";
 import { InsertPatch, SelectPatch, TableNames } from "../db/types/tables.ts";
 
@@ -43,8 +42,11 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
     return this.processedData;
   }
 
-  async create(data: InsertPatch & { channel: number; endAddress: number }) {
-    console.log({ data });
+  async create(data: InsertPatch & { channel: number; endAddress?: number }) {
+    // console.log({ data });
+    if (!data.endAddress) {
+      throw new Error("No end address found");
+    }
 
     if (data.startAddress > data.endAddress) {
       throw Error(
@@ -63,19 +65,21 @@ export default class Patch extends Base<typeof patches, SelectPatch> {
     );
 
     if (isOverlap) {
-      throw new Error("Address overlaps with current patch address in scene");
+      throw new Error("Address overlaps with current patch address in show");
     }
+
+    delete data.endAddress;
 
     return await this.db.insert(patches).values(data).returning();
   }
 
   private async checkOverlap(
     startAddressForCheck: number,
-    endAddressForCheck: number,
+    endAddressForCheck: number | undefined,
     showIdForCheck: number,
   ): Promise<boolean> {
     const OFFSET_BY_ONE = 1;
-    const overlappingPatches = await db
+    const overlappingPatches = await this.db
       .select()
       .from(patches)
       .where(

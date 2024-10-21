@@ -3,7 +3,6 @@ import {
   SelectFixture,
   SelectProfile,
 } from "../../../db/types/tables.ts";
-import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 
 export type ChannelObject = {
   startAddress: number;
@@ -30,8 +29,11 @@ export type PatchRowData = {
   profileName: string;
 };
 
-export type BuildPatchRowDataArgs = {
-  compositeFixturesStore: ParsedCompositeFixtureInfo[];
+export type FixtureDataForPatch = Omit<PatchRowData, "selected"> & {
+  fixtureAssignmentId: number;
+};
+
+interface BasePatchObjArgs {
   selectedChannels: number[];
   addressStartSelection: number;
   manufacturers: SelectManufacturer[];
@@ -41,7 +43,14 @@ export type BuildPatchRowDataArgs = {
   fixtureSelection: number;
   profileSelection: number;
   profile?: SelectProfile;
+}
+export interface BuildPatchRowDataArgs extends BasePatchObjArgs {
   showAllChannels: boolean;
-};
+  fixtureMap: Record<number, PatchRowData>;
+}
+export interface BuildChannelObjectArgs extends BasePatchObjArgs {
+  channel: number;
+  profileFootprint: number;
+}
 
 export type FixtureMap = Record<number, PatchRowData>;

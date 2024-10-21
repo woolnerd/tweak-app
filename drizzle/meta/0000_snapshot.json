@@ -1,11 +1,11 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "c199fc3d-d25d-4d24-94f4-b2ce94201aa6",
+  "id": "94e655df-7332-4d05-98e4-3e841577809a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "fixtureAssignments": {
-      "name": "fixtureAssignments",
+    "fixture_assignments": {
+      "name": "fixture_assignments",
       "columns": {
         "id": {
           "name": "id",
@@ -14,28 +14,12 @@
           "notNull": true,
           "autoincrement": true
         },
-        "title": {
-          "name": "title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
         "channel": {
           "name": "channel",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
-        },
-        "values": {
-          "name": "values",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'[]'"
         },
         "fixture_id": {
           "name": "fixture_id",
@@ -59,8 +43,51 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
-      "foreignKeys": {},
+      "indexes": {
+        "fixture_id_index": {
+          "name": "fixture_id_index",
+          "columns": [
+            "fixture_id"
+          ],
+          "isUnique": false
+        },
+        "profile_id_index": {
+          "name": "profile_id_index",
+          "columns": [
+            "profile_id"
+          ],
+          "isUnique": false
+        },
+        "patch_id_index": {
+          "name": "patch_id_index",
+          "columns": [
+            "patch_id"
+          ],
+          "isUnique": false
+        },
+        "channel_index": {
+          "name": "channel_index",
+          "columns": [
+            "channel"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "fixture_assignments_patch_id_patches_id_fk": {
+          "name": "fixture_assignments_patch_id_patches_id_fk",
+          "tableFrom": "fixture_assignments",
+          "tableTo": "patches",
+          "columnsFrom": [
+            "patch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -110,7 +137,22 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "manufacturer_id_index": {
+          "name": "manufacturer_id_index",
+          "columns": [
+            "manufacturer_id"
+          ],
+          "isUnique": false
+        },
+        "id_index": {
+          "name": "id_index",
+          "columns": [
+            "id"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "fixtures_manufacturer_id_manufacturers_id_fk": {
           "name": "fixtures_manufacturer_id_manufacturers_id_fk",
@@ -193,13 +235,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "end_address": {
-          "name": "end_address",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "fixture_id": {
           "name": "fixture_id",
           "type": "integer",
@@ -219,13 +254,6 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
-        },
-        "fixture_assignment_id": {
-          "name": "fixture_assignment_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
           "autoincrement": false
         }
       },
@@ -260,13 +288,6 @@
           "autoincrement": false,
           "default": "'{}'"
         },
-        "channel_count": {
-          "name": "channel_count",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "fixture_id": {
           "name": "fixture_id",
           "type": "integer",
@@ -281,14 +302,6 @@
           "notNull": true,
           "autoincrement": false,
           "default": "'[]'"
-        },
-        "is_16_bit": {
-          "name": "is_16_bit",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": false
         }
       },
       "indexes": {},
@@ -365,14 +378,37 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "values": {
+          "name": "values",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'[]'"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "fixture_assignment_id": {
+          "name": "fixture_assignment_id",
+          "columns": [
+            "fixture_assignment_id"
+          ],
+          "isUnique": false
+        },
+        "scene_id_index": {
+          "name": "scene_id_index",
+          "columns": [
+            "scene_id"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
-        "scenes_to_fixture_assignments_fixture_assignment_id_fixtureAssignments_id_fk": {
-          "name": "scenes_to_fixture_assignments_fixture_assignment_id_fixtureAssignments_id_fk",
+        "scenes_to_fixture_assignments_fixture_assignment_id_fixture_assignments_id_fk": {
+          "name": "scenes_to_fixture_assignments_fixture_assignment_id_fixture_assignments_id_fk",
           "tableFrom": "scenes_to_fixture_assignments",
-          "tableTo": "fixtureAssignments",
+          "tableTo": "fixture_assignments",
           "columnsFrom": [
             "fixture_assignment_id"
           ],

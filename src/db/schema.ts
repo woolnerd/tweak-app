@@ -4,16 +4,28 @@ import {
   primaryKey,
   text,
   integer,
+  index,
 } from "drizzle-orm/sqlite-core";
 
-export const fixtures = sqliteTable("fixtures", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  name: text("name").notNull(),
-  notes: text("notes").notNull(),
-  manufacturerId: integer("manufacturer_id").references(() => manufacturers.id),
-  colorTempRangeLow: integer("color_temp_range_low"),
-  colorTempRangeHigh: integer("color_temp_range_high"),
-});
+export const fixtures = sqliteTable(
+  "fixtures",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    name: text("name").notNull(),
+    notes: text("notes").notNull(),
+    manufacturerId: integer("manufacturer_id").references(
+      () => manufacturers.id,
+    ),
+    colorTempRangeLow: integer("color_temp_range_low"),
+    colorTempRangeHigh: integer("color_temp_range_high"),
+  },
+  (table) => ({
+    manufacturerIdIndex: index("manufacturer_id_index").on(
+      table.manufacturerId,
+    ),
+    idIndex: index("id_index").on(table.id),
+  }),
+);
 
 export const fixturesRelations = relations(fixtures, ({ one, many }) => ({
   fixtureAssignments: many(fixtureAssignments),
@@ -75,16 +87,25 @@ export const profilesRelations = relations(profiles, ({ one, many }) => ({
   fixtureAssignments: many(fixtureAssignments),
   patches: many(patches),
 }));
-// rename to snakecase
-export const fixtureAssignments = sqliteTable("fixtureAssignments", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  channel: integer("channel").notNull(),
-  fixtureId: integer("fixture_id").notNull(),
-  profileId: integer("profile_id").notNull(),
-  patchId: integer("patch_id")
-    .notNull()
-    .references(() => patches.id, { onDelete: "cascade" }),
-});
+
+export const fixtureAssignments = sqliteTable(
+  "fixture_assignments",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    channel: integer("channel").notNull(),
+    fixtureId: integer("fixture_id").notNull(),
+    profileId: integer("profile_id").notNull(),
+    patchId: integer("patch_id")
+      .notNull()
+      .references(() => patches.id, { onDelete: "cascade" }),
+  },
+  (table) => ({
+    fixtureIdIndex: index("fixture_id_index").on(table.fixtureId),
+    profileIdIndex: index("profile_id_index").on(table.profileId),
+    patchIdIndex: index("patch_id_index").on(table.patchId),
+    channelIndex: index("channel_index").on(table.channel),
+  }),
+);
 
 export const fixtureAssignmentRelations = relations(
   fixtureAssignments,
@@ -132,8 +153,12 @@ export const scenesToFixtureAssignments = sqliteTable(
       .references(() => scenes.id, { onDelete: "cascade" }),
     values: text("values").notNull().default("[]"),
   },
-  (t) => ({
-    pk: primaryKey({ columns: [t.fixtureAssignmentId, t.sceneId] }),
+  (table) => ({
+    pk: primaryKey({ columns: [table.fixtureAssignmentId, table.sceneId] }),
+    fixtureAssignmentAdIndex: index("fixture_assignment_id").on(
+      table.fixtureAssignmentId,
+    ),
+    sceneIdIndex: index("scene_id_index").on(table.sceneId),
   }),
 );
 

@@ -11,12 +11,16 @@ export const mockFixtureArray: SelectFixture[] = [
     name: "Test Fixture1",
     notes: "Test notes1",
     manufacturerId: 1,
+    colorTempRangeHigh: 10000,
+    colorTempRangeLow: 2800,
   },
   {
     id: 2,
     name: "Test Fixture2",
     notes: "Test notes2",
     manufacturerId: 1,
+    colorTempRangeHigh: 10000,
+    colorTempRangeLow: 2800,
   },
 ];
 
@@ -25,6 +29,8 @@ export const mockFixture: SelectFixture = {
   name: "Test Fixture",
   notes: "Test notes",
   manufacturerId: 1,
+  colorTempRangeHigh: 10000,
+  colorTempRangeLow: 2800,
 };
 
 export const mockInsertFixture: InsertFixture = {

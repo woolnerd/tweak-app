@@ -18,7 +18,7 @@ describe("ControlButton Helpers", () => {
         [3, 156],
         [4, 1],
       ],
-      title: "Vortex 1 at full",
+      manufacturerName: "Arri",
       profileChannels: {
         "1": "Dimmer",
         "2": "Dimmer fine",
@@ -70,7 +70,7 @@ describe("ControlButton Helpers", () => {
         [3, 35],
         [4, 143],
       ],
-      title: "S60 1 at 50%",
+      manufacturerName: "Arri",
       profileChannels: {
         "1": "Dimmer",
         "2": "Dimmer fine",
@@ -118,7 +118,7 @@ describe("ControlButton Helpers", () => {
       fixtureAssignmentId: 1,
       channel: 1,
       values: [[1, 128]],
-      title: "Dimmer",
+      manufacturerName: "Arri",
       profileChannels: { "1": "Dimmer" },
       channelPairs16Bit: [],
       is16Bit: false,
@@ -140,7 +140,7 @@ describe("ControlButton Helpers", () => {
         [3, 35],
         [4, 143],
       ],
-      title: "S60 1 at 50%",
+      manufacturerName: "Arri",
       profileChannels: {
         "1": "Dimmer",
         "2": "Dimmer fine",
