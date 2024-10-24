@@ -5,6 +5,7 @@ import { openDatabaseSync } from "expo-sqlite/next";
 import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import ErrorBoundary from "react-native-error-boundary";
+import dgram from "react-native-udp";
 
 import runMigrataions from "../../../scripts/migrations.ts";
 import seedDatabase from "../../../scripts/seedDatabase.ts";
@@ -16,9 +17,51 @@ import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
 import { Scene } from "../components/Scene/Scene.tsx";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelectionStore.ts";
+import { Buffer } from "buffer";
+
+// const e131 = require("e131");
+
+console.log(Buffer.from([1, 2, 3]));
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
+
+const createSACNPacket = (universe: number, data: number[]): Buffer => {
+  // Allocate a buffer for the sACN packet
+  const packet = Buffer.alloc(638); // The typical maximum length for an sACN packet
+
+  // Fill in Root Layer, Framing Layer, DMP Layer, etc.
+  // Here is a simplified version:
+  packet.writeUInt16BE(0x0010, 0); // Example: Write some values to the packet
+  packet.writeUInt16BE(universe, 2); // Write the universe to the appropriate position
+  packet.set(data, 10); // Assume DMX data starts at byte 10
+
+  return packet;
+};
+
+const sendSACNPacket = (universe: number, data: number[]) => {
+  const packet = createSACNPacket(universe, data);
+  const socket = dgram.createSocket({ type: "udp4" });
+  // console.log(dgram.createSocket({ type: "udp4" }));
+  // socket.bind(5568);
+  // socket.setBroadcast(true);
+
+  // Bind the socket to the desired port before using it
+  const PORT = 5568;
+  socket.bind(PORT);
+
+  // console.log(socket);
+  socket.send(packet, 0, packet.length, 5568, "172.20.10.3", (err) => {
+    if (err) {
+      console.error("Error sending sACN packet:", err);
+    } else {
+      console.log("sACN packet sent successfully!");
+    }
+    socket.close();
+  });
+};
+
+sendSACNPacket(1, [128, 0, 128, 511, 128]);
 
 function App() {
   const [scenes, setScenes] = useState<SelectScene[]>([]);

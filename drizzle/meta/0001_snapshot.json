@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "94e655df-7332-4d05-98e4-3e841577809a",
+  "id": "270541ab-e925-4c4a-85eb-4a6c63e7db8e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "fixture_assignments": {

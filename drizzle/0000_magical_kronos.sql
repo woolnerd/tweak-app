@@ -7,6 +7,13 @@ CREATE TABLE `fixture_assignments` (
 	FOREIGN KEY (`patch_id`) REFERENCES `patches`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+CREATE TABLE `manufacturers` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`name` text NOT NULL,
+	`notes` text DEFAULT '' NOT NULL,
+	`website` text DEFAULT '' NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE `fixtures` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
@@ -15,13 +22,6 @@ CREATE TABLE `fixtures` (
 	`color_temp_range_low` integer,
 	`color_temp_range_high` integer,
 	FOREIGN KEY (`manufacturer_id`) REFERENCES `manufacturers`(`id`) ON UPDATE no action ON DELETE no action
-);
---> statement-breakpoint
-CREATE TABLE `manufacturers` (
-	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`name` text NOT NULL,
-	`notes` text DEFAULT '' NOT NULL,
-	`website` text DEFAULT '' NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `patches` (
