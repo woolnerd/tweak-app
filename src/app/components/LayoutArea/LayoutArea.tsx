@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useState } from "react";
-import { StyleSheet, View, FlatList } from "react-native";
+import { View, FlatList } from "react-native";
 
 import { db } from "../../../db/client.ts";
 import ScenesToFixtureAssignments from "../../../models/scene-to-fixture-assignments.ts";
@@ -8,6 +8,9 @@ import { useCompositeFixtureStore } from "../../store/useCompositeFixtureStore.t
 import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
 import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
 import { Fixture as FixtureComponent } from "../Fixture/Fixture.tsx";
+import PacketSender from "../../../lib/packets/packet-sender.ts";
+import PacketBuilder from "../../../lib/packets/packet-builder.ts";
+import { useOutputValuesStore } from "../../store/useOutputValuesStore.ts";
 
 type LayoutAreaProps = {
   selectedSceneId: number;
@@ -28,6 +31,7 @@ export default function LayoutArea({
   );
 
   const { manualFixturesStore } = useManualFixtureStore((state) => state);
+  const { outputValuesStore } = useOutputValuesStore();
 
   const fetchCompositeFixtures = useCallback(async () => {
     try {
@@ -44,6 +48,17 @@ export default function LayoutArea({
   }, [selectedSceneId]);
 
   useUniverseOutput();
+
+  useEffect(() => {
+    const sender = new PacketSender(5568, "172.20.10.3");
+    const packetBuilder = new PacketBuilder(1, [128, 128, 0, 0]);
+    packetBuilder.build();
+
+    console.log(outputValuesStore);
+
+    sender.sendSACNPacket(packetBuilder.packet);
+    sender.closeSocket();
+  }, [outputValuesStore]);
 
   useEffect(() => {
     fetchCompositeFixtures()
