@@ -1,10 +1,5 @@
 import { Database } from "../../db/types/database.ts";
-import {
-  insertPatch,
-  mockDbInsert,
-  mockDbSelectOverlap,
-  selectPatch,
-} from "../__mocks__/patch.ts";
+import { insertPatch, mockDbInsert } from "../__mocks__/patch.ts";
 import Patch from "../patch.ts";
 
 jest.mock("../../db/client", () =>

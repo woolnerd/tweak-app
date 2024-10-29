@@ -1,4 +1,4 @@
-export const mockDb: Database = {
+export default {
   insert: jest.fn().mockReturnThis(),
   values: jest.fn().mockReturnThis(),
   returning: jest.fn(() =>

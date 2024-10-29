@@ -66,6 +66,9 @@ describe("Fixture model", () => {
       name: "Test Fixture",
       notes: "Test notes",
       manufacturerId: null,
+      colorTempRangeLow: 2800,
+      colorTempRangeHigh: 10000,
+      id: 1,
     };
 
     (mockUpdateDb.returning as jest.Mock).mockRejectedValueOnce(
@@ -82,6 +85,7 @@ describe("Fixture model", () => {
     await expect(new Fixture(mockDeleteDb).delete(1)).resolves.toEqual(
       mockFixture,
     );
+    // eslint-disable-next-line drizzle/enforce-delete-with-where
     expect(mockDeleteDb.delete).toHaveBeenCalledTimes(1);
     expect(mockDeleteDb.where).toHaveBeenCalledTimes(1);
     expect(mockDeleteDb.returning).toHaveBeenCalledTimes(1);

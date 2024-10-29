@@ -1,5 +1,4 @@
 /* eslint-disable drizzle/enforce-delete-with-where */
-import { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
 import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
@@ -10,23 +9,9 @@ import {
   percentageToIntensityLevel,
 } from "../../../util/helpers.ts";
 import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
-// import {
-//   removeManualFixture,
-//   addManualFixture,
-// } from "../util/fixture-cache.ts";
 import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
 
-// type OptionalProps<T> = { [P in keyof T]?: T[P] | null };
-type ProfileKey = number;
-type Value = number;
-type ChannelTuples = [ProfileKey, Value][];
-
-export type FixtureProps = {
-  // selectedFixtureIds: Set<number>;
-  // setSelectedFixtureIds: (
-  //   fixtureIds: (currentState: Set<number>) => Set<number>,
-  // ) => void;
-} & ParsedCompositeFixtureInfo;
+export type FixtureProps = object & ParsedCompositeFixtureInfo;
 export function Fixture({
   channel,
   fixtureName,
@@ -41,10 +26,6 @@ export function Fixture({
   colorTempLow,
   colorTempHigh,
 }: FixtureProps) {
-  // const [selectedValue, setSelectedValue] = useState<string | null>([150]);
-  // const [manualHighlight, setManualHighlight] = useState(false);
-  const [unsavedChanges, setUnsavedChanges] = useState(false);
-
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
     useFixtureChannelSelectionStore((state) => state);
 
@@ -65,38 +46,6 @@ export function Fixture({
     dupe.add(fixtureChannel);
     updateFixtureChannelSelectionStore(dupe);
   };
-
-  // does this do anything right now?
-  useEffect(() => {
-    fixtureInManualState ? setUnsavedChanges(true) : setUnsavedChanges(false);
-  }, [fixtureInManualState]);
-
-  // useEffect(() => {
-  //   if (fixtureIsCached) {
-  //     addManualFixture({
-  //       channel,
-  //       fixtureName,
-  //       profileChannels,
-  //       values, // here we need the correctly parsed value
-  //       fixtureAssignmentId,
-  //       sceneId,
-  //       startAddress,
-  //       endAddress,
-  //     });
-  //   } else {
-  //     removeManualFixture(sceneId, channel);
-  //   }
-  // }, [
-  //   fixtureIsCached,
-  //   channel,
-  //   fixtureName,
-  //   profileChannels,
-  //   values, // here we need the correctly parsed value
-  //   fixtureAssignmentId,
-  //   sceneId,
-  //   startAddress,
-  //   endAddress,
-  // ]);
 
   const handleOutput = (fixtureChannel: number) => {
     if (fixtureInManualState) {

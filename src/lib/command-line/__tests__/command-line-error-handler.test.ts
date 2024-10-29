@@ -1,10 +1,10 @@
-import CommandLineErrorHandler from "../command-line-error-handler.ts";
+// import CommandLineErrorHandler from "../command-line-error-handler.ts";
 
 describe("CommandLineErrorHandler", () => {
-  let errorHandler: CommandLineErrorHandler;
+  // let errorHandler: CommandLineErrorHandler;
 
   beforeEach(() => {
-    errorHandler = new CommandLineErrorHandler();
+    // errorHandler = new CommandLineErrorHandler();
   });
 
   test("test_ensureValidMethod", () => {
