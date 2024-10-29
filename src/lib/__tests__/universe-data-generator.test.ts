@@ -51,9 +51,10 @@ describe("UniverseOutputGenerator constructor", () => {
       UniverseDataBuilder.fillUniverseOutputValuesWithZero = jest
         .fn()
         .mockReturnValue(mockFilledData);
-      (PacketBuilder as unknown as jest.Mock).mockImplementation(() => ({
-        packet: mockPacket,
-      }));
+
+      jest
+        .spyOn(PacketBuilder, "build")
+        .mockReturnValue(Buffer.from("mockPacket"));
 
       mockOutputValuesStore = {
         1: [
