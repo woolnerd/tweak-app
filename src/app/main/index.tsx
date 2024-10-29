@@ -10,16 +10,16 @@ import runMigrataions from "../../../scripts/migrations.ts";
 import seedDatabase from "../../../scripts/seedDatabase.ts";
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
+import PacketSender from "../../lib/packets/packet-sender.ts";
+import UniverseOutputGenerator from "../../lib/universe-output-generator.ts";
 import SceneModel from "../../models/scene.ts";
 import ControlPanel from "../components/ControlPanel/ControlPanel.tsx";
 import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
 import { Scene } from "../components/Scene/Scene.tsx";
+import useUniverseOutput from "../hooks/useUniverseOutput.ts";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelectionStore.ts";
 import { useOutputValuesStore } from "../store/useOutputValuesStore.ts";
-import useUniverseOutput from "../hooks/useUniverseOutput.ts";
-import UniverseOutputGenerator from "../../lib/universe-output-generator.ts";
-import PacketSender from "../../lib/packets/packet-sender.ts";
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
@@ -30,6 +30,7 @@ function App() {
   const [goToOut, setGoToOut] = useState(false);
   const [loadFixtures, setLoadFixtures] = useState(false);
   const [reloadScenes, setReloadScenes] = useState(false);
+  const [sacnState, setSacnState] = useState(false);
   const labelRef = useRef<boolean>(false);
 
   const fetchScenes = async () => {
@@ -49,15 +50,24 @@ function App() {
   useUniverseOutput();
 
   useEffect(() => {
-    if (outputValuesStore) {
+    if (outputValuesStore && sacnState) {
       const outputGenerator = new UniverseOutputGenerator(
         outputValuesStore,
         new PacketSender(),
       );
       const packets = outputGenerator.generateOutput();
-      outputGenerator.sendOutput(packets);
+      const intervalId = setInterval(() => {
+        outputGenerator.sendOutput(packets);
+      }, 25);
+
+      return () => {
+        clearInterval(intervalId);
+        outputGenerator.closeSocket();
+      };
     }
-  }, [outputValuesStore]);
+
+    return undefined;
+  }, [outputValuesStore, sacnState]);
 
   useEffect(() => {
     if (reloadScenes) {
@@ -92,6 +102,14 @@ function App() {
 
             <Pressable className={bigButtonStyles} onPress={handleGoToOut}>
               <Text className={textStyles}>Go to Out</Text>
+            </Pressable>
+
+            <Pressable
+              className={bigButtonStyles}
+              onPress={() => setSacnState(!sacnState)}>
+              <Text className={textStyles}>
+                Sacn is {sacnState ? "On" : "Off"}
+              </Text>
             </Pressable>
 
             {scenes?.map((scene, i) => (

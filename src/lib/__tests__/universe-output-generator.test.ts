@@ -96,7 +96,7 @@ describe("UniverseOutputGenerator constructor", () => {
   });
 
   describe("sendOutput", () => {
-    it("should send each packet and then close the socket", () => {
+    test("should send each packet and then close the socket", () => {
       const universeOutputGenerator = new UniverseOutputGenerator(
         mockOutputValuesStore,
         mockPacketSender,
@@ -111,6 +111,16 @@ describe("UniverseOutputGenerator constructor", () => {
       packets.forEach((packet) => {
         expect(mockPacketSender.sendSACNPacket).toHaveBeenCalledWith(packet);
       });
+    });
+  });
+
+  describe("closeSocket", () => {
+    test("it closes the socket", () => {
+      const universeOutputGenerator = new UniverseOutputGenerator(
+        mockOutputValuesStore,
+        mockPacketSender,
+      );
+      universeOutputGenerator.closeSocket();
       expect(mockPacketSender.closeSocket).toHaveBeenCalled();
     });
   });

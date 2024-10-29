@@ -27,6 +27,9 @@ export default class UniverseOutputGenerator {
     packets.forEach((packet) => {
       this.sender.sendSACNPacket(packet);
     });
+  }
+
+  closeSocket() {
     this.sender.closeSocket();
   }
 }
