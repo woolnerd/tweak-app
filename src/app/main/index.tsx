@@ -19,6 +19,7 @@ import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelec
 import { useOutputValuesStore } from "../store/useOutputValuesStore.ts";
 import useUniverseOutput from "../hooks/useUniverseOutput.ts";
 import UniverseOutputGenerator from "../../lib/universe-output-generator.ts";
+import PacketSender from "../../lib/packets/packet-sender.ts";
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
@@ -49,7 +50,10 @@ function App() {
 
   useEffect(() => {
     if (outputValuesStore) {
-      const outputGenerator = new UniverseOutputGenerator(outputValuesStore);
+      const outputGenerator = new UniverseOutputGenerator(
+        outputValuesStore,
+        new PacketSender(),
+      );
       const packets = outputGenerator.generateOutput();
       outputGenerator.sendOutput(packets);
     }

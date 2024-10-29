@@ -3,8 +3,8 @@ import UdpSocket from "react-native-udp/lib/types/UdpSocket";
 
 export default class PacketSender {
   constructor(
-    private readonly port: number,
-    private readonly ip: string,
+    private readonly port: number = 5568,
+    private readonly ip: string = "0.0.0.0",
     private readonly socket: UdpSocket = dgram.createSocket({ type: "udp4" }),
   ) {
     this.socket.bind(this.port, () => {

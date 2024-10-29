@@ -8,13 +8,7 @@ export default class PacketBuilder {
 
   public packet: Buffer;
 
-  constructor(universe: number, dmxData: number[]) {
-    this.dmxData = dmxData;
-    this.universe = universe;
-    this.packet = this.build();
-  }
-
-  build() {
+  static build(universe: number, dmxData: number[]) {
     const PDU_HEADER_LENGTH = 126; // Updated to include the full header length
     const ROOT_VECTOR = 0x00000004;
     const FRAMING_VECTOR = 0x00000002;
@@ -25,7 +19,7 @@ export default class PacketBuilder {
     const OPTIONS = 0; // Default Options value
     const START_CODE = 0; // Default start code
 
-    const dmxLength = Math.min(this.dmxData.length, 512); // DMX data max length is 512 bytes
+    const dmxLength = Math.min(dmxData.length, 512); // DMX data max length is 512 bytes
 
     const totalPacketLength = PDU_HEADER_LENGTH + dmxLength;
     const packet = Buffer.alloc(totalPacketLength);
@@ -45,7 +39,7 @@ export default class PacketBuilder {
     packet.writeUInt8(PRIORITY, 108); // Priority
     packet.writeUInt8(SEQUENCE, 111); // Sequence Number
     packet.writeUInt8(OPTIONS, 112); // Options
-    packet.writeUInt16BE(this.universe, 113); // Universe number
+    packet.writeUInt16BE(universe, 113); // Universe number
 
     // DMP Layer (DMX data)
     packet.writeUInt16BE(0x7000 | (dmxLength + 11), 114); // DMP length
@@ -58,7 +52,7 @@ export default class PacketBuilder {
 
     // Write DMX data
     for (let i = 0; i < dmxLength; i += 1) {
-      packet.writeUInt8(this.dmxData[i], 125 + i);
+      packet.writeUInt8(dmxData[i], 125 + i);
     }
 
     return packet;
