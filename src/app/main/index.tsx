@@ -16,6 +16,9 @@ import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
 import { Scene } from "../components/Scene/Scene.tsx";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelectionStore.ts";
+import { useOutputValuesStore } from "../store/useOutputValuesStore.ts";
+import useUniverseOutput from "../hooks/useUniverseOutput.ts";
+import UniverseOutputGenerator from "../../lib/universe-output-generator.ts";
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
@@ -34,12 +37,23 @@ function App() {
   };
 
   const { compositeFixturesStore } = useCompositeFixtureStore((state) => state);
+  const { outputValuesStore } = useOutputValuesStore();
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
     useFixtureChannelSelectionStore((state) => state);
 
   const selectedCompositeFixtures = compositeFixturesStore.filter((fixture) =>
     fixtureChannelSelectionStore.has(fixture.channel),
   );
+
+  useUniverseOutput();
+
+  useEffect(() => {
+    if (outputValuesStore) {
+      const outputGenerator = new UniverseOutputGenerator(outputValuesStore);
+      const packets = outputGenerator.generateOutput();
+      outputGenerator.sendOutput(packets);
+    }
+  }, [outputValuesStore]);
 
   useEffect(() => {
     if (reloadScenes) {

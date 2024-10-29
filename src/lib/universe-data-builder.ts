@@ -19,25 +19,6 @@ export default class UniverseDataBuilder {
     this.data = data;
   }
 
-  // public toUniverseObject() {
-  //   const uniObj: UniverseDataObject = {};
-
-  //   uniObj[this.data.startAddress] = [];
-
-  //   const addressFootprint = this.data.endAddress - this.data.startAddress + 1;
-
-  //   for (let i = 0; i < addressFootprint; i += 1) {
-  //     uniObj[this.data.startAddress][i] = 0;
-  //   }
-
-  //   this.data.values.forEach((tuple) => {
-  //     const [addressIdx, dmxValue] = tuple;
-  //     uniObj[this.data.startAddress!][addressIdx - 1] = dmxValue;
-  //   });
-
-  //   return uniObj;
-  // }
-
   public buildUniverses() {
     return this.data.values?.reduce(
       (universes: UniverseDataObjectCollection, [originalAddress, dmxVal]) => {
@@ -98,5 +79,31 @@ export default class UniverseDataBuilder {
 
   static offsetByOneAndZeroIndex(value: number) {
     return value - 2;
+  }
+
+  static mapAddresses(channelOutputTuples: number[][]) {
+    return channelOutputTuples.reduce(
+      (acc, tuple) => {
+        const [address, outputValue] = tuple;
+        acc[address] = outputValue;
+        return acc;
+      },
+      {} as Record<number, number>,
+    );
+  }
+
+  static fillUniverseOutputValuesWithZero(channelOutputTuples: number[][]) {
+    const universe: number[] = [];
+    const addressMap = UniverseDataBuilder.mapAddresses(channelOutputTuples);
+
+    for (let i = 0; i < 511; i += 1) {
+      if (i in addressMap) {
+        universe.push(addressMap[i]);
+      } else {
+        universe.push(0);
+      }
+    }
+
+    return universe;
   }
 }
