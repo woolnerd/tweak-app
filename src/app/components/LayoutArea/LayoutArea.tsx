@@ -1,9 +1,8 @@
-import React, { useEffect, useCallback, useState } from "react";
-import { StyleSheet, View, FlatList } from "react-native";
+import React, { useEffect, useCallback } from "react";
+import { View, FlatList } from "react-native";
 
 import { db } from "../../../db/client.ts";
 import ScenesToFixtureAssignments from "../../../models/scene-to-fixture-assignments.ts";
-import useUniverseOutput from "../../hooks/useUniverseOutput.ts";
 import { useCompositeFixtureStore } from "../../store/useCompositeFixtureStore.ts";
 import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
 import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
@@ -43,8 +42,6 @@ export default function LayoutArea({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSceneId]);
 
-  useUniverseOutput();
-
   useEffect(() => {
     fetchCompositeFixtures()
       .then((res) => updateCompositeFixturesStore(res))
@@ -76,11 +73,7 @@ export default function LayoutArea({
   }, [manualFixturesStore]);
 
   return (
-    <View
-      style={{
-        ...styles.container,
-        alignItems: "center",
-      }}>
+    <View className="text-center bg-black m-1 h-auto">
       <FlatList
         data={compositeFixturesStore}
         renderItem={({ item }) => (
@@ -99,6 +92,7 @@ export default function LayoutArea({
             colorTempLow={item.colorTempLow}
             startAddress={item.startAddress}
             endAddress={item.endAddress}
+            manufacturerName={item.manufacturerName}
           />
         )}
         keyExtractor={(item, idx) => item.fixtureAssignmentId.toString()}
@@ -106,66 +100,3 @@ export default function LayoutArea({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#000",
-    // borderColor: '#cba601',
-    // borderWidth: 2,
-    margin: 4,
-    height: "auto",
-  },
-
-  scene: {
-    borderColor: "purple",
-    borderWidth: 2,
-    margin: 4,
-    height: "100%",
-    minWidth: 130,
-  },
-
-  rec: {
-    borderColor: "red",
-    borderWidth: 2,
-    margin: 4,
-    color: "#fff",
-    textAlign: "center",
-    minWidth: 60,
-    padding: 4,
-    // height: "100%"
-  },
-
-  bigButtons: {
-    borderColor: "blue",
-    minHeight: 60,
-    padding: 18,
-    borderWidth: 2,
-    margin: 4,
-    height: 30,
-    minWidth: 60,
-  },
-
-  sceneCtrl: {
-    minHeight: 40,
-    marginTop: 8,
-    marginBottom: 8,
-    justifyContent: "space-between",
-  },
-
-  btnText: {
-    color: "black",
-    textAlign: "center",
-    fontSize: 12,
-    margin: "auto",
-  },
-
-  fixtures: {
-    backgroundColor: "yellow",
-    width: 100,
-    height: 100,
-    borderColor: "black",
-    borderWidth: 4,
-    margin: 10,
-    textAlign: "center",
-  },
-});

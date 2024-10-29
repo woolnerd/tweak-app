@@ -4,25 +4,6 @@ import UniverseDataBuilder, {
 } from "../universe-data-builder.ts";
 
 describe("UniverseDataBuilder", () => {
-  describe("toUniverseObject", () => {
-    // test("should initialize and populate universe object correctly", () => {
-    //   const data: PickFixtureInfo = {
-    //     startAddress: 1,
-    //     endAddress: 3,
-    //     values: [
-    //       [1, 100],
-    //       [2, 150],
-    //       [3, 200],
-    //     ],
-    //   };
-    //   const builder = new UniverseDataBuilder(data);
-    //   const result = builder.toUniverseObject();
-    //   expect(result).toEqual({
-    //     1: [100, 150, 200],
-    //   });
-    // });
-  });
-
   describe("toUniverseTuples", () => {
     test("should convert data values into tuples correctly, applying transformations", () => {
       const data: PickFixtureInfo = {
@@ -123,6 +104,44 @@ describe("UniverseDataBuilder", () => {
           [2, 150],
         ],
       });
+    });
+  });
+
+  describe("mapAddresses", () => {
+    test("it maps channel tuples to map with keys as address and values as output value", () => {
+      const channelTuples1 = [
+        [1, 128],
+        [2, 0],
+        [3, 255],
+        [4, 0],
+      ];
+
+      expect(UniverseDataBuilder.mapAddresses(channelTuples1)).toEqual({
+        1: 128,
+        2: 0,
+        3: 255,
+        4: 0,
+      });
+    });
+  });
+
+  describe("fillUniverseOutputValuesWithZero", () => {
+    test("it creates an array of 512 output numbers", () => {
+      const channelTuples1 = [
+        [0, 128],
+        [1, 0],
+        [2, 255],
+        [3, 0],
+      ];
+
+      const filledOutputValues =
+        UniverseDataBuilder.fillUniverseOutputValuesWithZero(channelTuples1);
+      expect(filledOutputValues.length).toBe(511);
+      expect(filledOutputValues[0]).toBe(128);
+
+      expect(filledOutputValues[1]).toBe(0);
+      expect(filledOutputValues[2]).toBe(255);
+      expect(filledOutputValues[3]).toBe(0);
     });
   });
 });

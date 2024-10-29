@@ -1,9 +1,9 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import * as FileSystem from "expo-file-system";
 import { openDatabaseSync } from "expo-sqlite/next";
 import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import ErrorBoundary from "react-native-error-boundary";
 
 import runMigrataions from "../../../scripts/migrations.ts";
@@ -16,6 +16,10 @@ import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
 import { Scene } from "../components/Scene/Scene.tsx";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelectionStore.ts";
+import { useOutputValuesStore } from "../store/useOutputValuesStore.ts";
+import useUniverseOutput from "../hooks/useUniverseOutput.ts";
+import UniverseOutputGenerator from "../../lib/universe-output-generator.ts";
+import PacketSender from "../../lib/packets/packet-sender.ts";
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
@@ -34,12 +38,26 @@ function App() {
   };
 
   const { compositeFixturesStore } = useCompositeFixtureStore((state) => state);
+  const { outputValuesStore } = useOutputValuesStore();
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
     useFixtureChannelSelectionStore((state) => state);
 
   const selectedCompositeFixtures = compositeFixturesStore.filter((fixture) =>
     fixtureChannelSelectionStore.has(fixture.channel),
   );
+
+  useUniverseOutput();
+
+  useEffect(() => {
+    if (outputValuesStore) {
+      const outputGenerator = new UniverseOutputGenerator(
+        outputValuesStore,
+        new PacketSender(),
+      );
+      const packets = outputGenerator.generateOutput();
+      outputGenerator.sendOutput(packets);
+    }
+  }, [outputValuesStore]);
 
   useEffect(() => {
     if (reloadScenes) {
@@ -61,29 +79,19 @@ function App() {
     updateFixtureChannelSelectionStore(tempSet);
   };
 
+  const bigButtonStyles =
+    "border-blue-700 min-h-16 min-w-16 m-4 border-2 rounded-md h-20";
+  const textStyles = "text-xl text-white text-center p-5";
+
   return (
     <ErrorBoundary>
-      <View
-        style={{
-          flex: 1,
-          flexDirection: "row",
-          height: "80%",
-          margin: "auto",
-          backgroundColor: "black",
-          padding: 20,
-          borderWidth: 4,
-          borderColor: "yellow",
-        }}>
-        <View style={{ flex: 1, ...styles.container }}>
+      <ScrollView className="flex-1 flex flex-col space-y-4 m-auto bg-black p-5 border-4 border-yellow-500 w-full">
+        <View className="bg-black m-1 border-2 flex-1 border-[#cba601]">
           <View>
-            <View style={{ flex: 1, borderColor: "yellow", height: 100 }} />
+            <View className="flex-1 border-yellow-500 h-24" />
 
-            <Pressable style={styles.bigButtons} onPress={handleGoToOut}>
-              <Text
-                className="text-xl"
-                style={{ ...styles.btnText, fontSize: 18 }}>
-                Go to Out
-              </Text>
+            <Pressable className={bigButtonStyles} onPress={handleGoToOut}>
+              <Text className={textStyles}>Go to Out</Text>
             </Pressable>
 
             {scenes?.map((scene, i) => (
@@ -102,38 +110,24 @@ function App() {
             ))}
 
             <Pressable
-              style={styles.bigButtons}
+              className={bigButtonStyles}
               onPress={() => console.log(FileSystem.documentDirectory)}>
-              <Text
-                className="text-xl"
-                style={{ ...styles.btnText, fontSize: 18 }}>
-                Print DB directory
-              </Text>
+              <Text className={textStyles}>Print DB directory</Text>
             </Pressable>
             <Pressable
-              style={styles.bigButtons}
+              className={bigButtonStyles}
               onPress={() => runMigrataions()}>
-              <Text
-                className="text-xl"
-                style={{ ...styles.btnText, fontSize: 18 }}>
-                Run Migrations
-              </Text>
+              <Text className={textStyles}>Run Migrations</Text>
             </Pressable>
-            <Pressable style={styles.bigButtons} onPress={() => seedDatabase()}>
-              <Text
-                className="text-xl"
-                style={{ ...styles.btnText, fontSize: 18 }}>
-                Seed DB
-              </Text>
+            <Pressable
+              className={bigButtonStyles}
+              onPress={() => seedDatabase()}>
+              <Text className={textStyles}>Seed DB</Text>
             </Pressable>
           </View>
         </View>
 
-        <View
-          style={{
-            flex: 2,
-            ...styles.container,
-          }}>
+        <View className="bg-black m-1 border-2 flex-2 border-[#cba601]">
           <LayoutArea
             selectedSceneId={selectedSceneId}
             loadFixtures={loadFixtures}
@@ -141,7 +135,7 @@ function App() {
           />
         </View>
 
-        <View style={{ flex: 2, flexDirection: "row", ...styles.container }}>
+        <View className="bg-black m-1 border-2 flex-2 border-[#cba601] flex-row">
           <ControlPanel
             selectedFixtures={selectedCompositeFixtures}
             goToOut={goToOut}
@@ -149,35 +143,9 @@ function App() {
             setLoadFixtures={setLoadFixtures}
           />
         </View>
-      </View>
+      </ScrollView>
     </ErrorBoundary>
   );
 }
 
 export default App;
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#000",
-    borderColor: "#cba601",
-    borderWidth: 2,
-    margin: 4,
-  },
-
-  bigButtons: {
-    borderColor: "blue",
-    minHeight: 60,
-    padding: 18,
-    borderWidth: 2,
-    margin: 4,
-    height: 30,
-    minWidth: 60,
-  },
-
-  btnText: {
-    color: "#fff",
-    textAlign: "center",
-    fontSize: 12,
-    margin: "auto",
-  },
-});
