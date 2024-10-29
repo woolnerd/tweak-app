@@ -1,4 +1,3 @@
-import { Database } from "../../db/types/database.ts";
 import {
   SelectFixture,
   InsertFixture,
@@ -39,19 +38,19 @@ export const mockInsertFixture: InsertFixture = {
   manufacturerId: 1,
 };
 
-export const mockInsertDb: Database = {
+export const mockInsertDb: any = {
   insert: jest.fn().mockReturnThis(),
   values: jest.fn().mockReturnThis(),
   returning: jest.fn(() => Promise.resolve(mockFixture)),
 };
 
-export const mockGetByIdDb: Database = {
+export const mockGetByIdDb: any = {
   select: jest.fn().mockReturnThis(),
   from: jest.fn().mockReturnThis(),
   where: jest.fn(() => Promise.resolve(mockFixture)),
 };
 
-export const mockGetAllDb: Database = {
+export const mockGetAllDb: any = {
   query: {
     [TableNames.Fixtures]: {
       findMany: jest.fn(() => Promise.resolve(mockFixtureArray)),
@@ -59,14 +58,14 @@ export const mockGetAllDb: Database = {
   },
 };
 
-export const mockUpdateDb: Database = {
+export const mockUpdateDb: any = {
   returning: jest.fn(() => Promise.resolve(mockFixture)),
   update: jest.fn().mockReturnThis(),
   where: jest.fn().mockReturnThis(),
   set: jest.fn().mockReturnThis(),
 };
 
-export const mockDeleteDb: Database = {
+export const mockDeleteDb: any = {
   returning: jest.fn(() => Promise.resolve(mockFixture)),
   update: jest.fn().mockReturnThis(),
   where: jest.fn().mockReturnThis(),

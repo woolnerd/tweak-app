@@ -1,4 +1,4 @@
-import { and, eq, notInArray, sql } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import Base from "./base.ts";
 import {
@@ -64,15 +64,7 @@ export default class ScenesToFixtureAssignments extends Base<
         .leftJoin(patches, eq(fixtureAssignments.patchId, patches.id))
         .leftJoin(manufacturers, eq(fixtures.manufacturerId, manufacturers.id))
         .where(
-          // turn this checkoff while cache is being set aside for work later
-          // and(
           eq(scenesToFixtureAssignments.sceneId, sceneId),
-          // exclude any of the fixtures that are cached
-          // notInArray(
-          //   fixtureAssignments.channel,
-          //   Array.from(selectedFixtureChannels),
-          // ),
-          // ),
         )) as UnparsedCompositeFixtureInfo[];
 
       return this.parseStringColumnsToJSON();

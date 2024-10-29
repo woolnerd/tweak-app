@@ -1,8 +1,8 @@
-import * as utils from "../value-router-utils.ts";
 import { ManualFixtureState } from "../../app/components/Fixture/types/Fixture.ts";
 import ProfileAdapter from "../adapters/profile-adapter.ts";
 import { ActionObject } from "../command-line/types/command-line-types.ts";
 import { ProfileTarget } from "../types/buttons.ts";
+import * as utils from "../value-router-utils.ts";
 import ValueRouter from "../value-router.ts";
 
 const {

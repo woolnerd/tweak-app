@@ -1,17 +1,3 @@
-type Test =
-  | {
-      fixtureAssignmentId: number;
-      channel: number;
-      values: string | null;
-      title: string | null;
-      profileChannels: string | null;
-      profileName: string | null;
-      fixtureName: string | null;
-      fixtureNotes: string | null;
-      sceneId: number | null;
-    }[]
-  | undefined;
-
 // eslint-disable-next-line
 export const mockData = {
   fixtureAssignments: [

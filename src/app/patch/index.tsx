@@ -40,7 +40,7 @@ export default function Patch() {
   const [addressStartSelection, setAddressStartSelection] = useState<number>(1);
   const [showDMXUniverseTable, setShowDMXUniverseTable] =
     useState<boolean>(false);
-  const [showProfileSelector, setShowProfileSelector] = useState<boolean>(true);
+  // const [showProfileSelector, setShowProfileSelector] = useState<boolean>(true);
   const [selectManThruFix, setSelectManThruFix] = useState<boolean>(false);
   const [showAllChannels, setShowAllChannels] = useState<boolean>(true);
 
@@ -99,13 +99,13 @@ export default function Patch() {
 
   const handleAddressOrChannelColumnClick = () => {
     setShowDMXUniverseTable(true);
-    setShowProfileSelector(false);
+    // setShowProfileSelector(false);
   };
 
-  const handleHideDMXTable = () => {
-    setShowDMXUniverseTable(false);
-    setShowProfileSelector(true);
-  };
+  // const handleHideDMXTable = () => {
+  // setShowDMXUniverseTable(false);
+  // setShowProfileSelector(true);
+  // };
 
   const handlePatchDB = async () => {
     if (!(profileSelection && fixtureSelection)) {
@@ -166,18 +166,18 @@ export default function Patch() {
     (profileObj) => profileObj.id === profileSelection,
   );
 
-  const buildProfileDisplay = () => {
-    if (!profileSelection || !profile) return null;
+  // const buildProfileDisplay = () => {
+  //   if (!profileSelection || !profile) return null;
 
-    return (
-      <React.Fragment key={profile.id}>
-        <Text>Name: {profile.name}</Text>
-        <Text>Channel Count: {profile.channelCount}</Text>
-        <Text>Channels: {profile.channels}</Text>
-        <Text>16Bit: {profile.is16Bit ? "yes" : "no"}</Text>
-      </React.Fragment>
-    );
-  };
+  //   return (
+  //     <React.Fragment key={profile.id}>
+  //       <Text>Name: {profile.name}</Text>
+  //       <Text>Channel Count: {profile.channelCount}</Text>
+  //       <Text>Channels: {profile.channels}</Text>
+  //       <Text>16Bit: {profile.is16Bit ? "yes" : "no"}</Text>
+  //     </React.Fragment>
+  //   );
+  // };
 
   const patchRowData = buildPatchRowData({
     fixtureMap: buildFixtureMap(patchFixturesData, selectedChannels),
@@ -270,6 +270,7 @@ export default function Patch() {
     }
     setProfileSelection(0);
     setSelectManThruFix(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [manufacturerSelection]);
 
   useEffect(() => {

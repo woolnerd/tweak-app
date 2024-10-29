@@ -9,21 +9,6 @@ import {
   InsertSceneToFixtureAssignment,
 } from "./types/tables.ts";
 
-const fixture = { name: "Vortex", notes: "test" };
-const manufacturer = { name: "Creamsource", website: "www.creamsource.com" };
-const patch = {
-  fixtureId: 1,
-  profileId: 1,
-  startAddress: 81,
-  endAddress: 90,
-  showId: 1,
-};
-const profile = {
-  channelCount: 4,
-  channels: JSON.stringify({ 1: "Red", 2: "Green", 3: "Blue", 4: "Intensity" }),
-  name: "mode 6",
-};
-
 export type Seeds = {
   fixtures: InsertFixture[];
   manufacturers: InsertManufacturer[];
