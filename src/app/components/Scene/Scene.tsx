@@ -12,8 +12,8 @@ import {
 import { batchUpdateFixtureValuesInScene } from "./helpers.ts";
 import { db } from "../../../db/client.ts";
 import SceneModel from "../../../models/scene.ts";
-import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
-import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
+import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
+import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
 
 export type SceneProps = {
   id: number;

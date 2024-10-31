@@ -8,8 +8,8 @@ import {
   percentageToColorTemperature,
   percentageToIntensityLevel,
 } from "../../../util/helpers.ts";
-import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
-import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
+import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
+import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
 
 export type FixtureProps = object & ParsedCompositeFixtureInfo;
 export function Fixture({

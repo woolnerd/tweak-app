@@ -3,9 +3,9 @@ import { View, FlatList } from "react-native";
 
 import { db } from "../../../db/client.ts";
 import ScenesToFixtureAssignments from "../../../models/scene-to-fixture-assignments.ts";
-import { useCompositeFixtureStore } from "../../store/useCompositeFixtureStore.ts";
-import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
-import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
+import useCompositeFixtureStore from "../../store/useCompositeFixtureStore.ts";
+import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
+import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
 import { Fixture as FixtureComponent } from "../Fixture/Fixture.tsx";
 
 type LayoutAreaProps = {
@@ -42,6 +42,12 @@ export default function LayoutArea({
   }, [selectedSceneId, fixtureChannelSelection]);
 
   useEffect(() => {
+    // pointer on prevFixture state and nextFixtureState (res)
+    // extract fixture values from prev and next
+    // pass to class with methods for
+    // finding difference in values
+    // increment/decrement new value as needed
+    // setInterval with time rate
     fetchCompositeFixtures()
       .then((res) => updateCompositeFixturesStore(res))
       .catch((err) => console.log(err));

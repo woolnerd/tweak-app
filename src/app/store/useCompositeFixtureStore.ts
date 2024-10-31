@@ -10,8 +10,7 @@ type Action = {
   ) => void;
 };
 
-// eslint-disable-next-line import/prefer-default-export
-export const useCompositeFixtureStore = create<State & Action>((set) => ({
+export default create<State & Action>((set) => ({
   compositeFixturesStore: [],
   updateCompositeFixturesStore: (
     compositeFixturesStore: ParsedCompositeFixtureInfo[],

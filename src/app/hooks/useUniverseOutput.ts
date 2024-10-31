@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 
 import UniverseDataBuilder from "../../lib/universe-data-builder.ts";
-import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
-import { useManualFixtureStore } from "../store/useManualFixtureStore.ts";
-import { useOutputValuesStore } from "../store/useOutputValuesStore.ts";
+import useCompositeFixtureStore from "../store/useCompositeFixtureStore.ts";
+import useManualFixtureStore from "../store/useManualFixtureStore.ts";
+import useOutputValuesStore from "../store/useOutputValuesStore.ts";
 
 export default function useUniverseOutput() {
   const { updateOutputValuesStore } = useOutputValuesStore((state) => state);
