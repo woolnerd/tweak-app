@@ -7,6 +7,7 @@ import ErrorBoundary from "react-native-error-boundary";
 
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
+import { UniverseDataObjectCollection } from "../../lib/universe-data-builder.ts";
 import PacketSender from "../../lib/packets/packet-sender.ts";
 import UniverseOutputGenerator from "../../lib/universe-output-generator.ts";
 import SceneModel from "../../models/scene.ts";
@@ -16,9 +17,10 @@ import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
 import { Scene } from "../components/Scene/Scene.tsx";
 import useInitialize from "../hooks/useInitialize.ts";
 import useUniverseOutput from "../hooks/useUniverseOutput.ts";
-import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
-import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelectionStore.ts";
-import { useOutputValuesStore } from "../store/useOutputValuesStore.ts";
+import useCompositeFixtureStore from "../store/useCompositeFixtureStore.ts";
+import useFixtureChannelSelectionStore from "../store/useFixtureChannelSelectionStore.ts";
+import useOutputValuesStore from "../store/useOutputValuesStore.ts";
+import FaderCalculator from "../../util/fader-calculator.ts";
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
@@ -31,6 +33,7 @@ function App() {
   const [reloadScenes, setReloadScenes] = useState(false);
   const [sacnState, setSacnState] = useState(false);
   const labelRef = useRef<boolean>(false);
+  const prevOutputState = useRef<UniverseDataObjectCollection | null>(null);
 
   const fetchScenes = async () => {
     const response = await new SceneModel(db).getAllOrdered();
@@ -56,6 +59,16 @@ function App() {
         new PacketSender(),
       );
       const packets = outputGenerator.generateOutput();
+
+      // Check if the previous state is different from the current state
+      if (
+        prevOutputState.current &&
+        prevOutputState.current !== outputValuesStore
+      ) {
+        // Fade between previous and current values over 5000ms (adjust duration as needed)
+        // outputGenerator.fadeOutputValues(5000);
+      }
+
       const intervalId = setInterval(() => {
         outputGenerator.sendOutput(packets);
       }, 25);
@@ -65,6 +78,7 @@ function App() {
         outputGenerator.closeSocket();
       };
     }
+    prevOutputState.current = outputValuesStore;
 
     return undefined;
   }, [outputValuesStore, sacnState]);
