@@ -10,7 +10,7 @@ export default class UniverseOutputGenerator {
 
   constructor(
     private readonly outputValuesStore: UniverseDataObjectCollection,
-    private sender: PacketSender,
+    // private sender: PacketSender,
   ) {
     this.previousOutputValuesStore = { ...outputValuesStore };
   }
@@ -18,10 +18,14 @@ export default class UniverseOutputGenerator {
   generateOutput() {
     return Object.keys(this.outputValuesStore).map((universeNum) => {
       const outputData = this.outputValuesStore[Number(universeNum)];
+
       const filledData =
         UniverseDataBuilder.fillUniverseOutputValuesWithZero(outputData);
+
       const packet = PacketBuilder.build(Number(universeNum), filledData);
-      console.log(filledData);
+
+      console.log({ outputData });
+
       return packet;
     });
   }
@@ -31,7 +35,9 @@ export default class UniverseOutputGenerator {
       this.previousOutputValuesStore,
       this.outputValuesStore,
     );
+
     const steps = duration / 50; // Assuming 50ms per step for smooth animation
+
     const incrementValues = FaderCalculator.calculateIncrement(
       diffValues,
       steps,
@@ -63,8 +69,10 @@ export default class UniverseOutputGenerator {
       });
 
       // Generate and send the updated packets
-      const packets = this.generateOutput();
-      this.sendOutput(packets);
+      // const packets = this.generateOutput();
+      console.log(diffValues);
+
+      // this.sendOutput(packets);
 
       currentStep += 1;
     }, 50);

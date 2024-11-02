@@ -12,6 +12,10 @@ export default class FaderCalculator {
       const currentUniverseData = currentValues[universeNum];
       const prevUniverseData = prevValues[universeNum] || [];
 
+      if (currentUniverseData.length !== prevUniverseData.length) {
+        throw new Error("Universe data lengths do not match");
+      }
+
       const universeDiff: number[][] = currentUniverseData.map(
         (currentPair, index) => {
           const [currentAddress, currentOutputValue] = currentPair;
