@@ -18,11 +18,6 @@
     "strictPropertyInitialization": false
   },
   "extends": "expo/tsconfig.base",
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "scripts/seedDatabase.js",
-    "scripts/migrations.js"
-  ],
+  "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "**/*.test.ts", "**/*.test.tsx", "**/__mocks__/*"]
 }

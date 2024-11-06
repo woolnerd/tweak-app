@@ -1,12 +1,13 @@
 /* eslint-disable drizzle/enforce-delete-with-where */
 import { sql } from "drizzle-orm";
+
 import { db } from "../src/db/client.ts";
 import * as schema from "../src/db/schema.ts";
 import { seeds } from "../src/db/seeds.ts";
 
 export default async function seedDatabase() {
   try {
-    Promise.all([
+    await Promise.all([
       db.delete(schema.shows),
       db.delete(schema.fixtures),
       db.delete(schema.fixtureAssignments),
@@ -38,8 +39,8 @@ export default async function seedDatabase() {
     );
 
     await Promise.all(
-      seeds.fixtures.map(async (fixture) => {
-        await db.insert(schema.fixtures).values(fixture);
+      seeds.scenes.map(async (scene) => {
+        await db.insert(schema.scenes).values(scene);
       }),
     );
 
@@ -50,8 +51,8 @@ export default async function seedDatabase() {
     );
 
     await Promise.all(
-      seeds.fixtureAssignments.map(async (assignment) => {
-        await db.insert(schema.fixtureAssignments).values(assignment);
+      seeds.profiles.map(async (profile) => {
+        await db.insert(schema.profiles).values(profile);
       }),
     );
 
@@ -62,14 +63,14 @@ export default async function seedDatabase() {
     );
 
     await Promise.all(
-      seeds.profiles.map(async (profile) => {
-        await db.insert(schema.profiles).values(profile);
+      seeds.fixtures.map(async (fixture) => {
+        await db.insert(schema.fixtures).values(fixture);
       }),
     );
 
     await Promise.all(
-      seeds.scenes.map(async (scene) => {
-        await db.insert(schema.scenes).values(scene);
+      seeds.fixtureAssignments.map(async (assignment) => {
+        await db.insert(schema.fixtureAssignments).values(assignment);
       }),
     );
 

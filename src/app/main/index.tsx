@@ -1,13 +1,10 @@
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 import { drizzle } from "drizzle-orm/expo-sqlite";
-import * as FileSystem from "expo-file-system";
 import { openDatabaseSync } from "expo-sqlite/next";
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Pressable, ScrollView } from "react-native";
 import ErrorBoundary from "react-native-error-boundary";
 
-import runMigrataions from "../../../scripts/migrations.ts";
-import seedDatabase from "../../../scripts/seedDatabase.ts";
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
 import PacketSender from "../../lib/packets/packet-sender.ts";
@@ -16,6 +13,7 @@ import SceneModel from "../../models/scene.ts";
 import ControlPanel from "../components/ControlPanel/ControlPanel.tsx";
 import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
 import { Scene } from "../components/Scene/Scene.tsx";
+import useInitialize from "../hooks/useInitialize.ts";
 import useUniverseOutput from "../hooks/useUniverseOutput.ts";
 import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
 import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelectionStore.ts";
@@ -47,6 +45,7 @@ function App() {
     fixtureChannelSelectionStore.has(fixture.channel),
   );
 
+  useInitialize();
   useUniverseOutput();
 
   useEffect(() => {
@@ -126,25 +125,8 @@ function App() {
                 labelRef={labelRef}
               />
             ))}
-
-            <Pressable
-              className={bigButtonStyles}
-              onPress={() => console.log(FileSystem.documentDirectory)}>
-              <Text className={textStyles}>Print DB directory</Text>
-            </Pressable>
-            <Pressable
-              className={bigButtonStyles}
-              onPress={() => runMigrataions()}>
-              <Text className={textStyles}>Run Migrations</Text>
-            </Pressable>
-            <Pressable
-              className={bigButtonStyles}
-              onPress={() => seedDatabase()}>
-              <Text className={textStyles}>Seed DB</Text>
-            </Pressable>
           </View>
         </View>
-
         <View className="bg-black m-1 border-2 flex-2 border-[#cba601]">
           <LayoutArea
             selectedSceneId={selectedSceneId}

@@ -49,7 +49,7 @@ Welcome to the Tweak App repository! This guide will help you get started with s
    ```
 
 6. **Temporary Database Setup**
-   Once the app is up and running, press the "Run Migrations" button, followed by the "Seed Database" button to load the lighting fixtures.
+   The first time the app is loaded, the migrations and DB seeds will run. Reload the simulator to see the database populated.
 
 ## Additional Notes
 
