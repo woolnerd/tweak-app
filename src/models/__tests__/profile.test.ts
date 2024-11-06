@@ -1,4 +1,4 @@
-import { mockDb } from "../__mocks__/profile.ts";
+import mockDb from "../__mocks__/profile.ts";
 import Profile from "../profile.ts";
 
 describe("Profile model", () => {
@@ -26,7 +26,7 @@ describe("Profile model", () => {
 
     (mockDb.returning as jest.Mock).mockRejectedValueOnce(error);
 
-    await expect(profile.create({})).rejects.toThrow(
+    await expect(profile.create({} as any)).rejects.toThrow(
       new Error("Database operation failed: There was a problem"),
     );
   });

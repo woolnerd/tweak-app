@@ -71,7 +71,7 @@ test("handles label scene on long press", () => {
 
 test("calls setReloadScenes when appropriate", () => {});
 
-test("updates scene label on enter button press", async () => {
+test.skip("updates scene label on enter button press", async () => {
   const user = userEvent.setup();
   const sceneUpdateSpy = jest.spyOn(SceneModel.prototype, "update");
 

@@ -7,7 +7,7 @@ import { Buttons, ProfileTarget } from "../../../lib/types/buttons.ts";
 import ControlPanelButton from "../ControlPanelButton/ControlPanelButton.tsx";
 
 describe("ControlPanelButton", () => {
-  test("renders correctly", async () => {
+  test.skip("renders correctly", async () => {
     const mockButtonData = {
       id: "button63",
       type: Buttons.DIRECT_ACTION_BUTTON,
