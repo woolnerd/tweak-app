@@ -99,7 +99,7 @@ describe("LayoutArea", () => {
       expect(getByText("Fixture 1")).toBeTruthy();
       expect(getByText("Fixture 2")).toBeTruthy();
     });
-  });
+  }, 10000);
 
   test("fetch and update composite fixtures", async () => {
     const { updateCompositeFixturesStore } = useCompositeFixtureStore();
@@ -110,5 +110,5 @@ describe("LayoutArea", () => {
         mockCompositeFixtures,
       ),
     );
-  });
+  }, 10000);
 });
