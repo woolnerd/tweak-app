@@ -9,8 +9,8 @@ import {
 import React, { createRef } from "react";
 
 import SceneModel from "../../../models/scene.ts";
-import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
-import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
+import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
+import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
 import { Scene } from "../Scene/Scene.tsx";
 
 // Mock props

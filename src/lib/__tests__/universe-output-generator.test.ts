@@ -124,4 +124,16 @@ describe("UniverseOutputGenerator constructor", () => {
       expect(mockPacketSender.closeSocket).toHaveBeenCalled();
     });
   });
+  describe("fadeOutputValues", () => {
+    test("it invokes generateOutput", () => {
+      const universeOutputGenerator = new UniverseOutputGenerator(
+        mockOutputValuesStore,
+        // mockPacketSender,
+      );
+      jest.spyOn(universeOutputGenerator, "generateOutput");
+
+      universeOutputGenerator.fadeOutputValues(1000);
+      expect(universeOutputGenerator.generateOutput).toHaveBeenCalled();
+    });
+  });
 });

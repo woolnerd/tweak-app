@@ -11,9 +11,9 @@ jest.mock("../../store/useManualFixtureStore.ts");
 jest.mock("../../../models/scene-to-fixture-assignments");
 
 import ScenesToFixtureAssignments from "../../../models/scene-to-fixture-assignments.ts";
-import { useCompositeFixtureStore } from "../../store/useCompositeFixtureStore.ts";
-import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
-import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
+import useCompositeFixtureStore from "../../store/useCompositeFixtureStore.ts";
+import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
+import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
 import LayoutArea from "../LayoutArea/LayoutArea.tsx";
 
 describe("LayoutArea", () => {
@@ -92,7 +92,11 @@ describe("LayoutArea", () => {
 
   test("renders correctly", async () => {
     const { getByText } = render(
-      <LayoutArea selectedSceneId={1} goToOut={false} />,
+      <LayoutArea
+        selectedSceneId={1}
+        loadFixtures={true}
+        setLoadFixtures={jest.fn}
+      />,
     );
 
     await waitFor(() => {
@@ -103,7 +107,13 @@ describe("LayoutArea", () => {
 
   test("fetch and update composite fixtures", async () => {
     const { updateCompositeFixturesStore } = useCompositeFixtureStore();
-    render(<LayoutArea selectedSceneId={1} goToOut={false} />);
+    render(
+      <LayoutArea
+        selectedSceneId={1}
+        loadFixtures={true}
+        setLoadFixtures={jest.fn}
+      />,
+    );
 
     await waitFor(() =>
       expect(updateCompositeFixturesStore).toHaveBeenCalledWith(

@@ -1,6 +1,7 @@
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { openDatabaseSync } from "expo-sqlite/next";
+import { isEqual } from "lodash";
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import ErrorBoundary from "react-native-error-boundary";
@@ -53,21 +54,36 @@ function App() {
   useUniverseOutput();
 
   useEffect(() => {
+    console.log(outputValuesStore && sacnState);
+
     if (outputValuesStore && sacnState) {
       const outputGenerator = new UniverseOutputGenerator(
         outputValuesStore,
         // new PacketSender(),
       );
-      const packets = outputGenerator.generateOutput();
+      // const packets = outputGenerator.generateOutput();
+      // output values = [ [0, 255], [1, 255] ]
+      // now change outValues = [ 0, 128], [1, 255] ]
 
       // Check if the previous state is different from the current state
+      // debugger;
+      console.log(
+        "current",
+        prevOutputState.current,
+        outputValuesStore,
+        !isEqual(prevOutputState.current, outputValuesStore),
+      );
+
       if (
         prevOutputState.current &&
-        prevOutputState.current !== outputValuesStore
+        !isEqual(prevOutputState.current, outputValuesStore)
       ) {
+        console.log({ outputValuesStore });
+        outputGenerator.outputStart = { ...prevOutputState.current };
         // Fade between previous and current values over 5000ms (adjust duration as needed)
-        outputGenerator.fadeOutputValues(5000);
+        outputGenerator.fadeOutputValues(1000);
       }
+      prevOutputState.current = { ...outputValuesStore };
 
       // consistent output of sACN values
       const intervalId = setInterval(() => {
@@ -79,7 +95,8 @@ function App() {
         // outputGenerator.closeSocket();
       };
     }
-    prevOutputState.current = outputValuesStore;
+
+    //
 
     return undefined;
   }, [outputValuesStore, sacnState]);

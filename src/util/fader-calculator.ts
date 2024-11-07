@@ -27,6 +27,7 @@ export default class FaderCalculator {
 
       diff[universeNum] = universeDiff;
     });
+    console.log({ diff });
 
     return diff;
   }
@@ -47,6 +48,7 @@ export default class FaderCalculator {
 
       increments[universeNum] = universeIncrements;
     });
+    console.log({ increments });
 
     return increments;
   }

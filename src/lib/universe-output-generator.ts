@@ -1,3 +1,5 @@
+import { isEmpty } from "lodash";
+
 import PacketBuilder from "./packets/packet-builder.ts";
 import PacketSender from "./packets/packet-sender.ts";
 import UniverseDataBuilder, {
@@ -6,18 +8,22 @@ import UniverseDataBuilder, {
 import FaderCalculator from "../util/fader-calculator.ts";
 
 export default class UniverseOutputGenerator {
-  private previousOutputValuesStore: UniverseDataObjectCollection;
+  public outputStart: UniverseDataObjectCollection;
 
   constructor(
-    private readonly outputValuesStore: UniverseDataObjectCollection,
+    private readonly outputEnd: UniverseDataObjectCollection,
     // private sender: PacketSender,
   ) {
-    this.previousOutputValuesStore = { ...outputValuesStore };
+    // do nothing
+  }
+
+  public set value(outputStart: UniverseDataObjectCollection) {
+    this.outputStart = outputStart;
   }
 
   generateOutput() {
-    return Object.keys(this.outputValuesStore).map((universeNum) => {
-      const outputData = this.outputValuesStore[Number(universeNum)];
+    return Object.keys(this.outputEnd).map((universeNum) => {
+      const outputData = this.outputEnd[Number(universeNum)];
 
       const filledData =
         UniverseDataBuilder.fillUniverseOutputValuesWithZero(outputData);
@@ -31,9 +37,13 @@ export default class UniverseOutputGenerator {
   }
 
   fadeOutputValues(duration: number) {
+    if (!this.outputStart) {
+      throw new Error("Must define outputStart object");
+    }
+
     const diffValues = FaderCalculator.calculateDiff(
-      this.previousOutputValuesStore,
-      this.outputValuesStore,
+      this.outputStart,
+      this.outputEnd,
     );
 
     const steps = duration / 50; // Assuming 50ms per step for smooth animation
@@ -45,20 +55,23 @@ export default class UniverseOutputGenerator {
 
     let currentStep = 0;
 
+    console.log("being start", this.outputStart);
+    console.log("begin end", this.outputEnd);
+
     const intervalId = setInterval(() => {
       if (currentStep >= steps) {
         clearInterval(intervalId);
-        this.previousOutputValuesStore = { ...this.outputValuesStore };
+        this.outputStart = { ...this.outputEnd };
         return;
       }
 
       // Increment the output values for each universe
-      Object.keys(this.previousOutputValuesStore).forEach((universeKey) => {
+      Object.keys(this.outputStart).forEach((universeKey) => {
         const universeNum = Number(universeKey);
-        const currentUniverseData = this.previousOutputValuesStore[universeNum];
+        const currentUniverseData = this.outputStart[universeNum];
         const incrementData = incrementValues[universeNum];
 
-        this.previousOutputValuesStore[universeNum] = currentUniverseData.map(
+        this.outputStart[universeNum] = currentUniverseData.map(
           (currentPair, index) => {
             const [address, currentValue] = currentPair;
             const increment = incrementData[index]?.[1] ?? 0;
@@ -66,11 +79,15 @@ export default class UniverseOutputGenerator {
             return [address, currentValue + increment];
           },
         );
+        // debugger;
+        console.log("this.outputEnd:", this.outputEnd);
       });
 
       // Generate and send the updated packets
-      // const packets = this.generateOutput();
-      console.log(diffValues);
+      const packets = this.generateOutput();
+      // console.log({ incrementValues });
+
+      // console.log({ packets });
 
       // this.sendOutput(packets);
 
