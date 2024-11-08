@@ -30,7 +30,7 @@ export default class UniverseOutputGenerator {
 
       const packet = PacketBuilder.build(Number(universeNum), filledData);
 
-      console.log({ outputData });
+      // console.log({ outputData });
 
       return packet;
     });
@@ -45,54 +45,78 @@ export default class UniverseOutputGenerator {
       this.outputStart,
       this.outputEnd,
     );
-
-    const steps = duration / 50; // Assuming 50ms per step for smooth animation
-
+    const steps = Math.ceil(duration / 50);
     const incrementValues = FaderCalculator.calculateIncrement(
       diffValues,
       steps,
     );
 
-    let currentStep = 0;
+    let startTime: number | null = null;
 
-    console.log("being start", this.outputStart);
-    console.log("begin end", this.outputEnd);
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
 
-    const intervalId = setInterval(() => {
+      const currentStep = Math.min(
+        Math.floor((elapsed / duration) * steps),
+        steps,
+      );
+
       if (currentStep >= steps) {
-        clearInterval(intervalId);
         this.outputStart = { ...this.outputEnd };
         return;
       }
 
-      // Increment the output values for each universe
+      // Update each universe's output
+      const updatedOutput = { ...this.outputStart };
       Object.keys(this.outputStart).forEach((universeKey) => {
         const universeNum = Number(universeKey);
         const currentUniverseData = this.outputStart[universeNum];
         const incrementData = incrementValues[universeNum];
 
-        this.outputStart[universeNum] = currentUniverseData.map(
+        updatedOutput[universeNum] = currentUniverseData.map(
           (currentPair, index) => {
             const [address, currentValue] = currentPair;
             const increment = incrementData[index]?.[1] ?? 0;
 
-            return [address, currentValue + increment];
+            // Calculate the new value
+            let newValue = currentValue + increment;
+
+            // Determine target value for this channel
+            const targetValue = this.outputEnd[universeNum][index][1];
+
+            // Clamp the new value to ensure it does not exceed the target
+            if (increment < 0) {
+              // Decreasing towards target
+              newValue = Math.max(newValue, targetValue);
+            } else {
+              // Increasing towards target
+              newValue = Math.min(newValue, targetValue);
+            }
+
+            // Also, clamp between valid DMX range
+            newValue = Math.min(255, Math.max(0, newValue));
+
+            if (address === 0 || address === 1) {
+              console.log(newValue);
+            }
+
+            return [address, newValue];
           },
         );
-        // debugger;
-        console.log("this.outputEnd:", this.outputEnd);
       });
+
+      this.outputStart = updatedOutput;
+      // console.log({ updatedOutput });
 
       // Generate and send the updated packets
       const packets = this.generateOutput();
-      // console.log({ incrementValues });
-
-      // console.log({ packets });
-
       // this.sendOutput(packets);
 
-      currentStep += 1;
-    }, 50);
+      requestAnimationFrame(animate);
+    };
+
+    requestAnimationFrame(animate);
   }
 
   sendOutput(packets: Buffer[]) {
