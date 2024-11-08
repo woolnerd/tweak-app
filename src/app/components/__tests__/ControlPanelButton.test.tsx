@@ -1,137 +1,145 @@
-/* eslint-disable import/first */
-// @ts-nocheck
-import { render, waitFor } from "@testing-library/react-native";
+import { render, screen, fireEvent } from "@testing-library/react-native";
 import React from "react";
 
-import { Buttons, ProfileTarget } from "../../../lib/types/buttons.ts";
+import {
+  Buttons,
+  ProfileTarget,
+  ControlButton,
+} from "../../../lib/types/buttons.ts";
+import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import ControlPanelButton from "../ControlPanelButton/ControlPanelButton.tsx";
 
-describe("ControlPanelButton", () => {
-  test.skip("renders correctly", async () => {
-    const mockButtonData = {
-      id: "button63",
-      type: Buttons.DIRECT_ACTION_BUTTON,
-      label: "5600",
-      value: 5600,
-      styles: { color: "blue" },
-      profileTarget: ProfileTarget.COLOR_TEMP,
-    };
-    const fixturesWithTintAndColorTemp: ParsedCompositeFixtureInfo[] = [
-      {
-        fixtureAssignmentId: 1,
-        channel: 1,
-        values: [
-          [1, 179],
-          [2, 51],
-          [3, 156],
-          [4, 1],
-        ],
-        title: "Vortex 1 at full",
-        profileChannels: {
-          "1": "Dimmer",
-          "2": "Dimmer fine",
-          "3": "Color Temp",
-          "4": "Color Temp fine",
-          "5": "Green/Magenta Point",
-          "6": "Green/Magenta Point fine",
-          "7": "Crossfade color",
-          "8": "Crossfade color fine",
-          "9": "Red intensity",
-          "10": "Red intensity fine",
-          "11": "Green intensity",
-          "12": "Green intensity fine",
-          "13": "Blue intensity",
-          "14": "Blue intensity fine",
-          "15": "White intensity",
-          "16": "White intensity fine",
-          "17": "Fan control",
-          "18": "Preset",
-          "19": "Strobe",
-          "20": "Reserved for future use",
-        },
-        channelPairs16Bit: [
-          [1, 2],
-          [3, 4],
-          [5, 6],
-          [7, 8],
-          [9, 10],
-          [11, 12],
-          [13, 14],
-          [15, 16],
-        ],
-        is16Bit: true,
-        profileName: "mode 6",
-        fixtureName: "Vortex",
-        fixtureNotes: "test",
-        sceneId: 1,
-        startAddress: 1,
-        endAddress: 20,
-        colorTempLow: 2200,
-        colorTempHigh: 15000,
-      },
-      {
-        fixtureAssignmentId: 3,
-        channel: 10,
-        values: [
-          [1, 179],
-          [2, 51],
-          [3, 35],
-          [4, 143],
-        ],
-        title: "S60 1 at 50%",
-        profileChannels: {
-          "1": "Dimmer",
-          "2": "Dimmer fine",
-          "3": "Color Temp",
-          "4": "Color Temp fine",
-          "5": "Green/Magenta Point",
-          "6": "Green/Magenta Point fine",
-          "7": "Crossfade color",
-          "8": "Crossfade color fine",
-          "9": "Red intensity",
-          "10": "Red intensity fine",
-          "11": "Green intensity",
-          "12": "Green intensity fine",
-          "13": "Blue intensity",
-          "14": "Blue intensity fine",
-          "15": "White intensity",
-          "16": "White intensity fine",
-          "17": "Fan control",
-          "18": "Reserved for future use",
-        },
-        channelPairs16Bit: [
-          [1, 2],
-          [3, 4],
-          [5, 6],
-          [7, 8],
-          [9, 10],
-          [11, 12],
-          [13, 14],
-          [15, 16],
-        ],
-        is16Bit: true,
-        profileName: "mode 6",
-        fixtureName: "S60",
-        fixtureNotes: "test",
-        sceneId: 1,
-        startAddress: 41,
-        endAddress: 60,
-        colorTempLow: 2800,
-        colorTempHigh: 10000,
-      },
-    ];
+const buildFixture = (
+  overrides: Partial<ParsedCompositeFixtureInfo> = {},
+): ParsedCompositeFixtureInfo => ({
+  values: [[0, 255]],
+  profileChannels: {
+    1: "Dimmer",
+    2: "Dimmer fine",
+    3: "Color Temp",
+    4: "Color Temp fine",
+  },
+  manufacturerName: "Manufacturer",
+  colorTempLow: 2800,
+  colorTempHigh: 10000,
+  fixtureAssignmentId: 1,
+  channel: 1,
+  profileName: "",
+  fixtureName: "",
+  fixtureNotes: "",
+  sceneId: 1,
+  startAddress: 1,
+  channelPairs16Bit: [[0, 1]],
+  is16Bit: true,
+  endAddress: 20,
+  ...overrides,
+});
 
-    const { getByText } = render(
+describe("ControlPanelButton", () => {
+  const handleTouchMock = jest.fn();
+
+  const buttonData: ControlButton = {
+    id: "button1",
+    value: 2800,
+    label: "2800",
+    type: Buttons.DIRECT_ACTION_BUTTON,
+    profileTarget: ProfileTarget.COLOR_TEMP,
+    styles: { color: "orange" },
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should render button with correct label", () => {
+    render(
       <ControlPanelButton
-        key={mockButtonData.id}
-        buttonData={mockButtonData}
-        handleTouch={() => null}
-        selectedFixtures={fixturesWithTintAndColorTemp}
+        buttonData={buttonData}
+        handleTouch={handleTouchMock}
+        selectedFixtures={[]}
       />,
     );
 
-    await waitFor(() => {
-      expect(getByText("5600")).toBeTruthy();
+    expect(screen.getByText("2800")).toBeTruthy();
+  });
+
+  it("should enable the button when a valid fixture is selected", () => {
+    const selectedFixtures = [buildFixture({ colorTempLow: 2000 })];
+
+    render(
+      <ControlPanelButton
+        buttonData={buttonData}
+        handleTouch={handleTouchMock}
+        selectedFixtures={selectedFixtures}
+      />,
+    );
+
+    const button = screen.getByRole("button");
+    const textNode = screen.getByText("2800");
+    expect(button.props.accessibilityState.disabled).toBe(false);
+    expect(textNode.props.style).toMatchObject({
+      backgroundColor: "orange",
     });
+  });
+
+  it("should enable the button when no fixtures are selected", () => {
+    render(
+      <ControlPanelButton
+        buttonData={buttonData}
+        handleTouch={handleTouchMock}
+        selectedFixtures={[]}
+      />,
+    );
+
+    const button = screen.getByRole("button");
+    const textNode = screen.getByText("2800");
+    expect(button.props.accessibilityState.disabled).toBe(false);
+    expect(textNode.props.style).toMatchObject({
+      backgroundColor: "orange",
+    });
+  });
+
+  it("should disable the button if the selected fixture has incompatible color temperature", () => {
+    const selectedFixtures = [buildFixture({ colorTempLow: 3000 })]; // Set an incompatible color temp
+
+    render(
+      <ControlPanelButton
+        buttonData={buttonData}
+        handleTouch={handleTouchMock}
+        selectedFixtures={selectedFixtures}
+      />,
+    );
+
+    const button = screen.getByRole("button");
+    expect(button.props.accessibilityState.disabled).toBe(true);
+    expect(button.props.style).toMatchObject({ backgroundColor: "gray" });
+  });
+
+  it("should call handleTouch when button is pressed and enabled", () => {
+    const selectedFixtures = [buildFixture({ colorTempLow: 2800 })];
+
+    render(
+      <ControlPanelButton
+        buttonData={buttonData}
+        handleTouch={handleTouchMock}
+        selectedFixtures={selectedFixtures}
+      />,
+    );
+
+    fireEvent.press(screen.getByRole("button"));
+    expect(handleTouchMock).toHaveBeenCalledWith(buttonData);
+  });
+
+  it("should not call handleTouch when button is pressed and disabled", () => {
+    render(
+      <ControlPanelButton
+        buttonData={buttonData}
+        handleTouch={handleTouchMock}
+        selectedFixtures={[buildFixture({ colorTempLow: 3000 })]}
+      />,
+    );
+
+    fireEvent.press(screen.getByRole("button"));
+    expect(handleTouchMock).not.toHaveBeenCalled();
   });
 });
