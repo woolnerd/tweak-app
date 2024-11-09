@@ -160,24 +160,27 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     height: "100%",
     minWidth: 130,
+    borderRadius: 4,
   },
 
   rec: {
     borderColor: "red",
     borderWidth: 2,
-    margin: 4,
+    marginRight: 4,
     color: "#fff",
     textAlign: "center",
     minWidth: 60,
+    minHeight: 40,
     padding: 4,
+    borderRadius: 4,
   },
 
   sceneCtrl: {
     minHeight: 40,
     marginTop: 8,
     marginBottom: 8,
-    marginRight: 4,
-    justifyContent: "space-between",
+    marginLeft: 4,
+    justifyContent: "space-evenly",
   },
 
   btnText: {
