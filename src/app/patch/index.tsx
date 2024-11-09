@@ -303,7 +303,7 @@ export default function Patch() {
   ]);
 
   return (
-    <View className="w-full">
+    <View className="w-full flex">
       <View className=" bg-gray-900 h-1/2 w-full">
         <View className="p-4 bg-gray-900 w-full">
           <ScrollView horizontal className="w-full">
@@ -334,7 +334,7 @@ export default function Patch() {
       </View>
 
       <View className="w-full h-1/2 flex-row">
-        <View className="w-1/3 h-full justify-center items-center  bg-gray-900 ">
+        <View className="w-full md:w-1/3 h-full justify-center items-center  bg-gray-900 ">
           {(!!profileSelection || showDMXUniverseTable) && (
             <UniverseTable
               patchData={channelObjsToDisplay}
@@ -343,7 +343,7 @@ export default function Patch() {
             />
           )}
         </View>
-        <View className="w-2/3 h-full bg-slate-600 justify-center items-center flex-col">
+        <View className="md:w-2/3 h-full bg-slate-600 justify-center items-center flex-col">
           <View className="flex-row">
             <Text className="text-white m-2">Selected Fixture Details</Text>
             {/* <View>{buildProfileDisplay()}</View> */}
@@ -358,7 +358,7 @@ export default function Patch() {
               </Text>
             </Pressable>
           </View>
-          <View className="flex-row justify-between">
+          <View className="flex-col md:flex-row justify-between">
             <Dropdown
               selectedItem={manufacturerSelection}
               onSelect={handleManufacturerSelection}
