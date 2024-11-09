@@ -52,8 +52,9 @@ export default function ControlPanelButton({
   return (
     <Pressable
       key={buttonData.id}
+      accessibilityRole="button"
       style={styles.touchpadBtn}
-      onPressIn={() => handleTouch(buttonData)}
+      onPress={() => handleTouch(buttonData)}
       disabled={disable}>
       <Text
         style={{
