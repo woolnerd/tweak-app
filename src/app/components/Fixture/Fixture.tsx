@@ -143,6 +143,7 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     margin: 10,
     borderColor: "gold",
+    borderRadius: 10,
   },
   text: {
     fontWeight: "800",

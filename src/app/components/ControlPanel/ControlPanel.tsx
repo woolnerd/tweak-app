@@ -96,7 +96,7 @@ export default function ControlPanel({
       <View
         key={col.id}
         style={{
-          flex: 1,
+          flex: 2,
           flexGrow: 1,
           justifyContent: "center",
           alignItems: "center",

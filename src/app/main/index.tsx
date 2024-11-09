@@ -10,6 +10,7 @@ import { SelectScene } from "../../db/types/tables.ts";
 import PacketSender from "../../lib/packets/packet-sender.ts";
 import UniverseOutputGenerator from "../../lib/universe-output-generator.ts";
 import SceneModel from "../../models/scene.ts";
+import Container from "../components/Container/Container.tsx";
 import ControlPanel from "../components/ControlPanel/ControlPanel.tsx";
 import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
 import { Scene } from "../components/Scene/Scene.tsx";
@@ -94,10 +95,10 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <ScrollView className="flex-1 flex flex-col space-y-4 m-auto bg-black p-5 border-4 border-yellow-500 w-full">
-        <View className="bg-black m-1 border-2 flex-1 border-[#cba601]">
+      <Container>
+        <View className="bg-black m-1 border-2 w-m-1/6 border-yellow-500">
           <View>
-            <View className="flex-1 border-yellow-500 h-24" />
+            {/* <View className="flex-1 border-yellow-500 border-2 h-24 w-24" /> */}
 
             <Pressable className={bigButtonStyles} onPress={handleGoToOut}>
               <Text className={textStyles}>Go to Out</Text>
@@ -127,7 +128,7 @@ function App() {
             ))}
           </View>
         </View>
-        <View className="bg-black m-1 border-2 flex-2 border-[#cba601]">
+        <View className="bg-black border-2 flex-1 border-[#cba601]">
           <LayoutArea
             selectedSceneId={selectedSceneId}
             loadFixtures={loadFixtures}
@@ -135,7 +136,7 @@ function App() {
           />
         </View>
 
-        <View className="bg-black m-1 border-2 flex-2 border-[#cba601] flex-row">
+        <View className="bg-black border-2 flex-1 border-[#cba601] flex-row">
           <ControlPanel
             selectedFixtures={selectedCompositeFixtures}
             goToOut={goToOut}
@@ -143,7 +144,7 @@ function App() {
             setLoadFixtures={setLoadFixtures}
           />
         </View>
-      </ScrollView>
+      </Container>
     </ErrorBoundary>
   );
 }

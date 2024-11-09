@@ -304,7 +304,6 @@ export default function Patch() {
 
   return (
     <View className="w-full">
-      {/* <View className="flex-row w-full h-1/2 bg-gray-400 border-gray-300"> */}
       <View className=" bg-gray-900 h-1/2 w-full">
         <View className="p-4 bg-gray-900 w-full">
           <ScrollView horizontal className="w-full">

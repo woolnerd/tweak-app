@@ -73,8 +73,9 @@ export default function LayoutArea({
   }, [manualFixturesStore]);
 
   return (
-    <View className="text-center bg-black m-1 h-auto">
+    <View className="text-center bg-black-700 m-1 h-auto">
       <FlatList
+        className="flex m-auto"
         data={compositeFixturesStore}
         renderItem={({ item }) => (
           <FixtureComponent
