@@ -16,7 +16,7 @@ function Container({ children }: ContainerProps) {
       {children}
     </ScrollView>
   ) : (
-    <View className=" flex flex-row space-y-4 m-auto bg-black p-5 border-4 border-yellow-500 w-full">
+    <View className="flex flex-row m-auto bg-black p-5 border-4 border-yellow-500 w-full">
       {children}
     </View>
   );

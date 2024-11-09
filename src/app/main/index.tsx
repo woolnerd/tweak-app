@@ -2,7 +2,7 @@
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { openDatabaseSync } from "expo-sqlite/next";
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, Pressable, ScrollView } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import ErrorBoundary from "react-native-error-boundary";
 
 import * as schema from "../../db/schema.ts";
@@ -96,10 +96,8 @@ function App() {
   return (
     <ErrorBoundary>
       <Container>
-        <View className="bg-black m-1 border-2 w-m-1/6 border-yellow-500">
-          <View>
-            {/* <View className="flex-1 border-yellow-500 border-2 h-24 w-24" /> */}
-
+        <View className="bg-black border-2 border-yellow-500">
+          <View className="m-2">
             <Pressable className={bigButtonStyles} onPress={handleGoToOut}>
               <Text className={textStyles}>Go to Out</Text>
             </Pressable>
