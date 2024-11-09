@@ -67,8 +67,6 @@ export default function LayoutArea({
         return compFixtureStateObj;
       }),
     );
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [manualFixturesStore]);
 
   return (
@@ -76,25 +74,7 @@ export default function LayoutArea({
       <FlatList
         className="flex m-auto"
         data={compositeFixturesStore}
-        renderItem={({ item }) => (
-          <FixtureComponent
-            fixtureAssignmentId={item.fixtureAssignmentId}
-            channel={item.channel}
-            profileChannels={item.profileChannels}
-            profileName={item.profileName}
-            sceneId={item.sceneId}
-            fixtureName={item.fixtureName}
-            fixtureNotes={item.fixtureNotes}
-            values={item.values}
-            is16Bit={item.is16Bit}
-            channelPairs16Bit={item.channelPairs16Bit}
-            colorTempHigh={item.colorTempHigh}
-            colorTempLow={item.colorTempLow}
-            startAddress={item.startAddress}
-            endAddress={item.endAddress}
-            manufacturerName={item.manufacturerName}
-          />
-        )}
+        renderItem={({ item }) => <FixtureComponent {...item} />}
         keyExtractor={(item, idx) => item.fixtureAssignmentId.toString()}
       />
     </View>
