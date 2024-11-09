@@ -39,8 +39,7 @@ export default function LayoutArea({
       console.log(e);
       throw new Error();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedSceneId]);
+  }, [selectedSceneId, fixtureChannelSelection]);
 
   useEffect(() => {
     fetchCompositeFixtures()
