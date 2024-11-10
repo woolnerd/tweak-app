@@ -165,7 +165,7 @@ function dynamicRound(num: number) {
 }
 
 /**
- *
+ * Handles 8-bit and 16-bit values and converts 0-100
  * @param val
  * @param rounding
  * @returns
@@ -182,7 +182,7 @@ export function convertDmxValueToPercent(
 }
 
 /**
- *
+ * Converts a percentage (0-100) to Color Temperature integer
  * @param percentage
  * @param lowTemp
  * @param highTemp

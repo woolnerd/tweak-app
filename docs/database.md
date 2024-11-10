@@ -1,8 +1,10 @@
-# Schema Documentation
+# Schema Documentation - Nov 10, 2024
 
 ## Tables and Their Definitions
 
 ### manufacturers
+
+#### Has Many Fixtures
 
 - **id**: `integer` - Primary key, auto-incremented.
 - **name**: `text` - Name of the manufacturer, must be unique.
@@ -10,6 +12,8 @@
 - **website**: `text` - Manufacturer's website, defaults to an empty string.
 
 ### scenes
+
+#### Belongs To a Show
 
 - **id**: `integer` - Primary key, auto-incremented.
 - **name**: `text` - Name of the scene.
@@ -19,12 +23,18 @@
 
 ### shows
 
+#### Has Many Scenes
+
 - **id**: `integer` - Primary key, auto-incremented.
 - **name**: `text` - Name of the show, defaults to an empty string.
 - **createdAt**: `text` - Creation timestamp, defaults to current time.
 - **updatedAt**: `text` - Update timestamp, defaults to current time.
 
 ### profiles
+
+#### Belongs to a Fixture Assignment
+
+#### Has Many Patches
 
 - **id**: `integer` - Primary key, auto-incremented.
 - **name**: `text` - Name of the profile, defaults to an empty string.
@@ -34,6 +44,12 @@
 
 ### patches
 
+#### Belongs to a Show
+
+#### Belongs to a Fixture
+
+#### Belongs to a profile
+
 - **id**: `integer` - Primary key, auto-incremented.
 - **startAddress**: `integer` - Start address for the patch.
 - **fixtureId**: `integer` - Foreign key referencing the `fixtures` table.
@@ -41,6 +57,10 @@
 - **showId**: `integer` - Foreign key referencing the `shows` table.
 
 ### fixtures
+
+#### Belongs to a Manufacturer
+
+#### Has Many Patches
 
 - **id**: `integer` - Primary key, auto-incremented.
 - **name**: `text` - Name of the fixture.
@@ -51,6 +71,12 @@
 
 ### fixture_assignments
 
+#### Belongs to a Fixture
+
+#### Belongs to a Profile
+
+#### Belongs to Patch
+
 - **id**: `integer` - Primary key, auto-incremented.
 - **channel**: `integer` - Channel number assigned to a fixture.
 - **fixtureId**: `integer` - Foreign key referencing `fixtures`.
@@ -58,6 +84,10 @@
 - **patchId**: `integer` - Foreign key referencing `patches` (cascade delete).
 
 ### scenes_to_fixture_assignments
+
+#### Belongs to a Fixture Assignment
+
+#### Belongs to a Scene
 
 - **fixtureAssignmentId**: `integer` - Foreign key referencing `fixture_assignments` (cascade delete).
 - **sceneId**: `integer` - Foreign key referencing `scenes` (cascade delete).

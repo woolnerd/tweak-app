@@ -87,5 +87,8 @@ Welcome to the Tweak App repository! This guide will help you get started with s
 7. **Seed Database with the most common fixtures and profiles**
 
 8. **Implement Undo/Redo**
+
    - Be able to undo recorded looks
    - Be able to uno fixture output levels
+
+9. **Refresh Fixture Layout On New Fixture Add**

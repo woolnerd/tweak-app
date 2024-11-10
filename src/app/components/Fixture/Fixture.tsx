@@ -71,10 +71,6 @@ export function Fixture({
     return styles;
   };
 
-  const fixturesStyles =
-    "bg-purple-500 w-50 h-40 border-4 m-2 border-yellow-500 rounded-lg";
-  const textStyles = "font-extrabold text-center text-xl";
-
   const buildOutputDetails = () => {
     const { result: details, manualStyleChannels } = handleChannelValues(
       profileChannels,
