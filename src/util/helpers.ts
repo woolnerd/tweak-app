@@ -85,6 +85,8 @@ export function merge16BitValues(
  * @param manualStyleObj
  * @returns
  */
+
+//* Needs refactoring -- break into smaller functions to return separate values
 function buildResultAndManualStyleObj(
   values: ParsedCompositeFixtureInfo["values"],
   profileChannels: ParsedCompositeFixtureInfo["profileChannels"],
