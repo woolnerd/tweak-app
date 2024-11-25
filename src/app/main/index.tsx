@@ -110,18 +110,14 @@ function App() {
               </Text>
             </Pressable>
 
-            {scenes?.map((scene, i) => (
+            {scenes?.map((scene) => (
               <Scene
                 key={scene.id}
-                id={scene.id}
-                name={scene.name}
-                timeRate={scene.timeRate}
-                showId={scene.showId}
-                order={scene.order}
                 setSelectedSceneId={setSelectedSceneId}
                 selectedSceneId={selectedSceneId}
                 setReloadScenes={setReloadScenes}
                 labelRef={labelRef}
+                {...scene}
               />
             ))}
           </View>

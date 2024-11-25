@@ -13,40 +13,15 @@ type FetchCallback = () => Promise<ParsedCompositeFixtureInfo[]>;
 
 type SetCallback = (compositeFixtures: ParsedCompositeFixtureInfo[]) => void;
 
-export async function mergeCacheWithDBFixtures(
-  selectedSceneId: number,
-  fetchCallback: FetchCallback,
-  setCallback: SetCallback,
-) {
-  try {
-    const keys = await getManualFixtureKeys();
-    if (keys) {
-      const cachedFixtures = await getAllFixturesFromSceneKeys(
-        keys,
-        selectedSceneId,
-      );
-
-      const dbFixtures = await fetchCallback();
-
-      if (cachedFixtures instanceof Array && dbFixtures instanceof Array) {
-        setCallback(
-          [...cachedFixtures, ...dbFixtures].sort(
-            // sort by id, later use X,Y for draggable interface
-            (a, b) => a.channel - b.channel,
-          ),
-        );
-      } else {
-        throw new Error();
-      }
-
-      return;
-    }
-    throw new Error("Something went wrong");
-  } catch (err) {
-    console.log(err);
-  }
-}
-
+/**
+ *
+ * @param resultValueArray
+ * @param tupleArray
+ * @param compute16bitVal
+ * @param channel
+ * @param dmxVal
+ * @param valuesArray
+ */
 function choose8bitOrBuildValueTupleFor16bit(
   resultValueArray: number[][],
   tupleArray: number[][],
@@ -72,6 +47,13 @@ function choose8bitOrBuildValueTupleFor16bit(
     resultValueArray.push([channel, dmxVal]);
   }
 }
+
+/**
+ *
+ * @param channelPairs16Bit
+ * @param values
+ * @returns
+ */
 export function merge16BitValues(
   channelPairs16Bit: ParsedCompositeFixtureInfo["channelPairs16Bit"],
   values: ParsedCompositeFixtureInfo["values"],
@@ -93,6 +75,18 @@ export function merge16BitValues(
   });
   return newValues;
 }
+
+/**
+ *
+ * @param values
+ * @param profileChannels
+ * @param result
+ * @param callback
+ * @param manualStyleObj
+ * @returns
+ */
+
+//* Needs refactoring -- break into smaller functions to return separate values
 function buildResultAndManualStyleObj(
   values: ParsedCompositeFixtureInfo["values"],
   profileChannels: ParsedCompositeFixtureInfo["profileChannels"],
@@ -119,6 +113,7 @@ function buildResultAndManualStyleObj(
 
   return { result, manualStyleObj };
 }
+
 /**
  *
  * @param profileChannels example: {1: "Dimmer", 2: "Dimmer fine", 3: "Color Temp" ...}
@@ -157,6 +152,11 @@ export function handleChannelValues(
   return { result, manualStyleChannels };
 }
 
+/**
+ *
+ * @param num
+ * @returns
+ */
 function dynamicRound(num: number) {
   const decimalPart = num - Math.floor(num);
 
@@ -166,6 +166,12 @@ function dynamicRound(num: number) {
   return Math.floor(num);
 }
 
+/**
+ * Handles 8-bit and 16-bit values and converts 0-100
+ * @param val
+ * @param rounding
+ * @returns
+ */
 export function convertDmxValueToPercent(
   val: number,
   rounding: (n: number) => number = dynamicRound,
@@ -177,6 +183,13 @@ export function convertDmxValueToPercent(
   return Math.round((val / 255) * 100 * 100) / 100;
 }
 
+/**
+ * Converts a percentage (0-100) to Color Temperature integer
+ * @param percentage
+ * @param lowTemp
+ * @param highTemp
+ * @returns
+ */
 export function percentageToColorTemperature(
   percentage: number,
   lowTemp: number,
@@ -190,10 +203,16 @@ export function percentageToColorTemperature(
   return Math.round(colorTemp * 0.01) * 100;
 }
 
+/**
+ *
+ * @param percentage
+ * @returns
+ */
 export function percentageToIntensityLevel(percentage: number) {
   return Math.round(percentage);
 }
 
+//* Not implemented -- remove?
 export function mergeTupleArrays(
   dbStateArray: number[][],
   manualStateArray: number[][],
@@ -204,4 +223,39 @@ export function mergeTupleArrays(
     );
     return matchingTuple || [dbStateFirst, dbStateSecond];
   });
+}
+
+// * Not implemented. Add cache work in the future.
+export async function mergeCacheWithDBFixtures(
+  selectedSceneId: number,
+  fetchCallback: FetchCallback,
+  setCallback: SetCallback,
+) {
+  try {
+    const keys = await getManualFixtureKeys();
+    if (keys) {
+      const cachedFixtures = await getAllFixturesFromSceneKeys(
+        keys,
+        selectedSceneId,
+      );
+
+      const dbFixtures = await fetchCallback();
+
+      if (cachedFixtures instanceof Array && dbFixtures instanceof Array) {
+        setCallback(
+          [...cachedFixtures, ...dbFixtures].sort(
+            // sort by id, later use X,Y for draggable interface
+            (a, b) => a.channel - b.channel,
+          ),
+        );
+      } else {
+        throw new Error();
+      }
+
+      return;
+    }
+    throw new Error("Something went wrong");
+  } catch (err) {
+    console.log(err);
+  }
 }

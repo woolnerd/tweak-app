@@ -20,11 +20,9 @@ export function Fixture({
   fixtureAssignmentId,
   is16Bit,
   channelPairs16Bit,
-  sceneId,
-  startAddress,
-  endAddress,
   colorTempLow,
   colorTempHigh,
+  ...props
 }: FixtureProps) {
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
     useFixtureChannelSelectionStore((state) => state);
