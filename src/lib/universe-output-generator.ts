@@ -67,6 +67,8 @@ export default class UniverseOutputGenerator {
         return;
       }
 
+      // create a lookup table, with addresses pointing to a value of 0 (coarse), 1 (fine);
+
       // Update each universe's output
       const updatedOutput = { ...this.outputStart };
       Object.keys(this.outputStart).forEach((universeKey) => {
@@ -78,6 +80,8 @@ export default class UniverseOutputGenerator {
           (currentPair, index) => {
             const [address, currentValue] = currentPair;
             const increment = incrementData[index]?.[1] ?? 0;
+
+            // input address to 16BitLookupTable, determine if coarse or fine.
 
             // Calculate the new value
             let newValue = currentValue + increment;
@@ -107,7 +111,7 @@ export default class UniverseOutputGenerator {
       });
 
       this.outputStart = updatedOutput;
-      // console.log({ updatedOutput });
+      console.log({ updatedOutput });
 
       // Generate and send the updated packets
       const packets = this.generateOutput();

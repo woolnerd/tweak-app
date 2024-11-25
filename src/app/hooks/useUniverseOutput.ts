@@ -28,6 +28,5 @@ export default function useUniverseOutput() {
 
       updateOutputValuesStore(outputUniverses);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [compositeFixturesStore, manualFixturesStore]);
+  }, [compositeFixturesStore, manualFixturesStore, updateOutputValuesStore]);
 }
