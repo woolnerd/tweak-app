@@ -3,6 +3,7 @@ import { isEmpty } from "lodash";
 import PacketBuilder from "./packets/packet-builder.ts";
 import PacketSender from "./packets/packet-sender.ts";
 import UniverseDataBuilder, {
+  ChannelValueAnd16BitIndicator,
   UniverseDataObjectCollection,
 } from "./universe-data-builder.ts";
 import FaderCalculator from "../util/fader-calculator.ts";
@@ -45,6 +46,7 @@ export default class UniverseOutputGenerator {
       this.outputStart,
       this.outputEnd,
     );
+
     const steps = Math.ceil(duration / 50);
     const incrementValues = FaderCalculator.calculateIncrement(
       diffValues,
@@ -67,8 +69,6 @@ export default class UniverseOutputGenerator {
         return;
       }
 
-      // create a lookup table, with addresses pointing to a value of 0 (coarse), 1 (fine);
-
       // Update each universe's output
       const updatedOutput = { ...this.outputStart };
       Object.keys(this.outputStart).forEach((universeKey) => {
@@ -76,42 +76,92 @@ export default class UniverseOutputGenerator {
         const currentUniverseData = this.outputStart[universeNum];
         const incrementData = incrementValues[universeNum];
 
-        updatedOutput[universeNum] = currentUniverseData.map(
+        updatedOutput[universeNum] = currentUniverseData.flatMap(
+          // eslint-disable-next-line array-callback-return, consistent-return
           (currentPair, index) => {
-            const [address, currentValue] = currentPair;
+            const [address, currentValue, type] = currentPair;
             const increment = incrementData[index]?.[1] ?? 0;
-
             // input address to 16BitLookupTable, determine if coarse or fine.
+            // if this channel is fine, the previous one should be coarse;
+            if (type === -1) {
+              // 8-bit channel
+              let newValue = currentValue + increment;
 
-            // Calculate the new value
-            let newValue = currentValue + increment;
+              // Determine target value for this channel
+              const targetValue = this.outputEnd[universeNum][index][1];
 
-            // Determine target value for this channel
-            const targetValue = this.outputEnd[universeNum][index][1];
+              // Clamp the new value to ensure it does not exceed the target
+              if (increment < 0) {
+                // Decreasing towards target
+                newValue = Math.max(newValue, targetValue);
+              } else {
+                // Increasing towards target
+                newValue = Math.min(newValue, targetValue);
+              }
 
-            // Clamp the new value to ensure it does not exceed the target
-            if (increment < 0) {
-              // Decreasing towards target
-              newValue = Math.max(newValue, targetValue);
-            } else {
-              // Increasing towards target
-              newValue = Math.min(newValue, targetValue);
+              // Clamp between valid DMX range
+              newValue = Math.min(255, Math.max(0, newValue));
+
+              return [address, newValue, type];
             }
 
-            // Also, clamp between valid DMX range
-            newValue = Math.min(255, Math.max(0, newValue));
+            if (type === 0) {
+              // 16-bit channel (coarse value)
+              const coarseStart = currentValue;
+              const fineStart = currentUniverseData[index + 1]?.[1] || 0; // The next tuple is the fine value
+              const coarseTarget = this.outputEnd[universeNum][index][1];
+              const fineTarget = this.outputEnd[universeNum][index + 1][1];
+              const fineIncrement = incrementData[index + 1]?.[1] ?? 0;
 
-            if (address === 0 || address === 1) {
-              console.log(newValue);
+              // Combine coarse and fine values to calculate a full 16-bit value
+              const fullStartValue = (coarseStart << 8) + fineStart;
+              const fullTargetValue = (coarseTarget << 8) + fineTarget;
+
+              // Calculate the full new 16-bit value
+              // Calculate the full new 16-bit value
+              let fullNewValue =
+                fullStartValue + (increment << 8) + fineIncrement;
+
+              // Clamp to ensure it does not exceed the target
+              if (fullNewValue > fullTargetValue && increment < 0) {
+                // Decreasing
+                fullNewValue = Math.max(fullNewValue, fullTargetValue);
+              } else if (fullNewValue < fullTargetValue && increment > 0) {
+                // Increasing
+                fullNewValue = Math.min(fullNewValue, fullTargetValue);
+              }
+
+              // Clamp within valid 16-bit range (0 - 65535)
+              fullNewValue = Math.min(65535, Math.max(0, fullNewValue));
+
+              // Split back into coarse and fine
+              const newCoarseValue = (fullNewValue >> 8) & 0xff;
+              const newFineValue = fullNewValue & 0xff;
+
+              // Return both updated coarse and fine tuples
+              if (index === 0) {
+                console.log(`New coarse: ${newCoarseValue}`);
+                console.log(`New fine: ${newFineValue}`);
+              }
+
+              return [
+                [address, newCoarseValue, type],
+                [currentUniverseData[index + 1][0], newFineValue, 1],
+              ];
             }
 
-            return [address, newValue];
+            if (![-1, 0, 1].includes(type)) {
+              throw new Error(`Unexpected channel type: ${type}`);
+            }
+
+            return [];
           },
         );
       });
 
       this.outputStart = updatedOutput;
       console.log({ updatedOutput });
+      console.log("---------------------");
 
       // Generate and send the updated packets
       const packets = this.generateOutput();
@@ -131,5 +181,16 @@ export default class UniverseOutputGenerator {
 
   closeSocket() {
     this.sender.closeSocket();
+  }
+
+  static is16BitPair(
+    testLeftChannel: ChannelValueAnd16BitIndicator,
+    testRightChannel: ChannelValueAnd16BitIndicator,
+  ) {
+    const coarseFineIndex = 2;
+    return (
+      testLeftChannel[coarseFineIndex] === 0 &&
+      testRightChannel[coarseFineIndex] === 1
+    );
   }
 }

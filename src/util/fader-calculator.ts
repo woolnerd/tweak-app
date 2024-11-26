@@ -1,4 +1,7 @@
-import { UniverseDataObjectCollection } from "../lib/universe-data-builder.ts";
+import {
+  UniverseDataObjectCollection,
+  ChannelValueAnd16BitIndicator,
+} from "../lib/universe-data-builder.ts";
 
 export default class FaderCalculator {
   static calculateDiff(
@@ -16,14 +19,13 @@ export default class FaderCalculator {
         throw new Error("Universe data lengths do not match");
       }
 
-      const universeDiff: number[][] = currentUniverseData.map(
-        (currentPair, index) => {
-          const [currentAddress, currentOutputValue] = currentPair;
+      const universeDiff: ChannelValueAnd16BitIndicator[] =
+        currentUniverseData.map((currentPair, index) => {
+          const [currentAddress, currentOutputValue, type] = currentPair;
           const prevOutputValue = prevUniverseData[index]?.[1] ?? 0;
 
-          return [currentAddress, currentOutputValue - prevOutputValue];
-        },
-      );
+          return [currentAddress, currentOutputValue - prevOutputValue, type];
+        });
 
       diff[universeNum] = universeDiff;
     });
@@ -42,9 +44,12 @@ export default class FaderCalculator {
       const universeNum = Number(universeKey);
       const universeDiffData = diffValues[universeNum];
 
-      const universeIncrements: number[][] = universeDiffData.map(
-        ([address, diffValue]) => [address, diffValue / steps],
-      );
+      const universeIncrements: ChannelValueAnd16BitIndicator[] =
+        universeDiffData.map(([address, diffValue, type]) => [
+          address,
+          diffValue / steps,
+          type,
+        ]);
 
       increments[universeNum] = universeIncrements;
     });
