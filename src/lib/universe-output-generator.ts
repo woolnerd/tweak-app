@@ -47,7 +47,7 @@ export default class UniverseOutputGenerator {
       this.outputEnd,
     );
 
-    const steps = Math.ceil(duration / 50);
+    const steps = Math.ceil(duration / 60);
     const incrementValues = FaderCalculator.calculateIncrement(
       diffValues,
       steps,
@@ -63,6 +63,7 @@ export default class UniverseOutputGenerator {
         Math.floor((elapsed / duration) * steps),
         steps,
       );
+      console.log(currentStep);
 
       if (currentStep >= steps) {
         this.outputStart = { ...this.outputEnd };
@@ -77,12 +78,10 @@ export default class UniverseOutputGenerator {
         const incrementData = incrementValues[universeNum];
 
         updatedOutput[universeNum] = currentUniverseData.flatMap(
-          // eslint-disable-next-line array-callback-return, consistent-return
           (currentPair, index) => {
             const [address, currentValue, type] = currentPair;
             const increment = incrementData[index]?.[1] ?? 0;
-            // input address to 16BitLookupTable, determine if coarse or fine.
-            // if this channel is fine, the previous one should be coarse;
+
             if (type === -1) {
               // 8-bit channel
               let newValue = currentValue + increment;
@@ -102,22 +101,22 @@ export default class UniverseOutputGenerator {
               // Clamp between valid DMX range
               newValue = Math.min(255, Math.max(0, newValue));
 
-              return [address, newValue, type];
+              return [[address, newValue, type]];
             }
 
             if (type === 0) {
               // 16-bit channel (coarse value)
+              const fineIndex = index + 1;
               const coarseStart = currentValue;
-              const fineStart = currentUniverseData[index + 1]?.[1] || 0; // The next tuple is the fine value
+              const fineStart = currentUniverseData[fineIndex]?.[1] || 0; // The next tuple is the fine value
               const coarseTarget = this.outputEnd[universeNum][index][1];
-              const fineTarget = this.outputEnd[universeNum][index + 1][1];
-              const fineIncrement = incrementData[index + 1]?.[1] ?? 0;
+              const fineTarget = this.outputEnd[universeNum][fineIndex][1];
+              const fineIncrement = incrementData[fineIndex]?.[1] ?? 0;
 
               // Combine coarse and fine values to calculate a full 16-bit value
-              const fullStartValue = (coarseStart << 8) + fineStart;
-              const fullTargetValue = (coarseTarget << 8) + fineTarget;
+              const fullStartValue = coarseStart * 256 + fineStart;
+              const fullTargetValue = coarseTarget * 256 + fineTarget;
 
-              // Calculate the full new 16-bit value
               // Calculate the full new 16-bit value
               let fullNewValue =
                 fullStartValue + (increment << 8) + fineIncrement;
@@ -146,17 +145,18 @@ export default class UniverseOutputGenerator {
 
               return [
                 [address, newCoarseValue, type],
-                [currentUniverseData[index + 1][0], newFineValue, 1],
+                [currentUniverseData[fineIndex][0], newFineValue, 1],
               ];
             }
 
-            if (![-1, 0, 1].includes(type)) {
-              throw new Error(`Unexpected channel type: ${type}`);
+            if (type === 1) {
+              // fine case is handled in the check for coarse case, and empty array is removed by flattening.
+              return [];
             }
 
-            return [];
+            throw new Error(`Unexpected channel type: ${type}`);
           },
-        );
+        ) as [];
       });
 
       this.outputStart = updatedOutput;

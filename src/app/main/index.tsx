@@ -74,6 +74,7 @@ function App() {
       }
 
       prevOutputState.current = cloneDeep(outputValuesStore);
+      console.log({ prevOutputState });
 
       // consistent output of sACN values
       const intervalId = setInterval(() => {

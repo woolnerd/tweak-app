@@ -12,7 +12,7 @@ export default class FaderCalculator {
 
     Object.keys(currentValues).forEach((universeKey) => {
       const universeNum = Number(universeKey);
-      const currentUniverseData = currentValues[universeNum];
+      const currentUniverseData = currentValues[universeNum] || [];
       const prevUniverseData = prevValues[universeNum] || [];
 
       if (currentUniverseData.length !== prevUniverseData.length) {
@@ -23,6 +23,9 @@ export default class FaderCalculator {
         currentUniverseData.map((currentPair, index) => {
           const [currentAddress, currentOutputValue, type] = currentPair;
           const prevOutputValue = prevUniverseData[index]?.[1] ?? 0;
+
+          console.log({ currentOutputValue });
+          console.log({ prevOutputValue });
 
           return [currentAddress, currentOutputValue - prevOutputValue, type];
         });
