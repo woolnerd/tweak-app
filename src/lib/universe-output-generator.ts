@@ -31,8 +31,6 @@ export default class UniverseOutputGenerator {
 
       const packet = PacketBuilder.build(Number(universeNum), filledData);
 
-      // console.log({ outputData });
-
       return packet;
     });
   }
@@ -47,7 +45,7 @@ export default class UniverseOutputGenerator {
       this.outputEnd,
     );
 
-    const steps = Math.ceil(duration / 60);
+    const steps = Math.floor(duration / 60);
     const incrementValues = FaderCalculator.calculateIncrement(
       diffValues,
       steps,
@@ -59,19 +57,29 @@ export default class UniverseOutputGenerator {
       if (!startTime) startTime = timestamp;
       const elapsed = timestamp - startTime;
 
-      const currentStep = Math.min(
-        Math.floor((elapsed / duration) * steps),
-        steps,
-      );
-      console.log(currentStep);
+      // const currentStep = Math.min(
+      //   Math.round((elapsed / duration) * steps),
+      //   steps,
+      // );
+      // Calculate the progress factor t (between 0 and 1)
+      const t = Math.min(1, elapsed / duration);
+      console.log("elapsed", elapsed);
+      console.log("progress factor t", t);
 
-      if (currentStep >= steps) {
+      if (t >= 1) {
+        // Set outputStart to outputEnd when the animation is complete
         this.outputStart = { ...this.outputEnd };
         return;
       }
 
+      // if (currentStep >= steps) {
+      //   this.outputStart = { ...this.outputEnd };
+      //   return;
+      // }
+
       // Update each universe's output
       const updatedOutput = { ...this.outputStart };
+
       Object.keys(this.outputStart).forEach((universeKey) => {
         const universeNum = Number(universeKey);
         const currentUniverseData = this.outputStart[universeNum];
@@ -81,6 +89,10 @@ export default class UniverseOutputGenerator {
           (currentPair, index) => {
             const [address, currentValue, type] = currentPair;
             const increment = incrementData[index]?.[1] ?? 0;
+
+            if (type === 1) {
+              return [];
+            }
 
             if (type === -1) {
               // 8-bit channel
@@ -118,40 +130,38 @@ export default class UniverseOutputGenerator {
               const fullTargetValue = coarseTarget * 256 + fineTarget;
 
               // Calculate the full new 16-bit value
-              let fullNewValue =
-                fullStartValue + (increment << 8) + fineIncrement;
+              let fullNewStartValue =
+                fullStartValue + increment * 256 + fineIncrement;
 
               // Clamp to ensure it does not exceed the target
-              if (fullNewValue > fullTargetValue && increment < 0) {
+              if (fullNewStartValue > fullTargetValue && increment < 0) {
                 // Decreasing
-                fullNewValue = Math.max(fullNewValue, fullTargetValue);
-              } else if (fullNewValue < fullTargetValue && increment > 0) {
+                fullNewStartValue = Math.max(
+                  fullNewStartValue,
+                  fullTargetValue,
+                );
+              } else if (fullNewStartValue < fullTargetValue && increment > 0) {
                 // Increasing
-                fullNewValue = Math.min(fullNewValue, fullTargetValue);
+                fullNewStartValue = Math.min(
+                  fullNewStartValue,
+                  fullTargetValue,
+                );
               }
 
               // Clamp within valid 16-bit range (0 - 65535)
-              fullNewValue = Math.min(65535, Math.max(0, fullNewValue));
+              fullNewStartValue = Math.min(
+                fullTargetValue,
+                Math.max(0, fullNewStartValue),
+              );
 
               // Split back into coarse and fine
-              const newCoarseValue = (fullNewValue >> 8) & 0xff;
-              const newFineValue = fullNewValue & 0xff;
-
-              // Return both updated coarse and fine tuples
-              if (index === 0) {
-                console.log(`New coarse: ${newCoarseValue}`);
-                console.log(`New fine: ${newFineValue}`);
-              }
+              const newCoarseValue = (fullNewStartValue >> 8) & 0xff;
+              const newFineValue = fullNewStartValue & 0xff;
 
               return [
                 [address, newCoarseValue, type],
                 [currentUniverseData[fineIndex][0], newFineValue, 1],
               ];
-            }
-
-            if (type === 1) {
-              // fine case is handled in the check for coarse case, and empty array is removed by flattening.
-              return [];
             }
 
             throw new Error(`Unexpected channel type: ${type}`);

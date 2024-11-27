@@ -54,8 +54,6 @@ function App() {
   useUniverseOutput();
 
   useEffect(() => {
-    console.log(outputValuesStore && sacnState);
-
     if (outputValuesStore && sacnState) {
       const outputGenerator = new UniverseOutputGenerator(
         outputValuesStore,
@@ -70,7 +68,7 @@ function App() {
         console.log({ outputValuesStore });
         outputGenerator.outputStart = cloneDeep(prevOutputState.current);
         // Fade between previous and current values over 5000ms (adjust duration as needed)
-        outputGenerator.fadeOutputValues(5000);
+        outputGenerator.fadeOutputValues(2000);
       }
 
       prevOutputState.current = cloneDeep(outputValuesStore);

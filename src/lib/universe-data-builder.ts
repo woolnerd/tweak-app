@@ -77,6 +77,10 @@ export default class UniverseDataBuilder {
     const fine16BitChannel = 1;
     const coarse8BitChannel = -1;
 
+    if (this.data.channelPairs16Bit.length === 0) {
+      return coarse8BitChannel;
+    }
+
     for (let i = 0; i < this.data.channelPairs16Bit.length; i += 1) {
       const [coarse, fine] = this.data.channelPairs16Bit[i];
 
