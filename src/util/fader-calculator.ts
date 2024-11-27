@@ -1,3 +1,4 @@
+/* eslint-disable no-else-return */
 import {
   UniverseDataObjectCollection,
   ChannelValueAnd16BitIndicator,
@@ -5,38 +6,59 @@ import {
 
 export default class FaderCalculator {
   static calculateDiff(
-    prevValues: UniverseDataObjectCollection,
-    currentValues: UniverseDataObjectCollection,
+    startValues: UniverseDataObjectCollection,
+    endValues: UniverseDataObjectCollection,
   ): UniverseDataObjectCollection {
-    const diff: UniverseDataObjectCollection = {};
+    const diffs: UniverseDataObjectCollection = {};
 
-    Object.keys(currentValues).forEach((universeKey) => {
+    Object.keys(startValues).forEach((universeKey) => {
       const universeNum = Number(universeKey);
-      const currentUniverseData = currentValues[universeNum] || [];
-      const prevUniverseData = prevValues[universeNum];
+      const startUniverseData = startValues[universeNum];
+      const endUniverseData = endValues[universeNum];
 
-      // ! Newly created fixtures have no output value and will break
-      // ? Add default intensity values of 0? or create a dummy?
-      if (currentUniverseData.length !== prevUniverseData.length) {
-        throw new Error("Universe data lengths do not match");
-      }
+      const universeDiffs: ChannelValueAnd16BitIndicator[] =
+        startUniverseData.flatMap((currentPair, index) => {
+          const [address, startValue, type] = currentPair;
 
-      const universeDiff: ChannelValueAnd16BitIndicator[] =
-        currentUniverseData.map((currentPair, index) => {
-          const [currentAddress, currentOutputValue, type] = currentPair;
-          const prevOutputValue = prevUniverseData[index]?.[1] ?? 0;
+          if (type === 0) {
+            // Handle combined coarse and fine difference for 16-bit channels
+            const fineIndex = index + 1;
+            const coarseStart = startValue;
+            const fineStart = startUniverseData[fineIndex]?.[1] || 0;
+            const coarseEnd = endUniverseData[index][1];
+            const fineEnd = endUniverseData[fineIndex]?.[1] || 0;
 
-          console.log({ currentOutputValue });
-          console.log({ prevOutputValue });
+            // Combine coarse and fine into a single 16-bit value
+            const fullStartValue = (coarseStart << 8) + fineStart;
+            const fullEndValue = (coarseEnd << 8) + fineEnd;
 
-          return [currentAddress, currentOutputValue - prevOutputValue, type];
+            // Calculate the difference, preserving the sign
+            const diffValue = fullEndValue - fullStartValue;
+
+            // Split back into coarse and fine for the result
+            const coarseDiff = (diffValue >> 8) & 0xff;
+            const fineDiff = diffValue & 0xff;
+
+            return [
+              [address, coarseDiff, type],
+              [startUniverseData[fineIndex][0], fineDiff, 1],
+            ];
+          } else if (type === 1) {
+            // Fine value is handled with coarse in the previous block
+            return [];
+          } else {
+            // Handle 8-bit channels (type -1)
+            const endValue = endUniverseData[index][1];
+            const diffValue = endValue - startValue;
+
+            return [[address, diffValue, type]];
+          }
         });
 
-      diff[universeNum] = universeDiff;
+      diffs[universeNum] = universeDiffs;
     });
-    console.log({ diff });
 
-    return diff;
+    return diffs;
   }
 
   static calculateIncrement(
@@ -68,7 +90,7 @@ export default class FaderCalculator {
             const fineDiff = universeDiffData[fineIndex]?.[1] || 0; // Fine difference
 
             // Combine coarse and fine differences into a 16-bit full difference
-            const fullDiffValue = coarseDiff * 256 + fineDiff;
+            const fullDiffValue = (coarseDiff << 8) + fineDiff;
 
             // Calculate the full increment per step, keeping the sign intact
             const fullIncrement = fullDiffValue / steps;
@@ -77,10 +99,14 @@ export default class FaderCalculator {
             const coarseIncrement = Math.floor(fullIncrement / 256); // Coarse part
             const fineIncrement = fullIncrement % 256; // Fine part
 
+            // Ensure the sign is preserved during splitting
+            const correctedFineIncrement =
+              fineIncrement < 0 ? fineIncrement + 256 : fineIncrement;
+
             // Return both updated coarse and fine increments
             return [
               [address, coarseIncrement, type],
-              [universeDiffData[fineIndex][0], fineIncrement, 1],
+              [universeDiffData[fineIndex][0], correctedFineIncrement, 1],
             ];
           }
           if (type === 1) {
