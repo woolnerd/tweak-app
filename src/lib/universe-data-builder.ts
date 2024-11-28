@@ -6,7 +6,7 @@ type COARSE_16_BIT_CHANNEL = 0;
 type FINE_16_BIT_CHANNEL = 1;
 type COARSE_8_BIT_CHANNEL = -1;
 
-type Determine16Bit =
+export type Determine16Bit =
   | COARSE_16_BIT_CHANNEL
   | FINE_16_BIT_CHANNEL
   | COARSE_8_BIT_CHANNEL;

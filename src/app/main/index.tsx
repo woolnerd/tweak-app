@@ -57,9 +57,9 @@ function App() {
     if (outputValuesStore && sacnState) {
       const outputGenerator = new UniverseOutputGenerator(
         outputValuesStore,
-        // new PacketSender(),
+        new PacketSender(),
       );
-      // const packets = outputGenerator.generateOutput();
+      const packets = outputGenerator.generateOutput();
 
       if (
         prevOutputState.current &&
@@ -76,12 +76,12 @@ function App() {
 
       // consistent output of sACN values
       const intervalId = setInterval(() => {
-        // outputGenerator.sendOutput(packets);
-      }, 5000);
+        outputGenerator.sendOutput(packets);
+      }, 1000);
 
       return () => {
         clearInterval(intervalId);
-        // outputGenerator.closeSocket();
+        outputGenerator.closeSocket();
       };
     }
 

@@ -7,7 +7,7 @@ import seedDatabase from "../../../scripts/seedDatabase.ts";
 
 const CURRENT_SEED_VERSION = "1";
 const CURRENT_MIGRATION_VERSION = "1";
-const PRINT_DB_DIRECTORY = false; // update to true for DB printout
+const PRINT_DB_DIRECTORY = true; // update to true for DB printout
 
 export default function useInitialize() {
   const [migrationsRan, setMigrationsRan] = useState(false);
