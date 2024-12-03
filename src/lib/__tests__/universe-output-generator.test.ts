@@ -18,8 +18,8 @@ describe("UniverseOutputGenerator constructor", () => {
   beforeEach(() => {
     mockOutputValuesStore = {
       1: [
-        [0, 155],
-        [1, 255],
+        [0, 155, 0],
+        [1, 255, 1],
       ],
     };
     mockPacketSender = new PacketSender();
@@ -128,7 +128,7 @@ describe("UniverseOutputGenerator constructor", () => {
     test("it invokes generateOutput", () => {
       const universeOutputGenerator = new UniverseOutputGenerator(
         mockOutputValuesStore,
-        // mockPacketSender,
+        mockPacketSender,
       );
       jest.spyOn(universeOutputGenerator, "generateOutput");
 

@@ -42,12 +42,6 @@ export default function LayoutArea({
   }, [selectedSceneId, fixtureChannelSelection]);
 
   useEffect(() => {
-    // pointer on prevFixture state and nextFixtureState (res)
-    // extract fixture values from prev and next
-    // pass to class with methods for
-    // finding difference in values
-    // increment/decrement new value as needed
-    // setInterval with time rate
     fetchCompositeFixtures()
       .then((res) => updateCompositeFixturesStore(res))
       .catch((err) => console.log(err));

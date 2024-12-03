@@ -1,4 +1,3 @@
-// import AsyncStorage from "@react-native-async-storage/async-storage";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { openDatabaseSync } from "expo-sqlite/next";
 import { cloneDeep, isEqual } from "lodash";
@@ -21,7 +20,6 @@ import useUniverseOutput from "../hooks/useUniverseOutput.ts";
 import useCompositeFixtureStore from "../store/useCompositeFixtureStore.ts";
 import useFixtureChannelSelectionStore from "../store/useFixtureChannelSelectionStore.ts";
 import useOutputValuesStore from "../store/useOutputValuesStore.ts";
-import FaderCalculator from "../../util/fader-calculator.ts";
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
@@ -65,14 +63,12 @@ function App() {
         prevOutputState.current &&
         !isEqual(prevOutputState.current, outputValuesStore)
       ) {
-        console.log({ outputValuesStore });
         outputGenerator.outputStart = cloneDeep(prevOutputState.current);
         // Fade between previous and current values over 5000ms (adjust duration as needed)
         outputGenerator.fadeOutputValues(5000);
       }
 
       prevOutputState.current = cloneDeep(outputValuesStore);
-      console.log({ prevOutputState });
 
       // consistent output of sACN values
       const intervalId = setInterval(() => {
@@ -84,8 +80,6 @@ function App() {
         outputGenerator.closeSocket();
       };
     }
-
-    //
 
     return undefined;
   }, [outputValuesStore, sacnState]);

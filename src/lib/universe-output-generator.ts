@@ -17,13 +17,7 @@ export default class UniverseOutputGenerator {
     private readonly outputEnd: UniverseDataObjectCollection,
     private sender: PacketSender,
   ) {
-    // Initialize fading state as an empty object
     this.fadingState = {};
-  }
-
-  public set value(outputStart: UniverseDataObjectCollection) {
-    this.outputStart = outputStart;
-    this.fadingState = cloneDeep(outputStart); // Initialize fadingState to start with outputStart
   }
 
   generateOutput() {
@@ -65,9 +59,8 @@ export default class UniverseOutputGenerator {
       this.fadingState = updatedOutput;
 
       // Generate and optionally send the updated packets using the fadingState
-      const packets = this.generateOutput();
-      // Uncomment to send the output if needed
-      this.sendOutput(packets);
+      //! const packets = this.generateOutput();
+      // !this.sendOutput(packets);
 
       // Request the next animation frame if the animation is not complete
       requestAnimationFrame(animate);
@@ -75,6 +68,7 @@ export default class UniverseOutputGenerator {
 
     // Start the animation
     requestAnimationFrame(animate);
+    console.log("test");
   }
 
   calculateFadingState(t: number) {
@@ -96,8 +90,9 @@ export default class UniverseOutputGenerator {
             // 8-bit channel
             const targetValue = targetUniverseData[index]?.[1] || 0;
             // Avoid rounding in the middle of the animation
-            const newValue = startValue + t * (targetValue - startValue);
-            console.log(address, newValue, type);
+            const newValue = Math.round(
+              startValue + t * (targetValue - startValue),
+            );
 
             return [
               [address, newValue, type],
@@ -130,8 +125,6 @@ export default class UniverseOutputGenerator {
             const [newCoarseValue, newFineValue] =
               ChannelValueCalculator.split16BitValues(fullNewValue);
 
-            console.log(address, newCoarseValue, newFineValue, type);
-
             const fineAddress = currentUniverseData?.[fineIndex][0];
 
             return [
@@ -141,6 +134,7 @@ export default class UniverseOutputGenerator {
           }
 
           if (type === 1) {
+            // Already handled by with type === 0 check;
             return [];
           }
 
