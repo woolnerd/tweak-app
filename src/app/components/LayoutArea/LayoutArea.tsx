@@ -6,7 +6,7 @@ import ScenesToFixtureAssignments from "../../../models/scene-to-fixture-assignm
 import useCompositeFixtureStore from "../../store/useCompositeFixtureStore.ts";
 import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
 import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
-import { Fixture as FixtureComponent } from "../Fixture/Fixture.tsx";
+import Fixture from "../Fixture/Fixture.tsx";
 
 type LayoutAreaProps = {
   selectedSceneId: number;
@@ -67,14 +67,14 @@ export default function LayoutArea({
         return compFixtureStateObj;
       }),
     );
-  }, [manualFixturesStore]);
+  }, [manualFixturesStore, updateCompositeFixturesStore]);
 
   return (
     <View className="text-center bg-black-700 m-1 h-auto">
       <FlatList
         className="flex m-auto"
         data={compositeFixturesStore}
-        renderItem={({ item }) => <FixtureComponent {...item} />}
+        renderItem={({ item }) => <Fixture {...item} />}
         keyExtractor={(item, idx) => item.fixtureAssignmentId.toString()}
       />
     </View>

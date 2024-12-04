@@ -92,11 +92,7 @@ describe("LayoutArea", () => {
 
   test("renders correctly", async () => {
     const { getByText } = render(
-      <LayoutArea
-        selectedSceneId={1}
-        loadFixtures={true}
-        setLoadFixtures={jest.fn}
-      />,
+      <LayoutArea selectedSceneId={1} loadFixtures setLoadFixtures={jest.fn} />,
     );
 
     await waitFor(() => {
@@ -108,11 +104,7 @@ describe("LayoutArea", () => {
   test("fetch and update composite fixtures", async () => {
     const { updateCompositeFixturesStore } = useCompositeFixtureStore();
     render(
-      <LayoutArea
-        selectedSceneId={1}
-        loadFixtures={true}
-        setLoadFixtures={jest.fn}
-      />,
+      <LayoutArea selectedSceneId={1} loadFixtures setLoadFixtures={jest.fn} />,
     );
 
     await waitFor(() =>

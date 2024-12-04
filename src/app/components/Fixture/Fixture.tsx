@@ -12,7 +12,7 @@ import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelect
 import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
 
 export type FixtureProps = object & ParsedCompositeFixtureInfo;
-export function Fixture({
+export default function Fixture({
   channel,
   fixtureName,
   profileChannels,
@@ -124,6 +124,7 @@ export function Fixture({
   return (
     <View
       key={fixtureAssignmentId}
+      testID="parent-view"
       style={{ ...styles.fixtures, ...selectedStyle(false) }}
       onTouchStart={() => handleOutput(channel)}>
       <Text style={styles.text}>{channel}</Text>
