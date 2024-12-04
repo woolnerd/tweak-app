@@ -13,10 +13,10 @@ jest.mock("../packets/packet-sender.ts");
 
 describe("UniverseOutputGenerator constructor", () => {
   let mockPacketSender: PacketSender;
-  let mockOutputValuesStore: UniverseDataObjectCollection;
+  let mockOutputEnd: UniverseDataObjectCollection;
 
   beforeEach(() => {
-    mockOutputValuesStore = {
+    mockOutputEnd = {
       1: [
         [0, 155, 0],
         [1, 255, 1],
@@ -24,15 +24,15 @@ describe("UniverseOutputGenerator constructor", () => {
     };
     mockPacketSender = new PacketSender();
   });
+
   test("it instantiates a UniverseOutputGenerator", () => {
     const universeOutputGenerator = new UniverseOutputGenerator(
-      mockOutputValuesStore,
+      mockOutputEnd,
       mockPacketSender,
     );
-    expect(universeOutputGenerator["outputValuesStore"]).toBe(
-      mockOutputValuesStore,
-    );
+    expect(universeOutputGenerator["outputEnd"]).toBe(mockOutputEnd);
     expect(universeOutputGenerator["sender"]).toBe(mockPacketSender);
+    expect(universeOutputGenerator.fadeOutputValues).toBeDefined();
   });
 
   test("should throw an error if outputValuesStore is not provided and generateOutput is called", () => {
@@ -56,19 +56,19 @@ describe("UniverseOutputGenerator constructor", () => {
         .spyOn(PacketBuilder, "build")
         .mockReturnValue(Buffer.from("mockPacket"));
 
-      mockOutputValuesStore = {
+      mockOutputEnd = {
         1: [
-          [1, 155],
-          [2, 255],
+          [1, 155, 0],
+          [2, 255, 1],
         ],
         2: [
-          [10, 100],
-          [20, 255],
+          [10, 100, 0],
+          [20, 255, 1],
         ],
-      } as any;
+      };
 
       const universeOutputGenerator = new UniverseOutputGenerator(
-        mockOutputValuesStore,
+        mockOutputEnd,
         mockPacketSender,
       );
       const packets = universeOutputGenerator.generateOutput();
@@ -79,14 +79,14 @@ describe("UniverseOutputGenerator constructor", () => {
       expect(
         UniverseDataBuilder.fillUniverseOutputValuesWithZero,
       ).toHaveBeenCalledWith([
-        [1, 155],
-        [2, 255],
+        [1, 155, 0],
+        [2, 255, 1],
       ]);
       expect(
         UniverseDataBuilder.fillUniverseOutputValuesWithZero,
       ).toHaveBeenCalledWith([
-        [1, 155],
-        [2, 255],
+        [1, 155, 0],
+        [2, 255, 1],
       ]);
       expect(PacketBuilder.build).toHaveBeenCalledTimes(2);
       expect(PacketBuilder.build).toHaveBeenCalledWith(1, mockFilledData);
@@ -98,7 +98,7 @@ describe("UniverseOutputGenerator constructor", () => {
   describe("sendOutput", () => {
     test("should send each packet and then close the socket", () => {
       const universeOutputGenerator = new UniverseOutputGenerator(
-        mockOutputValuesStore,
+        mockOutputEnd,
         mockPacketSender,
       );
       const packets = [Buffer.from("packet1"), Buffer.from("packet2")];
@@ -117,7 +117,7 @@ describe("UniverseOutputGenerator constructor", () => {
   describe("closeSocket", () => {
     test("it closes the socket", () => {
       const universeOutputGenerator = new UniverseOutputGenerator(
-        mockOutputValuesStore,
+        mockOutputEnd,
         mockPacketSender,
       );
       universeOutputGenerator.closeSocket();
@@ -125,14 +125,17 @@ describe("UniverseOutputGenerator constructor", () => {
     });
   });
   describe("fadeOutputValues", () => {
+    jest.useFakeTimers();
     test("it invokes generateOutput", () => {
       const universeOutputGenerator = new UniverseOutputGenerator(
-        mockOutputValuesStore,
+        mockOutputEnd,
         mockPacketSender,
       );
       jest.spyOn(universeOutputGenerator, "generateOutput");
 
+      universeOutputGenerator.outputStart = { 1: [[0, 255, -1]] };
       universeOutputGenerator.fadeOutputValues(1000);
+      jest.runAllTimers();
       expect(universeOutputGenerator.generateOutput).toHaveBeenCalled();
     });
   });

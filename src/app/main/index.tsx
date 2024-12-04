@@ -72,7 +72,7 @@ function App() {
 
       // consistent output of sACN values
       const intervalId = setInterval(() => {
-        outputGenerator.sendOutput(packets);
+        // outputGenerator.sendOutput(packets);
       }, 1000);
 
       return () => {

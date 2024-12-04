@@ -1,3 +1,5 @@
+import { cloneDeep } from "lodash";
+
 import ChannelValueCalculator from "./channel-value-calculator.ts";
 import {
   UniverseDataObjectCollection,
@@ -5,138 +7,80 @@ import {
 } from "../lib/universe-data-builder.ts";
 
 export default class FaderCalculator {
-  static calculateDiff(
-    startValues: UniverseDataObjectCollection,
-    endValues: UniverseDataObjectCollection,
-  ): UniverseDataObjectCollection {
-    const diffs: UniverseDataObjectCollection = {};
+  static calculateFadingState(
+    t: number,
+    outputStart: UniverseDataObjectCollection,
+    outputEnd: UniverseDataObjectCollection,
+  ) {
+    // Update each universe's output
+    const updatedOutput: UniverseDataObjectCollection = cloneDeep(outputStart);
 
-    Object.keys(startValues).forEach((universeKey) => {
+    Object.keys(outputStart).forEach((universeKey) => {
       const universeNum = Number(universeKey);
-      const startUniverseData = startValues[universeNum];
-      const endUniverseData = endValues[universeNum];
+      const currentUniverseData = outputStart[universeNum];
+      const targetUniverseData = outputEnd[universeNum];
 
-      const universeDiffs: ChannelValueAnd16BitIndicator[] = startUniverseData
+      updatedOutput[universeNum] = currentUniverseData
         .map((currentPair, index) => {
           const [address, startValue, type] = currentPair;
 
+          if (type === -1) {
+            // 8-bit channel
+            const targetValue = targetUniverseData[index]?.[1] || 0;
+            // Avoid rounding in the middle of the animation
+            const newValue = Math.round(
+              startValue + t * (targetValue - startValue),
+            );
+
+            return [
+              [address, newValue, type],
+            ] as ChannelValueAnd16BitIndicator[];
+          }
+
           if (type === 0) {
-            // Handle combined coarse and fine difference for 16-bit channels
+            // 16-bit channel (coarse value)
             const fineIndex = index + 1;
             const coarseStart = startValue;
-            const fineStart = startUniverseData[fineIndex]?.[1] || 0;
-            const coarseEnd = endUniverseData[index][1];
-            const fineEnd = endUniverseData[fineIndex]?.[1] || 0;
+            const fineStart = currentUniverseData[fineIndex]?.[1] || 0;
+            const coarseTarget = targetUniverseData[index][1];
+            const fineTarget = targetUniverseData[fineIndex]?.[1] || 0;
 
-            // Combine coarse and fine into a single 16-bit value
+            // Combine coarse and fine values to calculate the full 16-bit value
             const fullStartValue = ChannelValueCalculator.build16BitValue(
               coarseStart,
               fineStart,
             );
-            const fullEndValue = ChannelValueCalculator.build16BitValue(
-              coarseEnd,
-              fineEnd,
+            const fullTargetValue = ChannelValueCalculator.build16BitValue(
+              coarseTarget,
+              fineTarget,
             );
 
-            // Calculate the difference, preserving the sign
-            const diffValue = fullEndValue - fullStartValue;
+            // Perform linear interpolation on the full 16-bit value
+            const fullNewValue =
+              fullStartValue + t * (fullTargetValue - fullStartValue);
 
-            // Split back into coarse and fine for the result
-            const [coarseDiff, fineDiff] =
-              ChannelValueCalculator.split16BitValues(diffValue);
+            // Split back into coarse and fine, keeping precision until necessary
+            const [newCoarseValue, newFineValue] =
+              ChannelValueCalculator.split16BitValues(fullNewValue);
 
-            const fineAddress = startUniverseData[fineIndex][0];
+            const fineAddress = currentUniverseData?.[fineIndex][0];
 
             return [
-              [address, coarseDiff, type],
-              [fineAddress, fineDiff, 1],
+              [address, newCoarseValue, type],
+              [fineAddress, newFineValue, 1],
             ] as ChannelValueAnd16BitIndicator[];
           }
 
           if (type === 1) {
-            // Fine value is handled with coarse in the previous block
-            return [];
-          }
-
-          // Handle 8-bit channels (type -1)
-          const endValue = endUniverseData[index][1];
-          const diffValue = endValue - startValue;
-
-          return [
-            [address, diffValue, type],
-          ] as ChannelValueAnd16BitIndicator[];
-        })
-        .flat();
-
-      diffs[universeNum] = universeDiffs;
-    });
-
-    return diffs;
-  }
-
-  static calculateIncrement(
-    diffValues: UniverseDataObjectCollection,
-    steps: number,
-  ): UniverseDataObjectCollection {
-    const increments: UniverseDataObjectCollection = {};
-
-    Object.keys(diffValues).forEach((universeKey) => {
-      const universeNum = Number(universeKey);
-      const universeDiffData = diffValues[universeNum];
-
-      const universeIncrements: ChannelValueAnd16BitIndicator[] =
-        universeDiffData.flatMap((currentGroup, index) => {
-          const [address, diffValue, type] = currentGroup;
-
-          if (diffValue === 0) {
-            return [currentGroup];
-          }
-
-          if (type === -1) {
-            // 8-bit channel: Calculate increment normally
-            return [[address, diffValue / steps, type]];
-          }
-          if (type === 0) {
-            // 16-bit channel (coarse value)
-            const fineIndex = index + 1;
-            const coarseDiff = diffValue; // Coarse difference
-            const fineDiff = universeDiffData[fineIndex]?.[1] || 0; // Fine difference
-
-            // Combine coarse and fine differences into a 16-bit full difference
-            const fullDiffValue = ChannelValueCalculator.build16BitValue(
-              coarseDiff,
-              fineDiff,
-            );
-
-            // Calculate the full increment per step, keeping the sign intact
-            const fullIncrement = fullDiffValue / steps;
-
-            // Split the full increment back into coarse and fine components
-            const [coarseIncrement, fineIncrement] =
-              ChannelValueCalculator.split16BitValues(fullIncrement);
-
-            // Ensure the sign is preserved during splitting
-            const correctedFineIncrement =
-              fineIncrement < 0 ? fineIncrement + 256 : fineIncrement;
-
-            const fineAddress = universeDiffData[fineIndex][0];
-
-            // Return both updated coarse and fine increments
-            return [
-              [address, coarseIncrement, type],
-              [fineAddress, correctedFineIncrement, 1],
-            ];
-          }
-          if (type === 1) {
-            // Fine value handled together with coarse value, return empty
+            // Already handled by with type === 0 check;
             return [];
           }
 
           throw new Error(`Unexpected channel type: ${type}`);
-        });
-
-      increments[universeNum] = universeIncrements;
+        })
+        .flat();
     });
-    return increments;
+
+    return updatedOutput;
   }
 }
