@@ -1,4 +1,3 @@
-/* eslint-disable no-bitwise */
 export default class ChannelValueCalculator {
   private percentage: number;
 
@@ -52,5 +51,16 @@ export default class ChannelValueCalculator {
     }
     // 8- Bit
     return Math.trunc((channel1 / 255) * 100);
+  }
+
+  static split16BitValues(sixteenBitValue: number) {
+    const coarseIncrement = Math.floor(sixteenBitValue >> 8) & 0xff; // Coarse part
+    const fineIncrement = Math.floor(sixteenBitValue) & 0xff; // Fine part
+
+    return [coarseIncrement, fineIncrement];
+  }
+
+  static build16BitValue(coarseVal: number, fineVal: number) {
+    return (coarseVal << 8) + fineVal;
   }
 }

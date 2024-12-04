@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import runMigrations from "../../../scripts/migrations.ts";
 import seedDatabase from "../../../scripts/seedDatabase.ts";
 
-const CURRENT_SEED_VERSION = "1";
-const CURRENT_MIGRATION_VERSION = "1";
+const CURRENT_SEED_VERSION = "0";
+const CURRENT_MIGRATION_VERSION = "0";
 const PRINT_DB_DIRECTORY = false; // update to true for DB printout
 
 export default function useInitialize() {

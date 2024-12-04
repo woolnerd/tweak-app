@@ -12,8 +12,8 @@ import {
 } from "../../../lib/types/buttons.ts";
 import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import useCommandLineRouter from "../../hooks/useCommandLineRouter.ts";
-import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
-import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
+import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
+import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
 import ControlPanelButton from "../ControlPanelButton/ControlPanelButton.tsx";
 
 type ControlPanelProps = {

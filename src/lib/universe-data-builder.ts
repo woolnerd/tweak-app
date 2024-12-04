@@ -2,12 +2,25 @@ import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-ass
 import ChannelNumber from "../util/channel-number.ts";
 import DmxValue from "../util/dmx-value.ts";
 
+type COARSE_16_BIT_CHANNEL = 0;
+type FINE_16_BIT_CHANNEL = 1;
+type COARSE_8_BIT_CHANNEL = -1;
+
+export type Determine16Bit =
+  | COARSE_16_BIT_CHANNEL
+  | FINE_16_BIT_CHANNEL
+  | COARSE_8_BIT_CHANNEL;
+export type ChannelValueAnd16BitIndicator = [number, number, Determine16Bit];
+
 export type UniverseDataObject = Record<number, number[]>;
-export type UniverseDataObjectCollection = Record<number, number[][]>;
+export type UniverseDataObjectCollection = Record<
+  number,
+  ChannelValueAnd16BitIndicator[]
+>;
 
 export type PickFixtureInfo = Pick<
   ParsedCompositeFixtureInfo,
-  "startAddress" | "endAddress" | "values"
+  "startAddress" | "endAddress" | "values" | "channelPairs16Bit"
 >;
 
 export default class UniverseDataBuilder {
@@ -25,6 +38,7 @@ export default class UniverseDataBuilder {
         if (!this.data.startAddress) {
           throw new Error("Address start cannot be falsy");
         }
+
         const channelValue = UniverseDataBuilder.offsetByOneAndZeroIndex(
           originalAddress + this.data.startAddress,
         );
@@ -37,14 +51,43 @@ export default class UniverseDataBuilder {
         const dmxValue = new DmxValue(dmxVal);
 
         if (universeNum in universes) {
-          universes[universeNum].push([channel.value, dmxValue.value]);
+          universes[universeNum].push([
+            channel.value,
+            dmxValue.value,
+            this.determineCoarseOrFineChannel(originalAddress),
+          ]);
         } else {
-          universes[universeNum] = [[channel.value, dmxValue.value]];
+          universes[universeNum] = [
+            [
+              channel.value,
+              dmxValue.value,
+              this.determineCoarseOrFineChannel(originalAddress),
+            ],
+          ];
         }
         return universes;
       },
       {},
     );
+  }
+
+  private determineCoarseOrFineChannel(channelValue: number): Determine16Bit {
+    const coercedChannelValue = this.clampAddressToUniverseSize(channelValue);
+    const coarse16BitChannel = 0;
+    const fine16BitChannel = 1;
+    const coarse8BitChannel = -1;
+
+    if (this.data.channelPairs16Bit.length === 0) {
+      return coarse8BitChannel;
+    }
+
+    for (let i = 0; i < this.data.channelPairs16Bit.length; i += 1) {
+      const [coarse, fine] = this.data.channelPairs16Bit[i];
+
+      if (coarse === coercedChannelValue) return coarse16BitChannel;
+      if (fine === coercedChannelValue) return fine16BitChannel;
+    }
+    return coarse8BitChannel;
   }
 
   public deriveUniverseFromAddress(startAddress: number) {

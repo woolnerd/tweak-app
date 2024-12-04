@@ -12,12 +12,9 @@ type Action = {
   ) => void;
 };
 
-// eslint-disable-next-line import/prefer-default-export
-export const useFixtureChannelSelectionStore = create<State & Action>(
-  (setCallback) => ({
-    fixtureChannelSelectionStore: new Set([DRIZZLE_ARRAY_CHECK_VALUE]),
-    updateFixtureChannelSelectionStore: (
-      fixtureChannelSelectionStore: Set<number>,
-    ) => setCallback(() => ({ fixtureChannelSelectionStore })),
-  }),
-);
+export default create<State & Action>((setCallback) => ({
+  fixtureChannelSelectionStore: new Set([DRIZZLE_ARRAY_CHECK_VALUE]),
+  updateFixtureChannelSelectionStore: (
+    fixtureChannelSelectionStore: Set<number>,
+  ) => setCallback(() => ({ fixtureChannelSelectionStore })),
+}));

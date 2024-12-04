@@ -33,6 +33,7 @@ module.exports = {
     "no-return-await": "off",
     "react/require-default-props": "off",
     "react/jsx-props-no-spreading": "off",
+    "no-bitwise": "off",
   },
   plugins: ["drizzle"],
 };

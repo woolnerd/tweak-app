@@ -3,9 +3,9 @@ import { View, FlatList } from "react-native";
 
 import { db } from "../../../db/client.ts";
 import ScenesToFixtureAssignments from "../../../models/scene-to-fixture-assignments.ts";
-import { useCompositeFixtureStore } from "../../store/useCompositeFixtureStore.ts";
-import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
-import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
+import useCompositeFixtureStore from "../../store/useCompositeFixtureStore.ts";
+import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
+import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
 import { Fixture as FixtureComponent } from "../Fixture/Fixture.tsx";
 
 type LayoutAreaProps = {
