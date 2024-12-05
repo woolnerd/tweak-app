@@ -1,6 +1,5 @@
-import { render, waitFor } from "@testing-library/react-native";
-
-import "@testing-library/jest-dom";
+import { render, waitFor, screen } from "@testing-library/react-native";
+import "@testing-library/react-native/extend-expect";
 
 import React from "react";
 
@@ -55,15 +54,18 @@ describe("Fixture component", () => {
 
   test("it has a green border when not selected", () => {
     const { getByTestId } = render(<Fixture {...fixture} />);
-
     const component = getByTestId("parent-view");
-
-    console.log(component);
-
-    expect(component).toHaveStyle({ borderColor: "green" });
+    expect(component).toHaveStyle({ borderColor: "rgb(100, 256, 100)" });
   });
 
-  test("it has a gold border when selected", () => {});
+  test("it has a gold border when selected", () => {
+    const { getByTestId } = render(<Fixture {...fixture} />);
+    const component = getByTestId("parent-view");
 
-  test("once manual values are entered, the details turn red", () => {});
+    expect(false).toBeTruthy();
+  });
+
+  test("once manual values are entered, the details turn red", () => {
+    expect(false).toBeTruthy();
+  });
 });
