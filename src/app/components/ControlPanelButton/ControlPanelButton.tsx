@@ -53,6 +53,7 @@ export default function ControlPanelButton({
     <Pressable
       key={buttonData.id}
       accessibilityRole="button"
+      testID={`cp-button-${buttonData.label}`}
       style={styles.touchpadBtn}
       onPress={() => handleTouch(buttonData)}
       disabled={disable}>

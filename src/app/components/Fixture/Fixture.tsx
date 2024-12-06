@@ -93,6 +93,7 @@ export default function Fixture({
     styleOptions: Record<string, boolean>,
   ) => (
     <Text
+      testID={`output-detail-${fixtureAssignmentId}`}
       key={`${profileField}+${Math.random()}`}
       style={{
         ...styles.text,
@@ -124,7 +125,7 @@ export default function Fixture({
   return (
     <View
       key={fixtureAssignmentId}
-      testID="parent-view"
+      testID={`fixture-${fixtureAssignmentId}`}
       style={{ ...styles.fixtures, ...selectedStyle(false) }}
       onTouchStart={() => handleOutput(channel)}>
       <Text style={styles.text}>{channel}</Text>

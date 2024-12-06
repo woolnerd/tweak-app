@@ -44,9 +44,11 @@ function App() {
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
     useFixtureChannelSelectionStore((state) => state);
 
-  const selectedCompositeFixtures = compositeFixturesStore.filter((fixture) =>
-    fixtureChannelSelectionStore.has(fixture.channel),
-  );
+  const selectedCompositeFixtures = compositeFixturesStore
+    ? compositeFixturesStore.filter((fixture) =>
+        fixtureChannelSelectionStore.has(fixture.channel),
+      )
+    : [];
 
   useInitialize();
   useUniverseOutput();

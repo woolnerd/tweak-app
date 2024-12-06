@@ -47,6 +47,7 @@ export default function ControlPanel({
       }
       setAction(commandLineAction);
     },
+
     [fixtureChannelSelectionStore, updateFixtureChannelSelectionStore],
   );
 
