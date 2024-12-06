@@ -31,7 +31,9 @@ export default function Fixture({
     (state) => state.manualFixturesStore,
   );
 
-  const fixtureInManualState = fixtureChannelSelectionStore.has(channel);
+  console.log({ fixtureChannelSelectionStore });
+
+  const fixtureInManualState = fixtureChannelSelectionStore?.has(channel);
 
   const removeFixtureFromState = (fixtureChannel: number): void => {
     const dupe = new Set([...fixtureChannelSelectionStore]);
@@ -42,10 +44,14 @@ export default function Fixture({
   const addFixtureToState = (fixtureChannel: number): void => {
     const dupe = new Set([...fixtureChannelSelectionStore]);
     dupe.add(fixtureChannel);
+    console.log("adding");
+
     updateFixtureChannelSelectionStore(dupe);
   };
 
   const handleOutput = (fixtureChannel: number) => {
+    console.log("click");
+
     if (fixtureInManualState) {
       removeFixtureFromState(fixtureChannel);
     } else {
@@ -58,6 +64,8 @@ export default function Fixture({
 
   const selectedStyle = (isManual: boolean) => {
     const styles: { color?: string; borderColor?: string } = {};
+    console.log({ isManual });
+    // console.log({ manualFixturesStore: manualFixturesStore[channel] });
 
     if (isManual) {
       styles.color = "rgb(256, 50, 30)";

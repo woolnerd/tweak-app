@@ -58,7 +58,10 @@ export default function LayoutArea({
   useEffect(() => {
     updateCompositeFixturesStore(
       compositeFixturesStore.map((compFixtureStateObj) => {
-        if (compFixtureStateObj.channel in manualFixturesStore) {
+        if (
+          manualFixturesStore &&
+          compFixtureStateObj.channel in manualFixturesStore
+        ) {
           return {
             ...compFixtureStateObj,
             ...manualFixturesStore[compFixtureStateObj.channel],

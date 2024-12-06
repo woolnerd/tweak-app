@@ -15,6 +15,7 @@ import useCommandLineRouter from "../../hooks/useCommandLineRouter.ts";
 import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
 import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
 import ControlPanelButton from "../ControlPanelButton/ControlPanelButton.tsx";
+import { log } from "console";
 
 type ControlPanelProps = {
   selectedFixtures: ParsedCompositeFixtureInfo[];
@@ -46,6 +47,7 @@ export default function ControlPanel({
         );
       }
       setAction(commandLineAction);
+      // console.log({ fixtureChannelSelectionStore });
     },
 
     [fixtureChannelSelectionStore, updateFixtureChannelSelectionStore],

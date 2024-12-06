@@ -128,9 +128,12 @@ import React from "react";
 import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import Fixture from "../Fixture/Fixture.tsx";
 import useCompositeFixtureStore from "../../store/useCompositeFixtureStore.ts";
+import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
+import { ManualFixtureState } from "../Fixture/types/Fixture.ts";
 import App from "../../main/index.tsx";
 import ErrorBoundary from "react-native-error-boundary";
 import { log } from "console";
+import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
 
 jest.mock("../../hooks/useInitialize.ts");
 // jest.mock("../../hooks/useCommandLineRouter.ts");
@@ -155,6 +158,53 @@ jest.mock("../../../models/scene-to-fixture-assignments", () => {
     }),
   };
 });
+
+// Mock Zustand store
+// jest.mock("../../store/useManualFixtureStore", () => {
+//   let manualFixturesStore = {};
+
+//   const updateManualFixturesStore = jest.fn((newState) => {
+//     console.log("Before update:", manualFixturesStore);
+//     manualFixturesStore = {
+//       ...manualFixturesStore,
+//       ...newState,
+//     };
+
+//     console.log("After update:", manualFixturesStore);
+//     return manualFixturesStore;
+//   });
+
+//   return {
+//     __esModule: true,
+//     default: jest.fn(() => ({
+//       manualFixturesStore,
+//       updateManualFixturesStore,
+//     })),
+//   };
+// });
+
+// jest.mock("../../store/useFixtureChannelSelectionStore", () => {
+//   let fixtureChannelSelectionStore = new Set([-1]);
+
+//   const updateFixtureChannelSelectionStore = jest.fn((newState) => {
+//     console.log("Before update:", fixtureChannelSelectionStore);
+//     fixtureChannelSelectionStore = new Set([
+//       ...fixtureChannelSelectionStore,
+//       ...newState,
+//     ]);
+
+//     console.log("After update:", fixtureChannelSelectionStore);
+//     return fixtureChannelSelectionStore;
+//   });
+
+//   return {
+//     __esModule: true,
+//     default: jest.fn(() => ({
+//       fixtureChannelSelectionStore,
+//       updateFixtureChannelSelectionStore,
+//     })),
+//   };
+// });
 
 describe("Fixture component", () => {
   const fixture: ParsedCompositeFixtureInfo = {
@@ -228,17 +278,24 @@ describe("Fixture component", () => {
     );
     const controlButton = getByTestId("cp-button-50%");
     const fixture = getByTestId("fixture-1");
-    // // await act(async () => {
-    await act(async () => {
-      fireEvent.press(fixture);
-      fireEvent.press(controlButton);
-    });
-    // // });
+    const fixture2 = getByTestId("fixture-2");
+
+    // fireEvent.press(fixture);
+    // fireEvent(fixture2, "onTouchStart");
+
+    // await act(async () => {
+    fireEvent(fixture, "onTouchStart");
+    // await act(async () => {
+    // fireEvent(controlButton, "onPress");
+
+    fireEvent.press(controlButton);
+    // });
+
     await waitFor(() => {
       const outputDetail = getByTestId("output-detail-1");
-      console.log(outputDetail.props);
+      // console.log(outputDetail.props.style);
 
-      expect(outputDetail.children.join(" ")).toContain("100%");
+      expect(outputDetail.children.join(" ")).toContain("50%");
       expect(outputDetail).toHaveStyle({ color: "rgb(256, 50, 30)" });
     });
   });

@@ -13,7 +13,7 @@ export default function useUniverseOutput() {
   useEffect(() => {
     if (compositeFixturesStore.length > 0) {
       const universeObjs = compositeFixturesStore.map((compFixture) => {
-        if (compFixture.channel in manualFixturesStore) {
+        if (manualFixturesStore && compFixture.channel in manualFixturesStore) {
           compFixture.values = manualFixturesStore[compFixture.channel].values;
         }
         return new UniverseDataBuilder(compFixture).buildUniverses();
