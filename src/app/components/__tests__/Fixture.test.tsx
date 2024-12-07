@@ -88,63 +88,24 @@ const mockCompositeFixtures: ParsedCompositeFixtureInfo[] = [
   },
 ];
 
-// jest.mock("../../store/useCompositeFixtureStore", () => {
-//   // const actualZustand = jest.requireActual("zustand");
-//   return jest.fn(() => ({
-//     compositeFixturesStore: mockCompositeFixtures,
-//     updateCompositeFixturesStore: jest.fn(),
-//   }));
-// });
-
-// jest.mock("../../store/useFixtureChannelSelectionStore", () => {
-//   // const actualZustand = jest.requireActual("zustand");
-//   return jest.fn(() => ({
-//     fixtureChannelSelectionStore: new Set([-1]),
-//     updatefixtureChannelSelectionStore: jest.fn(),
-//   }));
-// });
-
-// jest.mock("../../store/useManualFixtureStore", () => {
-//   // const actualZustand = jest.requireActual("zustand");
-//   return jest.fn(() => ({
-//     manualFixturesStore: {},
-//     updateManualFixturesStore: jest.fn(),
-//   }));
-// });
-
-import {
-  render,
-  waitFor,
-  userEvent,
-  fireEvent,
-  screen,
-  act,
-  configure,
-} from "@testing-library/react-native";
+import { render, waitFor, fireEvent } from "@testing-library/react-native";
 import "@testing-library/react-native/extend-expect";
-// import "@testing-library/jest-dom";
 
 import React from "react";
 import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import Fixture from "../Fixture/Fixture.tsx";
 import useCompositeFixtureStore from "../../store/useCompositeFixtureStore.ts";
-import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
-import { ManualFixtureState } from "../Fixture/types/Fixture.ts";
 import App from "../../main/index.tsx";
-import ErrorBoundary from "react-native-error-boundary";
-import { log } from "console";
-import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
 
 jest.mock("../../hooks/useInitialize.ts");
-// jest.mock("../../hooks/useCommandLineRouter.ts");
 jest.mock("../../../models/scene-to-fixture-assignments.ts");
 jest.mock("../../../models/scene", () => {
   return jest.fn().mockImplementation(() => ({
-    getAllOrdered: jest.fn(() => Promise.resolve([])), // Mock the function to return a promise with empty data or desired test data
+    getAllOrdered: jest.fn(() => Promise.resolve([])),
     handleError: jest.fn(),
   }));
 });
-// Mocking the module
+
 // Mock the ScenesToFixtureAssignments class
 jest.mock("../../../models/scene-to-fixture-assignments", () => {
   return {
@@ -158,53 +119,6 @@ jest.mock("../../../models/scene-to-fixture-assignments", () => {
     }),
   };
 });
-
-// Mock Zustand store
-// jest.mock("../../store/useManualFixtureStore", () => {
-//   let manualFixturesStore = {};
-
-//   const updateManualFixturesStore = jest.fn((newState) => {
-//     console.log("Before update:", manualFixturesStore);
-//     manualFixturesStore = {
-//       ...manualFixturesStore,
-//       ...newState,
-//     };
-
-//     console.log("After update:", manualFixturesStore);
-//     return manualFixturesStore;
-//   });
-
-//   return {
-//     __esModule: true,
-//     default: jest.fn(() => ({
-//       manualFixturesStore,
-//       updateManualFixturesStore,
-//     })),
-//   };
-// });
-
-// jest.mock("../../store/useFixtureChannelSelectionStore", () => {
-//   let fixtureChannelSelectionStore = new Set([-1]);
-
-//   const updateFixtureChannelSelectionStore = jest.fn((newState) => {
-//     console.log("Before update:", fixtureChannelSelectionStore);
-//     fixtureChannelSelectionStore = new Set([
-//       ...fixtureChannelSelectionStore,
-//       ...newState,
-//     ]);
-
-//     console.log("After update:", fixtureChannelSelectionStore);
-//     return fixtureChannelSelectionStore;
-//   });
-
-//   return {
-//     __esModule: true,
-//     default: jest.fn(() => ({
-//       fixtureChannelSelectionStore,
-//       updateFixtureChannelSelectionStore,
-//     })),
-//   };
-// });
 
 describe("Fixture component", () => {
   const fixture: ParsedCompositeFixtureInfo = {
@@ -271,32 +185,22 @@ describe("Fixture component", () => {
   });
 
   test("once manual values are entered in the ControlPanel, the details turn red", async () => {
-    const { getByTestId, debug } = render(
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>,
-    );
-    const controlButton = getByTestId("cp-button-50%");
+    const { getByTestId, getAllByTestId } = render(<App />);
+    const controlButton50Percent = getByTestId("cp-button-50%");
+    const controlButton5600 = getByTestId("cp-button-5600");
     const fixture = getByTestId("fixture-1");
-    const fixture2 = getByTestId("fixture-2");
 
-    // fireEvent.press(fixture);
-    // fireEvent(fixture2, "onTouchStart");
-
-    // await act(async () => {
     fireEvent(fixture, "onTouchStart");
-    // await act(async () => {
-    // fireEvent(controlButton, "onPress");
-
-    fireEvent.press(controlButton);
-    // });
+    fireEvent.press(controlButton50Percent);
+    fireEvent.press(controlButton5600);
 
     await waitFor(() => {
-      const outputDetail = getByTestId("output-detail-1");
-      // console.log(outputDetail.props.style);
+      const outputDetail = getAllByTestId("output-detail-1");
 
-      expect(outputDetail.children.join(" ")).toContain("50%");
-      expect(outputDetail).toHaveStyle({ color: "rgb(256, 50, 30)" });
+      expect(outputDetail[0].children.join(" ")).toContain("50%");
+      expect(outputDetail[0]).toHaveStyle({ color: "rgb(256, 50, 30)" });
+      expect(outputDetail[1].children.join(" ")).toContain("5600");
+      expect(outputDetail[1]).toHaveStyle({ color: "rgb(256, 50, 30)" });
     });
   });
 });

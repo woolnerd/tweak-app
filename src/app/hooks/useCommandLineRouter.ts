@@ -54,16 +54,12 @@ export default function useCommandLineRouter(action: ActionObject | null) {
           }),
           {},
         );
-      console.log({ manualFixturesStore });
-      console.log(JSON.stringify(nextManualFixtureState, null, 2));
 
       updateManualFixturesStore({
         ...manualFixturesStore,
         ...nextManualFixtureState,
       });
     }
-
-    console.log("action", action);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [action, updateCompositeFixturesStore]);
