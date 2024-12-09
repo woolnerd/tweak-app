@@ -1,36 +1,25 @@
+/* eslint-disable global-require */
+import { render, waitFor, fireEvent } from "@testing-library/react-native";
+import "@testing-library/react-native/extend-expect";
+import React from "react";
+
+import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
+import App from "../../main/index.tsx";
+import useCompositeFixtureStore from "../../store/useCompositeFixtureStore.ts";
+import Fixture from "../Fixture/Fixture.tsx";
+
 if (typeof global.setImmediate === "undefined") {
-  (global.setImmediate as unknown) = (fn, ...args) => {
-    return setTimeout(fn, 0, ...args);
-  };
+  (global.setImmediate as unknown) = (fn, ...args) =>
+    setTimeout(fn, 0, ...args);
 }
 
-// Mocking expo-sqlite/next
-jest.mock("expo-sqlite/next", () => {
-  return {
-    openDatabaseSync: jest.fn(() => ({
-      transaction: jest.fn((callback) => {
-        const tx = {
-          executeSql: jest.fn(
-            (query, params, successCallback, errorCallback) => {
-              // Provide a mocked result object, as required by your application
-              if (successCallback) {
-                successCallback({
-                  rows: {
-                    length: 0,
-                    item: jest.fn(),
-                    _array: [],
-                  },
-                });
-              }
-            },
-          ),
-        };
-        callback(tx);
-      }),
-    })),
-    prepareSync: jest.fn(), // Mocking prepareSync function
-  };
-});
+jest.mock("../../hooks/useInitialize.ts");
+jest.mock("../../../models/scene-to-fixture-assignments.ts", () =>
+  require("../../../models/__mocks__/scenes-to-fixture-assignments.ts"),
+);
+jest.mock("../../../models/scene.ts", () =>
+  require("../../../models/__mocks__/scene.ts"),
+);
 
 const mockCompositeFixtures: ParsedCompositeFixtureInfo[] = [
   {
@@ -87,38 +76,6 @@ const mockCompositeFixtures: ParsedCompositeFixtureInfo[] = [
     manufacturerName: "arri",
   },
 ];
-
-import { render, waitFor, fireEvent } from "@testing-library/react-native";
-import "@testing-library/react-native/extend-expect";
-
-import React from "react";
-import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
-import Fixture from "../Fixture/Fixture.tsx";
-import useCompositeFixtureStore from "../../store/useCompositeFixtureStore.ts";
-import App from "../../main/index.tsx";
-
-jest.mock("../../hooks/useInitialize.ts");
-jest.mock("../../../models/scene-to-fixture-assignments.ts");
-jest.mock("../../../models/scene", () => {
-  return jest.fn().mockImplementation(() => ({
-    getAllOrdered: jest.fn(() => Promise.resolve([])),
-    handleError: jest.fn(),
-  }));
-});
-
-// Mock the ScenesToFixtureAssignments class
-jest.mock("../../../models/scene-to-fixture-assignments", () => {
-  return {
-    __esModule: true,
-    default: jest.fn().mockImplementation(() => {
-      return {
-        getCompositeFixtureInfo: jest
-          .fn()
-          .mockResolvedValue(mockCompositeFixtures),
-      };
-    }),
-  };
-});
 
 describe("Fixture component", () => {
   const fixture: ParsedCompositeFixtureInfo = {
@@ -188,9 +145,9 @@ describe("Fixture component", () => {
     const { getByTestId, getAllByTestId } = render(<App />);
     const controlButton50Percent = getByTestId("cp-button-50%");
     const controlButton5600 = getByTestId("cp-button-5600");
-    const fixture = getByTestId("fixture-1");
+    const fixtureElement = getByTestId("fixture-1");
 
-    fireEvent(fixture, "onTouchStart");
+    fireEvent(fixtureElement, "onTouchStart");
     fireEvent.press(controlButton50Percent);
     fireEvent.press(controlButton5600);
 
