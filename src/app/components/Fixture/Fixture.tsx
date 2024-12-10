@@ -1,6 +1,7 @@
 /* eslint-disable drizzle/enforce-delete-with-where */
 import { View, Text, StyleSheet } from "react-native";
 import { useEffect } from "react";
+import { uniqueId } from "lodash";
 
 import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import {
@@ -61,20 +62,17 @@ export default function Fixture({
   const isManualFixtureChannel = (testChannel: number) =>
     !!manualFixturesStore[channel]?.manualChannels?.includes(testChannel);
 
-  const selectedStyle = (isManual: boolean) => {
-    const styles: { color?: string; borderColor?: string } = {};
+  const fixtureTextDetailStyles = isManualFixtureChannel(channel)
+    ? "text-red-600"
+    : "text-black";
 
-    if (isManual) {
-      styles.color = "rgb(256, 50, 30)";
-    }
+  const fixtureSelectStyles = fixtureInManualState
+    ? "border-yellow-500"
+    : "border-green-500";
 
-    if (fixtureInManualState) {
-      styles.borderColor = "gold";
-    } else {
-      styles.borderColor = "rgb(100, 256, 100)";
-    }
-    return styles;
-  };
+  const fixtureStyles = `bg-purple-800 w-52 h-52 border-4 rounded-lg m-2 ${fixtureSelectStyles}`;
+
+  const fixtureTextStyles = `text-center text-lg font-extrabold ${fixtureTextDetailStyles}`;
 
   const buildOutputDetails = () => {
     const { result: details, manualStyleChannels } = handleChannelValues(
@@ -99,11 +97,8 @@ export default function Fixture({
   ) => (
     <Text
       testID={`output-detail-${fixtureAssignmentId}`}
-      key={`${profileField}+${Math.random()}`}
-      style={{
-        ...styles.text,
-        ...selectedStyle(styleOptions[profileField]),
-      }}>
+      key={uniqueId(String(fixtureAssignmentId))}
+      className={fixtureTextStyles}>
       {`${profileField}:
       ${details ? handleDifferentProfileFields(profileField, details) : ""}`}
     </Text>
@@ -131,29 +126,12 @@ export default function Fixture({
     <View
       key={fixtureAssignmentId}
       testID={`fixture-${fixtureAssignmentId}`}
-      style={{ ...styles.fixtures, ...selectedStyle(false) }}
+      className={fixtureStyles}
       onTouchStart={() => handleOutput(channel)}>
-      <Text style={styles.text}>{channel}</Text>
-      <Text style={styles.text}>{fixtureName}</Text>
+      <Text className="text-center text-lg font-extrabold">{channel}</Text>
+      <Text className="text-center text-lg font-extrabold">{fixtureName}</Text>
       {buildOutputDetails()}
-      <FaderNumbers start={100} end={50} duration={5000} />
+      {/* <FaderNumbers start={100} end={50} duration={5000} /> */}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  fixtures: {
-    backgroundColor: "purple",
-    width: 200,
-    height: 160,
-    borderWidth: 4,
-    margin: 10,
-    borderColor: "gold",
-    borderRadius: 10,
-  },
-  text: {
-    fontWeight: "800",
-    textAlign: "center",
-    fontSize: 20,
-  },
-});

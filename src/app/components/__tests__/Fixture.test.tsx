@@ -7,6 +7,7 @@ import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixtu
 import App from "../../main/index.tsx";
 import useCompositeFixtureStore from "../../store/useCompositeFixtureStore.ts";
 import Fixture from "../Fixture/Fixture.tsx";
+import { log } from "console";
 
 if (typeof global.setImmediate === "undefined") {
   (global.setImmediate as unknown) = (fn, ...args) =>
@@ -129,7 +130,11 @@ describe("Fixture component", () => {
   test("it has a green border when not selected", () => {
     const { getByTestId } = render(<Fixture {...fixture} />);
     const component = getByTestId("fixture-1");
-    expect(component).toHaveStyle({ borderColor: "rgb(100, 256, 100)" });
+
+    expect(component).toHaveStyle({ borderTopColor: "#22c55e" });
+    expect(component).toHaveStyle({ borderRightColor: "#22c55e" });
+    expect(component).toHaveStyle({ borderBottomColor: "#22c55e" });
+    expect(component).toHaveStyle({ borderLeftColor: "#22c55e" });
   });
 
   test("it has a gold border when selected", () => {
@@ -138,7 +143,10 @@ describe("Fixture component", () => {
 
     fireEvent(component, "onTouchStart");
 
-    expect(component).toHaveStyle({ borderColor: "gold" });
+    expect(component).toHaveStyle({ borderTopColor: "#eab308" });
+    expect(component).toHaveStyle({ borderRightColor: "#eab308" });
+    expect(component).toHaveStyle({ borderBottomColor: "#eab308" });
+    expect(component).toHaveStyle({ borderLeftColor: "#eab308" });
   });
 
   test("once manual values are entered in the ControlPanel, the details turn red", async () => {
@@ -155,9 +163,9 @@ describe("Fixture component", () => {
       const outputDetail = getAllByTestId("output-detail-1");
 
       expect(outputDetail[0].children.join(" ")).toContain("50%");
-      expect(outputDetail[0]).toHaveStyle({ color: "rgb(256, 50, 30)" });
+      expect(outputDetail[0]).toHaveStyle({ color: "#dc2626" });
       expect(outputDetail[1].children.join(" ")).toContain("5600");
-      expect(outputDetail[1]).toHaveStyle({ color: "rgb(256, 50, 30)" });
+      expect(outputDetail[1]).toHaveStyle({ color: "#dc2626" });
     });
   });
 });
