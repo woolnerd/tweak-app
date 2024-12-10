@@ -1,15 +1,13 @@
-/* eslint-disable drizzle/enforce-delete-with-where */
-import { View, Text, StyleSheet } from "react-native";
-import { useEffect } from "react";
+import { View, Text } from "react-native";
 import { uniqueId } from "lodash";
 
 import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import {
-  handleChannelValues,
   convertDmxValueToPercent,
   percentageToColorTemperature,
   percentageToIntensityLevel,
 } from "../../../util/helpers.ts";
+import { handleChannelValues } from "./helpers.ts";
 import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
 import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
 import FaderNumbers from "../FaderNumbers/FaderNumbers.tsx";
@@ -86,14 +84,14 @@ export default function Fixture({
     if (!details) return null;
 
     return Object.keys(details as object).map((profileField) =>
-      outputDetail(profileField, details, manualStyleChannels),
+      outputDetail(profileField, details),
     );
   };
 
   const outputDetail = (
     profileField: string,
     details: Record<string, number>,
-    styleOptions: Record<string, boolean>,
+    // styleOptions: Record<string, boolean>,
   ) => (
     <Text
       testID={`output-detail-${fixtureAssignmentId}`}
@@ -104,6 +102,7 @@ export default function Fixture({
     </Text>
   );
 
+  // only handles color temp and intensity right now, needs to handle tint, plus more
   const handleDifferentProfileFields = (
     profileField: string,
     details: Record<string, number>,
