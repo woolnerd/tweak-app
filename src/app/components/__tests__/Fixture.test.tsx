@@ -76,6 +76,25 @@ const mockCompositeFixtures: ParsedCompositeFixtureInfo[] = [
     is16Bit: false,
     manufacturerName: "arri",
   },
+  {
+    fixtureAssignmentId: 3,
+    channel: 3,
+    values: [[1, 128]],
+    profileChannels: {
+      1: "Dimmer",
+    },
+    profileName: "",
+    fixtureName: "Single Channel",
+    fixtureNotes: "no notes",
+    sceneId: 1,
+    startAddress: 1,
+    endAddress: 1,
+    colorTempLow: -1,
+    colorTempHigh: -1,
+    channelPairs16Bit: [],
+    is16Bit: false,
+    manufacturerName: "generic",
+  },
 ];
 
 describe("Fixture component", () => {
@@ -154,18 +173,27 @@ describe("Fixture component", () => {
     const controlButton50Percent = getByTestId("cp-button-50%");
     const controlButton5600 = getByTestId("cp-button-5600");
     const fixtureElement = getByTestId("fixture-1");
+    const fixtureElementSingleChannel = getByTestId("fixture-3");
 
     fireEvent(fixtureElement, "onTouchStart");
     fireEvent.press(controlButton50Percent);
     fireEvent.press(controlButton5600);
 
+    fireEvent(fixtureElementSingleChannel, "onTouchStart");
+    fireEvent.press(controlButton50Percent);
+
     await waitFor(() => {
       const outputDetail = getAllByTestId("output-detail-1");
+      const outputDetailSingleChannel = getAllByTestId("output-detail-3");
 
       expect(outputDetail[0].children.join(" ")).toContain("50%");
       expect(outputDetail[0]).toHaveStyle({ color: "#dc2626" });
       expect(outputDetail[1].children.join(" ")).toContain("5600");
       expect(outputDetail[1]).toHaveStyle({ color: "#dc2626" });
+
+      expect(outputDetailSingleChannel[0].children.join(" ")).toContain("50%");
+      expect(outputDetailSingleChannel[0]).toHaveStyle({ color: "#dc2626" });
+      // console.log(outputDetailSingleChannel[0].props);
     });
   });
 });

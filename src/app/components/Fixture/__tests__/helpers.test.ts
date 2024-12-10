@@ -83,4 +83,23 @@ describe("handleChannelValues properly merges 16bit channels, and 8bit channel w
 
     expect(result).toStrictEqual({ Dimmer: 65280 });
   });
+
+  test("it handles 8bit channels", () => {
+    const profileChannels = {
+      1: "Dimmer",
+    };
+    const values: AddressTuples = [[1, 255]];
+
+    const channelPairs16Bit = [];
+
+    const { result } = handleChannelValues(
+      profileChannels,
+      values,
+      channelPairs16Bit,
+      true,
+      () => true,
+    );
+
+    expect(result).toStrictEqual({ Dimmer: 255 });
+  });
 });
