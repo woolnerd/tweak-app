@@ -1,5 +1,6 @@
 /* eslint-disable drizzle/enforce-delete-with-where */
 import { View, Text, StyleSheet } from "react-native";
+import { useEffect } from "react";
 
 import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import {
@@ -10,6 +11,8 @@ import {
 } from "../../../util/helpers.ts";
 import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
 import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
+import FaderNumbers from "../FaderNumbers/FaderNumbers.tsx";
+import { useRef } from "react";
 
 export type FixtureProps = object & ParsedCompositeFixtureInfo;
 export default function Fixture({
@@ -32,6 +35,8 @@ export default function Fixture({
   );
 
   const fixtureInManualState = fixtureChannelSelectionStore.has(channel);
+
+  const outputValue = useRef<string | null>(null);
 
   const removeFixtureFromState = (fixtureChannel: number): void => {
     const dupe = new Set([...fixtureChannelSelectionStore]);
@@ -131,6 +136,7 @@ export default function Fixture({
       <Text style={styles.text}>{channel}</Text>
       <Text style={styles.text}>{fixtureName}</Text>
       {buildOutputDetails()}
+      <FaderNumbers start={100} end={50} duration={5000} />
     </View>
   );
 }
