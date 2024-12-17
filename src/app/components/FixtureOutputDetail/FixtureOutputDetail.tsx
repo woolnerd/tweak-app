@@ -1,7 +1,10 @@
 import { Text } from "react-native";
-import { uniqueId } from "lodash";
 
-import { handleChannelValues } from "../Fixture/helpers.ts";
+import {
+  processChannelValues,
+  buildObjectDetailData,
+  buildObjectDetailManualStyleObj,
+} from "../Fixture/helpers.ts";
 import {
   percentageToColorTemperature,
   percentageToIntensityLevel,
@@ -34,37 +37,6 @@ export function FixtureOutputDetail({
   const manualFixturesStore = useManualFixtureStore(
     (state) => state.manualFixturesStore,
   );
-  const buildOutputDetails = () => {
-    const { result: details, manualStyleChannels } = handleChannelValues(
-      profileChannels,
-      values,
-      channelPairs16Bit,
-      is16Bit,
-      isManualFixtureChannel,
-    );
-
-    if (!details) return null;
-
-    return Object.keys(details as object).map((profileField) =>
-      outputDetail(profileField, details, manualStyleChannels),
-    );
-  };
-
-  const outputDetail = (
-    profileField: string,
-    details: Record<string, number>,
-    styleOptions: Record<string, boolean>,
-  ) => (
-    <Text
-      testID={`output-detail-${fixtureAssignmentId}`}
-      key={uniqueId(String(fixtureAssignmentId))}
-      className={
-        fixtureTextStyles + fixtureTextDetailStyles(styleOptions[profileField])
-      }>
-      {`${profileField}:
-      ${details ? handleDifferentProfileFields(profileField, details) : ""}`}
-    </Text>
-  );
 
   const isManualFixtureChannel = (testChannel: number) =>
     !!manualFixturesStore[channel]?.manualChannels?.includes(testChannel);
@@ -74,23 +46,71 @@ export function FixtureOutputDetail({
 
   const fixtureTextStyles = `text-center text-lg font-extrabold `;
 
+  const isColorTempField = (
+    colorTempLow: number,
+    colorTempHigh: number,
+    profileField: string,
+  ) =>
+    profileField.toLowerCase().includes("temp") &&
+    colorTempHigh &&
+    colorTempLow;
+
   // only handles color temp and intensity right now, needs to handle tint, plus more
   const handleDifferentProfileFields = (
     profileField: string,
     details: Record<string, number>,
   ) => {
-    if (
-      profileField.toLowerCase().includes("temp") &&
-      colorTempHigh &&
-      colorTempLow
-    ) {
+    const profileValue = details[profileField];
+
+    if (isColorTempField(colorTempLow, colorTempHigh, profileField)) {
       return percentageToColorTemperature(
-        convertDmxValueToPercent(details[profileField]),
+        convertDmxValueToPercent(profileValue),
         colorTempLow,
         colorTempHigh,
       );
     }
-    return `${percentageToIntensityLevel(convertDmxValueToPercent(details[profileField]))}%`;
+    return `${percentageToIntensityLevel(convertDmxValueToPercent(profileValue))}%`;
+  };
+
+  const outputDetail = (
+    profileField: string,
+    details: Record<string, number>,
+    styleOptions: Record<string, boolean>,
+  ) => (
+    <Text
+      testID={`output-detail-${fixtureAssignmentId}`}
+      key={String(fixtureAssignmentId).concat(profileField)}
+      className={
+        fixtureTextStyles + fixtureTextDetailStyles(styleOptions[profileField])
+      }>
+      {`${profileField}:
+      ${details ? handleDifferentProfileFields(profileField, details) : ""}`}
+    </Text>
+  );
+
+  const buildOutputDetails = () => {
+    const processedChannelValues = processChannelValues(
+      values,
+      channelPairs16Bit,
+      is16Bit,
+    );
+
+    const objectDetails = buildObjectDetailData(
+      processedChannelValues,
+      profileChannels,
+    );
+
+    const manualStyleChannels = buildObjectDetailManualStyleObj(
+      processedChannelValues,
+      profileChannels,
+      isManualFixtureChannel,
+    );
+
+    if (!objectDetails) return null;
+
+    return Object.keys(objectDetails).map((profileField) =>
+      outputDetail(profileField, objectDetails, manualStyleChannels),
+    );
   };
 
   return buildOutputDetails();
