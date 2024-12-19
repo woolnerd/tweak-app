@@ -63,7 +63,7 @@ export default class ValueRouter {
             manualChannels: [],
           };
 
-    const channelList = this.channelTuples.map((tuple) => tuple[0]);
+    const channelList = this.channelTuples.map(([channel, _]) => channel);
 
     manualFixtureObj.manualChannels = Array.from(
       new Set((manualFixtureObj.manualChannels ?? []).concat(channelList)),
@@ -74,18 +74,19 @@ export default class ValueRouter {
 
   private mutateOrMergeOutputValues(manualFixtureObj: ManualFixtureObj) {
     if (Object.keys(manualFixtureObj).length === 0) return;
-    this.channelTuples.forEach((tuple) => {
-      const channel = tuple[0];
-      const tupleToMutateIdx = manualFixtureObj.values.findIndex(
-        (fixtureTuple) => fixtureTuple[0] === channel,
+
+    this.channelTuples.forEach(([channel, output]) => {
+      // const channel = tuple[0];
+      const idxOfTupleToMutate = manualFixtureObj.values.findIndex(
+        ([manualChannel, _]) => manualChannel === channel,
       );
 
-      if (tupleToMutateIdx === -1) {
+      if (idxOfTupleToMutate === -1) {
         // don't mutate just push tuple into channel list.
-        manualFixtureObj.values.push(tuple);
+        manualFixtureObj.values.push([channel, output]);
       } else {
         // otherwise mutate
-        manualFixtureObj.values[tupleToMutateIdx] = tuple;
+        manualFixtureObj.values[idxOfTupleToMutate] = [channel, output];
       }
     });
 
@@ -97,18 +98,14 @@ export default class ValueRouter {
     if (this.channelIs16Bit()) {
       this.values = this.calculator.calc16BitValues();
       this.channelTuples = this.parse16BitChannels();
-
-      return this;
-    }
-
-    if (this.channelIs8Bit()) {
+    } else if (this.channelIs8Bit()) {
       this.values = this.calculator.calc8BitValues();
       this.channelTuples = this.parse8BitChannel();
-
-      return this;
+    } else {
+      throw new Error("Could not route Values");
     }
 
-    throw new Error("Could not route Values");
+    return this;
   }
 
   convertColorTempToPercentage(fixture: ParsedCompositeFixtureInfo) {
@@ -146,10 +143,9 @@ export default class ValueRouter {
   }
 
   parse16BitChannels() {
+    const [coarseOutputValue, fineOutputValue] = this.values;
     const coarseChannelNumber = parseInt(this.channels[0][0], 10);
-    const coarseOutputValue = this.values[0];
     const fineChannelNumber = parseInt(this.channels[1][0], 10);
-    const fineOutputValue = this.values[1];
     return [
       [coarseChannelNumber, coarseOutputValue],
       [fineChannelNumber, fineOutputValue],
@@ -158,7 +154,7 @@ export default class ValueRouter {
 
   parse8BitChannel() {
     const coarseChannelNumber = parseInt(this.channels[0][0], 10);
-    const coarseOutputValue = this.values[0];
+    const [coarseOutputValue, _] = this.values;
     return [[coarseChannelNumber, coarseOutputValue]];
   }
 }

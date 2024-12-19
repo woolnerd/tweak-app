@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useRef } from "react";
 import { View, FlatList } from "react-native";
 
 import { db } from "../../../db/client.ts";
@@ -56,8 +56,8 @@ export default function LayoutArea({
   ]);
 
   useEffect(() => {
-    updateCompositeFixturesStore(
-      compositeFixturesStore.map((compFixtureStateObj) => {
+    const updatedCompositeFixtures = compositeFixturesStore.map(
+      (compFixtureStateObj) => {
         if (
           manualFixturesStore &&
           compFixtureStateObj.channel in manualFixturesStore
@@ -68,8 +68,10 @@ export default function LayoutArea({
           };
         }
         return compFixtureStateObj;
-      }),
+      },
     );
+
+    updateCompositeFixturesStore(updatedCompositeFixtures);
   }, [manualFixturesStore, updateCompositeFixturesStore]);
 
   return (

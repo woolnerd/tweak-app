@@ -2,7 +2,6 @@ import { View, Text } from "react-native";
 
 import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
-import { useRef } from "react";
 import { FixtureOutputDetail } from "../FixtureOutputDetail/FixtureOutputDetail.tsx";
 
 export type FixtureProps = object & ParsedCompositeFixtureInfo;

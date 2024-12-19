@@ -7,7 +7,6 @@ import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixtu
 import App from "../../main/index.tsx";
 import useCompositeFixtureStore from "../../store/useCompositeFixtureStore.ts";
 import Fixture from "../Fixture/Fixture.tsx";
-import { log } from "console";
 
 if (typeof global.setImmediate === "undefined") {
   (global.setImmediate as unknown) = (fn, ...args) =>
