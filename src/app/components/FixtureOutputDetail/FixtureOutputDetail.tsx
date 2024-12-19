@@ -1,4 +1,5 @@
-import { Text } from "react-native";
+import { Text, View } from "react-native";
+import { useRef, useEffect } from "react";
 
 import {
   processChannelValues,
@@ -10,8 +11,13 @@ import {
   percentageToIntensityLevel,
   convertDmxValueToPercent,
 } from "../../../util/helpers.ts";
-import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
+import {
+  AddressTuples,
+  ParsedCompositeFixtureInfo,
+} from "../../../models/types/scene-to-fixture-assignment.ts";
 import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
+import { cloneDeep } from "lodash";
+import FaderNumbers from "../FaderNumbers/FaderNumbers.tsx";
 
 type FixtureOutputDetailProps = {
   profileChannels: ParsedCompositeFixtureInfo["profileChannels"];
@@ -37,6 +43,12 @@ export function FixtureOutputDetail({
   const manualFixturesStore = useManualFixtureStore(
     (state) => state.manualFixturesStore,
   );
+
+  const prevValues = useRef<AddressTuples>([]);
+
+  useEffect(() => {
+    prevValues.current = cloneDeep(values);
+  }, [values]);
 
   const isManualFixtureChannel = (testChannel: number) =>
     !!manualFixturesStore[channel]?.manualChannels?.includes(testChannel);
@@ -77,15 +89,25 @@ export function FixtureOutputDetail({
     details: Record<string, number>,
     styleOptions: Record<string, boolean>,
   ) => (
-    <Text
-      testID={`output-detail-${fixtureAssignmentId}`}
-      key={String(fixtureAssignmentId).concat(profileField)}
-      className={
-        fixtureTextStyles + fixtureTextDetailStyles(styleOptions[profileField])
-      }>
-      {`${profileField}:
-      ${details ? handleDifferentProfileFields(profileField, details) : ""}`}
-    </Text>
+    <View key={String(fixtureAssignmentId).concat(profileField)}>
+      <Text
+        testID={`output-detail-${fixtureAssignmentId}`}
+        key={String(fixtureAssignmentId).concat(profileField)}
+        className={
+          fixtureTextStyles +
+          fixtureTextDetailStyles(styleOptions[profileField])
+        }>
+        {`${profileField}:
+        ${details ? handleDifferentProfileFields(profileField, details) : ""}`}
+      </Text>
+      {prevValues.current.length && (
+        <FaderNumbers
+          start={prevValues.current[0][1]}
+          end={values[0][1]}
+          duration={5000}
+        />
+      )}
+    </View>
   );
 
   const buildOutputDetails = () => {
