@@ -80,7 +80,7 @@ export default function LayoutArea({
         className="flex m-auto"
         data={compositeFixturesStore}
         renderItem={({ item }) => <Fixture {...item} />}
-        keyExtractor={(item, idx) => item.fixtureAssignmentId.toString()}
+        keyExtractor={(item) => item.fixtureAssignmentId.toString()}
       />
     </View>
   );

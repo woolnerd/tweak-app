@@ -7,6 +7,7 @@ import {
 } from "../app/components/Fixture/types/Fixture.ts";
 import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 import ChannelValueCalculator from "../util/channel-value-calculator.ts";
+import { cloneDeep } from "lodash";
 
 export default class ValueRouter {
   profileAdapter: ProfileAdapter;
@@ -43,7 +44,9 @@ export default class ValueRouter {
   createManualFixtureObj(
     manualFixturesStore: ManualFixtureState,
   ): ManualFixtureState {
-    const manualFixtureObj = this.setUpManualFixture(manualFixturesStore);
+    const manualFixtureObj = this.setUpManualFixture(
+      cloneDeep(manualFixturesStore),
+    );
 
     this.mutateOrMergeOutputValues(manualFixtureObj);
 

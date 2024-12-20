@@ -58,6 +58,7 @@ export function merge16BitValues(
   channelPairs16Bit: ParsedCompositeFixtureInfo["channelPairs16Bit"],
   values: ParsedCompositeFixtureInfo["values"],
 ): AddressTuples {
+  if (!values || values.length === 0) return [];
   const compute16bitVal = (coarseVal: number, fineVal: number) =>
     coarseVal * 256 + fineVal;
 

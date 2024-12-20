@@ -2,6 +2,7 @@ import { View, Text } from "react-native";
 
 import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
+import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
 import { FixtureOutputDetail } from "../FixtureOutputDetail/FixtureOutputDetail.tsx";
 
 export type FixtureProps = object & ParsedCompositeFixtureInfo;
@@ -21,6 +22,10 @@ export default function Fixture({
     useFixtureChannelSelectionStore((state) => state);
 
   const fixtureInManualState = fixtureChannelSelectionStore.has(channel);
+
+  const { previousManualFixtureStore } = useManualFixtureStore(
+    (state) => state,
+  );
 
   const removeFixtureFromState = (fixtureChannel: number): void => {
     const dupe = new Set([...fixtureChannelSelectionStore]);
@@ -65,6 +70,8 @@ export default function Fixture({
         colorTempHigh={colorTempHigh}
         colorTempLow={colorTempLow}
         values={values}
+        previousValues={previousManualFixtureStore[channel]?.values}
+        shouldFade={fixtureInManualState}
       />
     </View>
   );

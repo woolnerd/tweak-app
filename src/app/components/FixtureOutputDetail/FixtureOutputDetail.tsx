@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
 
 import {
   processChannelValues,
@@ -28,6 +28,8 @@ type FixtureOutputDetailProps = {
   channel: number;
   colorTempHigh: ParsedCompositeFixtureInfo["colorTempHigh"];
   colorTempLow: ParsedCompositeFixtureInfo["colorTempLow"];
+  previousValues: AddressTuples;
+  shouldFade: boolean;
 };
 
 export function FixtureOutputDetail({
@@ -39,16 +41,12 @@ export function FixtureOutputDetail({
   channel,
   colorTempHigh,
   colorTempLow,
+  previousValues,
+  shouldFade,
 }: FixtureOutputDetailProps) {
   const manualFixturesStore = useManualFixtureStore(
     (state) => state.manualFixturesStore,
   );
-
-  const prevValues = useRef<AddressTuples>([]);
-
-  useEffect(() => {
-    prevValues.current = cloneDeep(values);
-  }, [values]);
 
   const isManualFixtureChannel = (testChannel: number) =>
     !!manualFixturesStore[channel]?.manualChannels?.includes(testChannel);
@@ -71,8 +69,10 @@ export function FixtureOutputDetail({
   const handleDifferentProfileFields = (
     profileField: string,
     details: Record<string, number>,
+    previousDetails: Record<string, number>,
   ) => {
     const profileValue = details[profileField];
+    const previousValue = previousDetails[profileField] || 0;
 
     if (isColorTempField(colorTempLow, colorTempHigh, profileField)) {
       return percentageToColorTemperature(
@@ -81,12 +81,21 @@ export function FixtureOutputDetail({
         colorTempHigh,
       );
     }
-    return `${percentageToIntensityLevel(convertDmxValueToPercent(profileValue))}%`;
+
+    const start = percentageToIntensityLevel(
+      convertDmxValueToPercent(previousValue),
+    );
+    const end = percentageToIntensityLevel(
+      convertDmxValueToPercent(profileValue),
+    );
+
+    return <FaderNumbers start={start} end={end} duration={2000} />;
   };
 
   const outputDetail = (
     profileField: string,
     details: Record<string, number>,
+    previousDetails: Record<string, number>,
     styleOptions: Record<string, boolean>,
   ) => (
     <View key={String(fixtureAssignmentId).concat(profileField)}>
@@ -97,16 +106,11 @@ export function FixtureOutputDetail({
           fixtureTextStyles +
           fixtureTextDetailStyles(styleOptions[profileField])
         }>
-        {`${profileField}:
-        ${details ? handleDifferentProfileFields(profileField, details) : ""}`}
+        {`${profileField}:`}
+        {details
+          ? handleDifferentProfileFields(profileField, details, previousDetails)
+          : ""}
       </Text>
-      {prevValues.current.length && (
-        <FaderNumbers
-          start={prevValues.current[0][1]}
-          end={values[0][1]}
-          duration={5000}
-        />
-      )}
     </View>
   );
 
@@ -117,8 +121,19 @@ export function FixtureOutputDetail({
       is16Bit,
     );
 
+    const previousProcessedChannelValues = processChannelValues(
+      previousValues,
+      channelPairs16Bit,
+      is16Bit,
+    );
+
     const objectDetails = buildObjectDetailData(
       processedChannelValues,
+      profileChannels,
+    );
+
+    const previousObjectDetails = buildObjectDetailData(
+      previousProcessedChannelValues,
       profileChannels,
     );
 
@@ -131,7 +146,12 @@ export function FixtureOutputDetail({
     if (!objectDetails) return null;
 
     return Object.keys(objectDetails).map((profileField) =>
-      outputDetail(profileField, objectDetails, manualStyleChannels),
+      outputDetail(
+        profileField,
+        objectDetails,
+        previousObjectDetails,
+        manualStyleChannels,
+      ),
     );
   };
 
