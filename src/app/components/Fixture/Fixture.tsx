@@ -1,4 +1,5 @@
 import { View, Text } from "react-native";
+import { useState } from "react";
 
 import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
@@ -23,9 +24,13 @@ export default function Fixture({
 
   const fixtureInManualState = fixtureChannelSelectionStore.has(channel);
 
-  const { previousManualFixtureStore } = useManualFixtureStore(
-    (state) => state,
-  );
+  const { previousManualFixtureStore, manualFixturesStore } =
+    useManualFixtureStore((state) => state);
+
+  const valuesFromDB = values;
+  let manualStateValues = manualFixturesStore[channel]?.values;
+  const previousManualStateValues =
+    previousManualFixtureStore[channel]?.values || valuesFromDB;
 
   const removeFixtureFromState = (fixtureChannel: number): void => {
     const dupe = new Set([...fixtureChannelSelectionStore]);
@@ -40,10 +45,13 @@ export default function Fixture({
   };
 
   const handleOutput = (fixtureChannel: number) => {
+    console.log("clicked a fixture channel: ", channel);
+
     if (fixtureInManualState) {
       removeFixtureFromState(fixtureChannel);
     } else {
       addFixtureToState(fixtureChannel);
+      manualStateValues = values;
     }
   };
 
@@ -53,6 +61,13 @@ export default function Fixture({
 
   const fixtureStyles = `bg-purple-800 w-52 h-52 border-4 rounded-lg m-2 ${fixtureSelectStyles}`;
 
+  if (channel === 1) {
+    console.log("--------start render-------");
+
+    console.log("prev", previousManualStateValues);
+    console.log("cur_values", values);
+    console.log("--------end render-------");
+  }
   return (
     <View
       key={fixtureAssignmentId}
@@ -69,9 +84,10 @@ export default function Fixture({
         fixtureAssignmentId={fixtureAssignmentId}
         colorTempHigh={colorTempHigh}
         colorTempLow={colorTempLow}
-        values={values}
-        previousValues={previousManualFixtureStore[channel]?.values}
-        shouldFade={fixtureInManualState}
+        values={valuesFromDB}
+        manualValues={manualStateValues}
+        previousManualValues={previousManualStateValues}
+        shouldFade={!fixtureInManualState}
       />
     </View>
   );

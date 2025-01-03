@@ -16,8 +16,9 @@ import {
   ParsedCompositeFixtureInfo,
 } from "../../../models/types/scene-to-fixture-assignment.ts";
 import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isUndefined } from "lodash";
 import FaderNumbers from "../FaderNumbers/FaderNumbers.tsx";
+import { log } from "console";
 
 type FixtureOutputDetailProps = {
   profileChannels: ParsedCompositeFixtureInfo["profileChannels"];
@@ -88,6 +89,11 @@ export function FixtureOutputDetail({
     const end = percentageToIntensityLevel(
       convertDmxValueToPercent(profileValue),
     );
+
+    if (channel === 1) {
+      console.log({ start });
+      console.log({ end });
+    }
 
     return <FaderNumbers start={start} end={end} duration={2000} />;
   };
