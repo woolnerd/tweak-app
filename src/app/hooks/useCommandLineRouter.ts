@@ -60,7 +60,5 @@ export default function useCommandLineRouter(action: ActionObject | null) {
         ...nextManualFixtureState,
       });
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [action, updateCompositeFixturesStore]);
+  }, [action, updateManualFixturesStore]);
 }

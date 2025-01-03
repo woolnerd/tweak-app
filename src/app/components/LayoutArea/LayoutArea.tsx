@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useRef } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { View, FlatList } from "react-native";
 
 import { db } from "../../../db/client.ts";
@@ -7,6 +7,7 @@ import useCompositeFixtureStore from "../../store/useCompositeFixtureStore.ts";
 import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
 import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
 import Fixture from "../Fixture/Fixture.tsx";
+import { ManualFixtureState } from "../Fixture/types/Fixture.ts";
 
 type LayoutAreaProps = {
   selectedSceneId: number;
@@ -28,6 +29,10 @@ export default function LayoutArea({
 
   const { manualFixturesStore } = useManualFixtureStore((state) => state);
 
+  const [originalFixtures, setOriginalFixtures] = useState<ManualFixtureState>(
+    {},
+  );
+
   const fetchCompositeFixtures = useCallback(async () => {
     try {
       const compositeFixtureInfoObjs = await new ScenesToFixtureAssignments(
@@ -42,17 +47,34 @@ export default function LayoutArea({
   }, [selectedSceneId, fixtureChannelSelection]);
 
   useEffect(() => {
-    fetchCompositeFixtures()
-      .then((res) => updateCompositeFixturesStore(res))
-      .catch((err) => console.log(err));
+    fetchCompositeFixtures().then((databaseFixtures) => {
+      console.log(databaseFixtures);
 
-    if (loadFixtures) setLoadFixtures(false);
+      setOriginalFixtures(
+        Object.fromEntries(
+          databaseFixtures.map((dbFixture) => [dbFixture.channel, dbFixture]),
+        ),
+      );
+    });
+  }, [selectedSceneId]);
+
+  useEffect(() => {
+    if (originalFixtures) {
+      fetchCompositeFixtures()
+        .then((res) => {
+          updateCompositeFixturesStore(res);
+        })
+        .catch((err) => console.log(err));
+
+      if (loadFixtures) setLoadFixtures(false);
+    }
   }, [
     selectedSceneId,
     fetchCompositeFixtures,
     updateCompositeFixturesStore,
     loadFixtures,
     setLoadFixtures,
+    originalFixtures,
   ]);
 
   useEffect(() => {
@@ -79,7 +101,12 @@ export default function LayoutArea({
       <FlatList
         className="flex m-auto"
         data={compositeFixturesStore}
-        renderItem={({ item }) => <Fixture {...item} />}
+        renderItem={({ item }) => (
+          <Fixture
+            {...item}
+            dbValues={originalFixtures[item.channel]?.values ?? []}
+          />
+        )}
         keyExtractor={(item) => item.fixtureAssignmentId.toString()}
       />
     </View>

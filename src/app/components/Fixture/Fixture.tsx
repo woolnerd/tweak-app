@@ -5,8 +5,10 @@ import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixtu
 import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
 import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
 import { FixtureOutputDetail } from "../FixtureOutputDetail/FixtureOutputDetail.tsx";
+import { AddressTuples } from "../../../models/types/scene-to-fixture-assignment.ts";
 
-export type FixtureProps = object & ParsedCompositeFixtureInfo;
+export type FixtureProps = object &
+  ParsedCompositeFixtureInfo & { dbValues: AddressTuples };
 export default function Fixture({
   channel,
   fixtureName,
@@ -17,6 +19,7 @@ export default function Fixture({
   channelPairs16Bit,
   colorTempLow,
   colorTempHigh,
+  dbValues,
   ...props
 }: FixtureProps) {
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
@@ -27,10 +30,10 @@ export default function Fixture({
   const { previousManualFixtureStore, manualFixturesStore } =
     useManualFixtureStore((state) => state);
 
-  const valuesFromDB = values;
-  let manualStateValues = manualFixturesStore[channel]?.values;
-  const previousManualStateValues =
-    previousManualFixtureStore[channel]?.values || valuesFromDB;
+  let currentValues = manualFixturesStore[channel]?.values ?? values;
+  let previousValues = previousManualFixtureStore[channel]?.values || dbValues;
+
+  console.log({ dbValues });
 
   const removeFixtureFromState = (fixtureChannel: number): void => {
     const dupe = new Set([...fixtureChannelSelectionStore]);
@@ -51,7 +54,6 @@ export default function Fixture({
       removeFixtureFromState(fixtureChannel);
     } else {
       addFixtureToState(fixtureChannel);
-      manualStateValues = values;
     }
   };
 
@@ -64,7 +66,7 @@ export default function Fixture({
   if (channel === 1) {
     console.log("--------start render-------");
 
-    console.log("prev", previousManualStateValues);
+    console.log("prev", previousValues);
     console.log("cur_values", values);
     console.log("--------end render-------");
   }
@@ -84,10 +86,8 @@ export default function Fixture({
         fixtureAssignmentId={fixtureAssignmentId}
         colorTempHigh={colorTempHigh}
         colorTempLow={colorTempLow}
-        values={valuesFromDB}
-        manualValues={manualStateValues}
-        previousManualValues={previousManualStateValues}
-        shouldFade={!fixtureInManualState}
+        values={currentValues}
+        previousValues={previousValues}
       />
     </View>
   );

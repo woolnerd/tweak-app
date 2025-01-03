@@ -30,7 +30,6 @@ type FixtureOutputDetailProps = {
   colorTempHigh: ParsedCompositeFixtureInfo["colorTempHigh"];
   colorTempLow: ParsedCompositeFixtureInfo["colorTempLow"];
   previousValues: AddressTuples;
-  shouldFade: boolean;
 };
 
 export function FixtureOutputDetail({
@@ -43,7 +42,6 @@ export function FixtureOutputDetail({
   colorTempHigh,
   colorTempLow,
   previousValues,
-  shouldFade,
 }: FixtureOutputDetailProps) {
   const manualFixturesStore = useManualFixtureStore(
     (state) => state.manualFixturesStore,
@@ -89,11 +87,6 @@ export function FixtureOutputDetail({
     const end = percentageToIntensityLevel(
       convertDmxValueToPercent(profileValue),
     );
-
-    if (channel === 1) {
-      console.log({ start });
-      console.log({ end });
-    }
 
     return <FaderNumbers start={start} end={end} duration={2000} />;
   };
