@@ -1,24 +1,21 @@
 import { Text, View } from "react-native";
-import { useRef, useEffect, useCallback } from "react";
 
 import {
-  processChannelValues,
-  buildObjectDetailData,
-  buildObjectDetailManualStyleObj,
-} from "../Fixture/helpers.ts";
+  AddressTuples,
+  ParsedCompositeFixtureInfo,
+} from "../../../models/types/scene-to-fixture-assignment.ts";
 import {
   percentageToColorTemperature,
   percentageToIntensityLevel,
   convertDmxValueToPercent,
 } from "../../../util/helpers.ts";
-import {
-  AddressTuples,
-  ParsedCompositeFixtureInfo,
-} from "../../../models/types/scene-to-fixture-assignment.ts";
 import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
-import { cloneDeep, isUndefined } from "lodash";
 import FaderNumbers from "../FaderNumbers/FaderNumbers.tsx";
-import { log } from "console";
+import {
+  processChannelValues,
+  buildObjectDetailData,
+  buildObjectDetailManualStyleObj,
+} from "../Fixture/helpers.ts";
 
 type FixtureOutputDetailProps = {
   profileChannels: ParsedCompositeFixtureInfo["profileChannels"];
@@ -32,7 +29,7 @@ type FixtureOutputDetailProps = {
   previousValues: AddressTuples;
 };
 
-export function FixtureOutputDetail({
+export default function FixtureOutputDetail({
   profileChannels,
   values,
   channelPairs16Bit,
@@ -56,13 +53,13 @@ export function FixtureOutputDetail({
   const fixtureTextStyles = `text-center text-lg font-extrabold `;
 
   const isColorTempField = (
-    colorTempLow: number,
-    colorTempHigh: number,
+    colorTempLowArg: number,
+    colorTempHighArg: number,
     profileField: string,
   ) =>
     profileField.toLowerCase().includes("temp") &&
-    colorTempHigh &&
-    colorTempLow;
+    colorTempHighArg &&
+    colorTempLowArg;
 
   // only handles color temp and intensity right now, needs to handle tint, plus more
   const handleDifferentProfileFields = (

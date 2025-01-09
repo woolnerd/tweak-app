@@ -3,7 +3,10 @@ import { render, waitFor, fireEvent } from "@testing-library/react-native";
 import "@testing-library/react-native/extend-expect";
 import React from "react";
 
-import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
+import {
+  AddressTuples,
+  ParsedCompositeFixtureInfo,
+} from "../../../models/types/scene-to-fixture-assignment.ts";
 import App from "../../main/index.tsx";
 import useCompositeFixtureStore from "../../store/useCompositeFixtureStore.ts";
 import Fixture from "../Fixture/Fixture.tsx";
@@ -97,7 +100,7 @@ const mockCompositeFixtures: ParsedCompositeFixtureInfo[] = [
 ];
 
 describe("Fixture component", () => {
-  const fixture: ParsedCompositeFixtureInfo = {
+  const fixture: ParsedCompositeFixtureInfo & { dbValues: AddressTuples } = {
     fixtureAssignmentId: 1,
     channel: 1,
     values: [
@@ -124,6 +127,10 @@ describe("Fixture component", () => {
     colorTempLow: 2800,
     colorTempHigh: 10000,
     manufacturerName: "Arri",
+    dbValues: [
+      [1, 255],
+      [2, 255],
+    ],
   };
 
   beforeEach(() => {

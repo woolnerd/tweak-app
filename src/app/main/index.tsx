@@ -7,8 +7,8 @@ import ErrorBoundary from "react-native-error-boundary";
 
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
-import { UniverseDataObjectCollection } from "../../lib/universe-data-builder.ts";
 import PacketSender from "../../lib/packets/packet-sender.ts";
+import { UniverseDataObjectCollection } from "../../lib/universe-data-builder.ts";
 import UniverseOutputGenerator from "../../lib/universe-output-generator.ts";
 import SceneModel from "../../models/scene.ts";
 import Container from "../components/Container/Container.tsx";
