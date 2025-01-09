@@ -22,7 +22,7 @@ const FaderNumbers = ({ start, end, duration }: FaderNumberProps) => {
     let stepCount = 0;
 
     const timer = setInterval(() => {
-      stepCount++;
+      stepCount += 1;
       if (end > start) {
         currentValueRef.current += increment;
       } else {

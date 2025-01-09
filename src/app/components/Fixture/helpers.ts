@@ -1,6 +1,8 @@
-import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
+import {
+  ParsedCompositeFixtureInfo,
+  AddressTuples,
+} from "../../../models/types/scene-to-fixture-assignment.ts";
 import { merge16BitValues } from "../../../util/helpers.ts";
-import { AddressTuples } from "../../../models/types/scene-to-fixture-assignment.ts";
 
 /**
  * @param values example: [ [1, 255], [2, 128], [3, 50] ]

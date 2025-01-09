@@ -48,7 +48,6 @@ export default function LayoutArea({
 
   useEffect(() => {
     fetchCompositeFixtures().then((databaseFixtures) => {
-      console.log(databaseFixtures);
       setOriginalFixtures(
         Object.fromEntries(
           databaseFixtures.map((dbFixture) => [dbFixture.channel, dbFixture]),

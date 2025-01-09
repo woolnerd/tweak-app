@@ -1,6 +1,6 @@
 /* eslint-disable import/first */
 // @ts-nocheck
-import { render, waitFor } from "@testing-library/react-native";
+import { render, screen, waitFor } from "@testing-library/react-native";
 import React from "react";
 
 jest.mock("../../../util/fixture-cache.ts");
@@ -15,6 +15,7 @@ import useCompositeFixtureStore from "../../store/useCompositeFixtureStore.ts";
 import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
 import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
 import LayoutArea from "../LayoutArea/LayoutArea.tsx";
+import ErrorBoundary from "react-native-error-boundary";
 
 describe("LayoutArea", () => {
   const mockCompositeFixtures = [
@@ -89,6 +90,7 @@ describe("LayoutArea", () => {
 
     useManualFixtureStore.mockReturnValue({
       manualFixturesStore: mockManualFixtures,
+      previousManualFixtureStore: {},
     });
 
     (ScenesToFixtureAssignments as jest.Mock).mockImplementation(() => ({
@@ -99,20 +101,35 @@ describe("LayoutArea", () => {
   });
 
   test("renders correctly", async () => {
-    const { getByText } = render(
-      <LayoutArea selectedSceneId={1} loadFixtures setLoadFixtures={jest.fn} />,
+    render(
+      <ErrorBoundary>
+        <LayoutArea
+          selectedSceneId={1}
+          loadFixtures
+          setLoadFixtures={jest.fn}
+        />
+      </ErrorBoundary>,
     );
 
     await waitFor(() => {
-      expect(getByText("Fixture 1")).toBeTruthy();
-      // expect(getByText("Fixture 2")).toBeTruthy();
+      expect(screen.getByText("Fixture 1")).toBeTruthy();
     });
-  }, 10000);
+
+    await waitFor(() => {
+      expect(screen.getByText("Fixture 2")).toBeTruthy();
+    });
+  });
 
   test("fetch and update composite fixtures", async () => {
     const { updateCompositeFixturesStore } = useCompositeFixtureStore();
     render(
-      <LayoutArea selectedSceneId={1} loadFixtures setLoadFixtures={jest.fn} />,
+      <ErrorBoundary>
+        <LayoutArea
+          selectedSceneId={1}
+          loadFixtures
+          setLoadFixtures={jest.fn}
+        />
+      </ErrorBoundary>,
     );
 
     await waitFor(() =>
@@ -120,5 +137,5 @@ describe("LayoutArea", () => {
         mockCompositeFixtures,
       ),
     );
-  }, 10000);
+  });
 });
