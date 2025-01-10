@@ -57,8 +57,6 @@ export default function LayoutArea({
   }, [selectedSceneId, fetchCompositeFixtures]);
 
   useEffect(() => {
-    console.log({ originalFixtures });
-
     if (originalFixtures) {
       fetchCompositeFixtures()
         .then((res) => {

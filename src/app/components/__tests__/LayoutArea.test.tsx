@@ -2,6 +2,7 @@
 // @ts-nocheck
 import { render, screen, waitFor } from "@testing-library/react-native";
 import React from "react";
+import ErrorBoundary from "react-native-error-boundary";
 
 jest.mock("../../../util/fixture-cache.ts");
 jest.mock("../../../db/client.ts");
@@ -15,7 +16,11 @@ import useCompositeFixtureStore from "../../store/useCompositeFixtureStore.ts";
 import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
 import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
 import LayoutArea from "../LayoutArea/LayoutArea.tsx";
-import ErrorBoundary from "react-native-error-boundary";
+
+if (typeof global.setImmediate === "undefined") {
+  (global.setImmediate as unknown) = (fn, ...args) =>
+    setTimeout(fn, 0, ...args);
+}
 
 describe("LayoutArea", () => {
   const mockCompositeFixtures = [

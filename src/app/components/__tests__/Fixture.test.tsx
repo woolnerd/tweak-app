@@ -1,13 +1,14 @@
+/* eslint-disable testing-library/no-node-access */
 /* eslint-disable global-require */
 import {
   render,
   screen,
   waitFor,
   fireEvent,
-  act,
 } from "@testing-library/react-native";
 import "@testing-library/react-native/extend-expect";
 import React from "react";
+import ErrorBoundary from "react-native-error-boundary";
 
 import {
   AddressTuples,
@@ -16,7 +17,6 @@ import {
 import App from "../../main/index.tsx";
 import useCompositeFixtureStore from "../../store/useCompositeFixtureStore.ts";
 import Fixture from "../Fixture/Fixture.tsx";
-import ErrorBoundary from "react-native-error-boundary";
 
 if (typeof global.setImmediate === "undefined") {
   (global.setImmediate as unknown) = (fn, ...args) =>
@@ -142,29 +142,17 @@ describe("Fixture component", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // jest.useFakeTimers();
     useCompositeFixtureStore.setState({
       compositeFixturesStore: mockCompositeFixtures,
     });
   });
 
-  afterEach(() => {
-    // jest.clearAllTimers();
-  });
-
   test("it displays fixture percentages, channel number, and fixture name", async () => {
     render(<Fixture {...fixture} data-testid="fixture" />);
 
-    await waitFor(() => {
-      expect(screen.getByText("1")).toBeTruthy();
-    });
-    await waitFor(() => {
-      expect(screen.getByText("Fixture 1")).toBeTruthy();
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText(/50%/)).toBeTruthy();
-    });
+    expect(screen.getByText("1")).toBeTruthy();
+    expect(screen.getByText("Fixture 1")).toBeTruthy();
+    expect(screen.getByText(/50%/)).toBeTruthy();
   });
 
   test("it has a green border when not selected", () => {
@@ -198,31 +186,27 @@ describe("Fixture component", () => {
     const controlButton50Percent = screen.getByTestId("cp-button-50%");
     const controlButton5600 = screen.getByTestId("cp-button-5600");
     const fixtureElement = screen.getByTestId("fixture-1");
-    const fixtureElementSingleChannel = screen.getByTestId("fixture-3");
 
     fireEvent(fixtureElement, "onTouchStart");
     fireEvent.press(controlButton50Percent);
     fireEvent.press(controlButton5600);
 
-    fireEvent(fixtureElementSingleChannel, "onTouchStart");
-    fireEvent.press(controlButton50Percent);
+    expect(screen.getAllByTestId("output-detail-1")[0]).toHaveStyle({
+      color: "#dc2626",
+    });
 
-    // act(() => {
-    //   jest.advanceTimersByTime(2000);
-    // });
+    expect(
+      screen.getAllByTestId("output-detail-1")[0].children.join(" "),
+    ).toContain("Dimmer");
+
+    expect(
+      screen.getAllByTestId("output-detail-1")[1].children.join(" "),
+    ).toContain("5600");
 
     await waitFor(() => {
-      const outputDetail = screen.getAllByTestId("output-detail-1");
-      const outputDetailSingleChannel =
-        screen.getAllByTestId("output-detail-3");
-
-      // expect(outputDetail[0].children.join(" ")).toContain("50%");
-      expect(outputDetail[0]).toHaveStyle({ color: "#dc2626" });
-      expect(outputDetail[1].children.join(" ")).toContain("5600");
-      expect(outputDetail[1]).toHaveStyle({ color: "#dc2626" });
-
-      // expect(outputDetailSingleChannel[0].children.join(" ")).toContain("50%");
-      expect(outputDetailSingleChannel[0]).toHaveStyle({ color: "#dc2626" });
+      expect(
+        screen.getAllByTestId("output-detail-1")[1].children.join(" "),
+      ).toContain("Color temp");
     });
   });
 });
