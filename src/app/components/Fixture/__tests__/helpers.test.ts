@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { AddressTuples } from "../../../../models/types/scene-to-fixture-assignment.ts";
 import {
   processChannelValues,

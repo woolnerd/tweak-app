@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-node-access */
 /* eslint-disable testing-library/prefer-screen-queries */
 import { render, screen, act } from "@testing-library/react-native";
 import React from "react";
@@ -113,9 +114,9 @@ describe("FixtureOutputDetail", () => {
   test.skip("handles null object details", () => {
     (buildObjectDetailData as jest.Mock).mockReturnValue(null);
 
-    const { getByTestId } = render(<FixtureOutputDetail {...defaultProps} />);
+    const { queryByTestId } = render(<FixtureOutputDetail {...defaultProps} />);
 
-    expect(getByTestId("output-detail-1")).toBeFalsy();
+    expect(queryByTestId("output-detail-1")).toBeFalsy();
   });
 
   test("processes previous values correctly", () => {
@@ -164,7 +165,6 @@ describe("FixtureOutputDetail", () => {
       <FixtureOutputDetail {...defaultProps} />,
     );
 
-    screen.debug();
     expect(getAllByTestId("output-detail-1")[0].children[1]).toContain("2000");
   });
 });

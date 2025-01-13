@@ -74,6 +74,7 @@ export default class CommandLine {
         complete: false,
         directive: COMMAND.CLEAR,
         profileTarget: ProfileTarget.EMPTY,
+        selection: [],
       };
     }
 

@@ -1,3 +1,5 @@
+import { cloneDeep } from "lodash";
+
 import ProfileAdapter from "./adapters/profile-adapter.ts";
 import { ActionObject } from "./command-line/types/command-line-types.ts";
 import { ProfileTarget } from "./types/buttons.ts";
@@ -7,7 +9,6 @@ import {
 } from "../app/components/Fixture/types/Fixture.ts";
 import { ParsedCompositeFixtureInfo } from "../models/types/scene-to-fixture-assignment.ts";
 import ChannelValueCalculator from "../util/channel-value-calculator.ts";
-import { cloneDeep } from "lodash";
 
 export default class ValueRouter {
   profileAdapter: ProfileAdapter;
