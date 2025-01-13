@@ -44,7 +44,7 @@ describe("UniverseOutputGenerator constructor", () => {
   });
 
   describe("generateOutput", () => {
-    it("should generate packets for each universe in outputValuesStore", () => {
+    test("should generate packets for each universe in outputValuesStore", () => {
       const mockFilledData = "filledData";
       const mockPacket = Buffer.from("mockPacket");
 

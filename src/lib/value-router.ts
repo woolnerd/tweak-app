@@ -98,10 +98,10 @@ export default class ValueRouter {
 
   // outputs a tuple of [ channel, Value (btw 0-255) ]
   buildResult() {
-    if (this.channelIs16Bit()) {
+    if (this.channelIs16Btest()) {
       this.values = this.calculator.calc16BitValues();
       this.channelTuples = this.parse16BitChannels();
-    } else if (this.channelIs8Bit()) {
+    } else if (this.channelIs8Btest()) {
       this.values = this.calculator.calc8BitValues();
       this.channelTuples = this.parse8BitChannel();
     } else {
@@ -137,11 +137,11 @@ export default class ValueRouter {
     return this.actionObject.profileTarget === ProfileTarget.COLOR_TEMP;
   }
 
-  channelIs16Bit() {
+  channelIs16Btest() {
     return this.channels.length === 2;
   }
 
-  channelIs8Bit() {
+  channelIs8Btest() {
     return this.channels.length === 1;
   }
 

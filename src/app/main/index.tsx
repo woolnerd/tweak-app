@@ -67,7 +67,7 @@ function App() {
       ) {
         outputGenerator.outputStart = cloneDeep(prevOutputState.current);
         // Fade between previous and current values over 5000ms (adjust duration as needed)
-        outputGenerator.fadeOutputValues(5000);
+        outputGenerator.fadeOutputValues(2000);
       }
 
       prevOutputState.current = cloneDeep(outputValuesStore);
@@ -75,7 +75,7 @@ function App() {
       // consistent output of sACN values
       const intervalId = setInterval(() => {
         // outputGenerator.sendOutput(packets);
-      }, 1000);
+      }, 60);
 
       return () => {
         clearInterval(intervalId);

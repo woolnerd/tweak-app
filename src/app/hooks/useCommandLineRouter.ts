@@ -10,8 +10,7 @@ import useFixtureChannelSelectionStore from "../store/useFixtureChannelSelection
 import useManualFixtureStore from "../store/useManualFixtureStore.ts";
 
 export default function useCommandLineRouter(action: ActionObject | null) {
-  const { compositeFixturesStore, updateCompositeFixturesStore } =
-    useCompositeFixtureStore((state) => state);
+  const { compositeFixturesStore } = useCompositeFixtureStore((state) => state);
 
   const fixtureChannelSelectionStore = useFixtureChannelSelectionStore(
     (state) => state.fixtureChannelSelectionStore,

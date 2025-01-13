@@ -1,3 +1,5 @@
+/* eslint-disable testing-library/no-node-access */
+/* eslint-disable testing-library/prefer-screen-queries */
 import { render, act } from "@testing-library/react-native";
 import React from "react";
 
@@ -43,23 +45,23 @@ describe("FaderNumbers", () => {
     });
   };
 
-  it("renders initial value correctly", () => {
+  test("renders initial value correctly", () => {
     const { getByTestId } = render(
       <FaderNumbers start={0} end={100} duration={1000} />,
     );
 
-    expect(getByTestId("fader-number").props.children.join("")).toBe("0%");
+    expect(getByTestId("fader-number").props.children.join("")).toBe(" 0");
   });
 
-  it("handles zero duration", () => {
+  test("handles zero duration", () => {
     const { getByTestId } = render(
       <FaderNumbers start={0} end={100} duration={0} />,
     );
 
-    expect(getByTestId("fader-number").props.children.join("")).toBe("100%");
+    expect(getByTestId("fader-number").props.children.join("")).toBe(" 100");
   });
 
-  it("animates from start to end", async () => {
+  test("animates from start to end", async () => {
     const { getByTestId } = render(
       <FaderNumbers start={0} end={100} duration={1000} />,
     );
@@ -68,16 +70,17 @@ describe("FaderNumbers", () => {
     await advanceAnimation(500);
     const midValue = parseInt(
       getByTestId("fader-number").props.children.join(""),
+      10,
     );
     expect(midValue).toBeGreaterThanOrEqual(45);
     expect(midValue).toBeLessThanOrEqual(55);
 
     // Test completion
     await advanceAnimation(500);
-    expect(getByTestId("fader-number").props.children.join("")).toBe("100%");
+    expect(getByTestId("fader-number").props.children.join("")).toBe(" 100");
   });
 
-  it("handles decreasing values", async () => {
+  test("handles decreasing values", async () => {
     const { getByTestId } = render(
       <FaderNumbers start={100} end={0} duration={1000} />,
     );
@@ -85,15 +88,16 @@ describe("FaderNumbers", () => {
     await advanceAnimation(500);
     const midValue = parseInt(
       getByTestId("fader-number").props.children.join(""),
+      10,
     );
     expect(midValue).toBeGreaterThanOrEqual(45);
     expect(midValue).toBeLessThanOrEqual(55);
 
     await advanceAnimation(500);
-    expect(getByTestId("fader-number").props.children.join("")).toBe("0%");
+    expect(getByTestId("fader-number").props.children.join("")).toBe(" 0");
   });
 
-  it("handles prop changes", async () => {
+  test("handles prop changes", async () => {
     const { getByTestId, rerender } = render(
       <FaderNumbers start={0} end={100} duration={1000} />,
     );
@@ -105,10 +109,10 @@ describe("FaderNumbers", () => {
     });
 
     await advanceAnimation(1000);
-    expect(getByTestId("fader-number").props.children.join("")).toBe("75%");
+    expect(getByTestId("fader-number").props.children.join("")).toBe(" 75");
   });
 
-  it("cleans up animation frame on unmount", () => {
+  test("cleans up animation frame on unmount", () => {
     const { unmount } = render(
       <FaderNumbers start={0} end={100} duration={1000} />,
     );

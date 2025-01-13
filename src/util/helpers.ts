@@ -22,7 +22,7 @@ type SetCallback = (compositeFixtures: ParsedCompositeFixtureInfo[]) => void;
  * @param dmxVal
  * @param valuesArray
  */
-function choose8bitOrBuildValueTupleFor16bit(
+function choose8bitOrBuildValueTupleFor16btest(
   resultValueArray: number[][],
   tupleArray: number[][],
   compute16bitVal: (coarseVal: number, fineVal: number) => number,
@@ -65,7 +65,7 @@ export function merge16BitValues(
   const newValues: typeof values = [];
 
   values.forEach(([channel, dmxVal]) => {
-    choose8bitOrBuildValueTupleFor16bit(
+    choose8bitOrBuildValueTupleFor16btest(
       newValues,
       channelPairs16Bit,
       compute16bitVal,

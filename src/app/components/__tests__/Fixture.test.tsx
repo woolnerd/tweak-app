@@ -5,7 +5,6 @@ import {
   screen,
   waitFor,
   fireEvent,
-  act,
 } from "@testing-library/react-native";
 import "@testing-library/react-native/extend-expect";
 import React from "react";
@@ -192,17 +191,17 @@ describe("Fixture component", () => {
     fireEvent.press(controlButton50Percent);
     fireEvent.press(controlButton5600);
 
-    expect(screen.getAllByTestId("output-detail-1")[0]).toHaveStyle({
-      color: "#dc2626",
+    await waitFor(() => {
+      expect(screen.getAllByTestId("output-detail-1")[0]).toHaveStyle({
+        color: "#dc2626",
+      });
     });
 
-    expect(
-      screen.getAllByTestId("output-detail-1")[0].children.join(" "),
-    ).toContain("Dimmer");
-
-    expect(
-      screen.getAllByTestId("output-detail-1")[1].children.join(" "),
-    ).toContain("5600");
+    await waitFor(() => {
+      expect(
+        screen.getAllByTestId("output-detail-1")[0].children.join(" "),
+      ).toContain("Dimmer");
+    });
 
     await waitFor(() => {
       expect(

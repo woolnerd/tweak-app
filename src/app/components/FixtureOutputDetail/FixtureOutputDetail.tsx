@@ -13,7 +13,7 @@ import {
   buildObjectDetailManualStyleObj,
 } from "../Fixture/helpers.ts";
 
-type FixtureOutputDetailProps = {
+export type FixtureOutputDetailProps = {
   profileChannels: ParsedCompositeFixtureInfo["profileChannels"];
   values: ParsedCompositeFixtureInfo["values"];
   channelPairs16Bit: ParsedCompositeFixtureInfo["channelPairs16Bit"];
