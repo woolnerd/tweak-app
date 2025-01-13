@@ -1,18 +1,17 @@
 /* eslint-disable drizzle/enforce-delete-with-where */
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text } from "react-native";
 
-import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import {
-  handleChannelValues,
-  convertDmxValueToPercent,
-  percentageToColorTemperature,
-  percentageToIntensityLevel,
-} from "../../../util/helpers.ts";
+  ParsedCompositeFixtureInfo,
+  AddressTuples,
+} from "../../../models/types/scene-to-fixture-assignment.ts";
 import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
 import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
+import FixtureOutputDetail from "../FixtureOutputDetail/FixtureOutputDetail.tsx";
 
-export type FixtureProps = object & ParsedCompositeFixtureInfo;
-export function Fixture({
+export type FixtureProps = object &
+  ParsedCompositeFixtureInfo & { dbValues: AddressTuples };
+export default function Fixture({
   channel,
   fixtureName,
   profileChannels,
@@ -22,16 +21,20 @@ export function Fixture({
   channelPairs16Bit,
   colorTempLow,
   colorTempHigh,
+  dbValues,
   ...props
 }: FixtureProps) {
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
     useFixtureChannelSelectionStore((state) => state);
 
-  const manualFixturesStore = useManualFixtureStore(
-    (state) => state.manualFixturesStore,
-  );
-
   const fixtureInManualState = fixtureChannelSelectionStore.has(channel);
+
+  const { previousManualFixtureStore, manualFixturesStore } =
+    useManualFixtureStore((state) => state);
+
+  const currentValues = manualFixturesStore[channel]?.values ?? values;
+  const previousValues =
+    previousManualFixtureStore[channel]?.values || dbValues;
 
   const removeFixtureFromState = (fixtureChannel: number): void => {
     const dupe = new Set([...fixtureChannelSelectionStore]);
@@ -45,107 +48,41 @@ export function Fixture({
     updateFixtureChannelSelectionStore(dupe);
   };
 
-  const handleOutput = (fixtureChannel: number) => {
-    if (fixtureInManualState) {
-      removeFixtureFromState(fixtureChannel);
-    } else {
-      addFixtureToState(fixtureChannel);
-    }
-  };
-
-  const isManualFixtureChannel = (testChannel: number) =>
-    !!manualFixturesStore[channel]?.manualChannels?.includes(testChannel);
-
-  const selectedStyle = (isManual: boolean) => {
-    const styles: { color?: string; borderColor?: string } = {};
-
-    if (isManual) {
-      styles.color = "rgb(256, 50, 30)";
-    }
+  const handleOutput = () => {
+    console.log("clicked a fixture channel: ", channel);
 
     if (fixtureInManualState) {
-      styles.borderColor = "gold";
+      removeFixtureFromState(channel);
     } else {
-      styles.borderColor = "rgb(100, 256, 100)";
+      addFixtureToState(channel);
     }
-    return styles;
   };
 
-  const buildOutputDetails = () => {
-    const { result: details, manualStyleChannels } = handleChannelValues(
-      profileChannels,
-      values,
-      channelPairs16Bit,
-      is16Bit,
-      isManualFixtureChannel,
-    );
+  const fixtureSelectStyles = fixtureInManualState
+    ? "border-yellow-500"
+    : "border-green-500";
 
-    if (!details) return null;
-
-    return Object.keys(details as object).map((profileField) =>
-      outputDetail(profileField, details, manualStyleChannels),
-    );
-  };
-
-  const outputDetail = (
-    profileField: string,
-    details: Record<string, number>,
-    styleOptions: Record<string, boolean>,
-  ) => (
-    <Text
-      key={`${profileField}+${Math.random()}`}
-      style={{
-        ...styles.text,
-        ...selectedStyle(styleOptions[profileField]),
-      }}>
-      {`${profileField}:
-      ${details ? handleDifferentProfileFields(profileField, details) : ""}`}
-    </Text>
-  );
-
-  const handleDifferentProfileFields = (
-    profileField: string,
-    details: Record<string, number>,
-  ) => {
-    if (
-      profileField.toLowerCase().includes("temp") &&
-      colorTempHigh &&
-      colorTempLow
-    ) {
-      return percentageToColorTemperature(
-        convertDmxValueToPercent(details[profileField]),
-        colorTempLow,
-        colorTempHigh,
-      );
-    }
-    return `${percentageToIntensityLevel(convertDmxValueToPercent(details[profileField]))}%`;
-  };
+  const fixtureStyles = `bg-purple-800 w-52 h-52 border-4 rounded-lg m-2 ${fixtureSelectStyles}`;
 
   return (
     <View
       key={fixtureAssignmentId}
-      style={{ ...styles.fixtures, ...selectedStyle(false) }}
-      onTouchStart={() => handleOutput(channel)}>
-      <Text style={styles.text}>{channel}</Text>
-      <Text style={styles.text}>{fixtureName}</Text>
-      {buildOutputDetails()}
+      testID={`fixture-${fixtureAssignmentId}`}
+      className={fixtureStyles}
+      onTouchStart={handleOutput}>
+      <Text className="text-center text-lg font-extrabold">{channel}</Text>
+      <Text className="text-center text-lg font-extrabold">{fixtureName}</Text>
+      <FixtureOutputDetail
+        channel={channel}
+        profileChannels={profileChannels}
+        channelPairs16Bit={channelPairs16Bit}
+        is16Bit={is16Bit}
+        fixtureAssignmentId={fixtureAssignmentId}
+        colorTempHigh={colorTempHigh}
+        colorTempLow={colorTempLow}
+        values={currentValues}
+        previousValues={previousValues}
+      />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  fixtures: {
-    backgroundColor: "purple",
-    width: 200,
-    height: 160,
-    borderWidth: 4,
-    margin: 10,
-    borderColor: "gold",
-    borderRadius: 10,
-  },
-  text: {
-    fontWeight: "800",
-    textAlign: "center",
-    fontSize: 20,
-  },
-});

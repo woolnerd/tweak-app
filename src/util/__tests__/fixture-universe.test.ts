@@ -24,12 +24,12 @@ describe("Universe", () => {
     universe.addFixture(fixtureMap2);
   });
 
-  it("assigns universe number to 1", () => {
+  test("assigns universe number to 1", () => {
     // eslint-disable-next-line dot-notation
     expect(universe["number"]).toEqual(1);
   });
 
-  it("displays utilized fixture channels", () => {
+  test("displays utilized fixture channels", () => {
     const display = universe.buildUniverse();
 
     expect(display[1]).toBe("456");
@@ -47,12 +47,12 @@ describe("Universe", () => {
     expect(display[512]).toBe(undefined);
   });
 
-  it("returns fixtures sorted by starting index", () => {
+  test("returns fixtures sorted by starting index", () => {
     expect(universe.getFixtures[0]).toBe(fixtureMap2);
     expect(universe.getFixtures[1]).toBe(fixtureMap1);
   });
 
-  it("throws an error if address is not available", () => {
+  test("throws an error if address is not available", () => {
     expect(() => {
       universe.addFixture({
         fixtureId: "678",
@@ -62,7 +62,7 @@ describe("Universe", () => {
     }).toThrow("Address not available");
   });
 
-  it("throws an error if fixture cannot fit", () => {
+  test("throws an error if fixture cannot fit", () => {
     expect(() => {
       universe.addFixture({
         fixtureId: "999",
@@ -72,7 +72,7 @@ describe("Universe", () => {
     }).toThrow("Fixture cannot fit at address");
   });
 
-  it("throws an error if start address it out of bounds", () => {
+  test("throws an error if start address it out of bounds", () => {
     expect(() => {
       universe.addFixture({
         fixtureId: "999",

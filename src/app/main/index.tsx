@@ -7,8 +7,8 @@ import ErrorBoundary from "react-native-error-boundary";
 
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
-import { UniverseDataObjectCollection } from "../../lib/universe-data-builder.ts";
 import PacketSender from "../../lib/packets/packet-sender.ts";
+import { UniverseDataObjectCollection } from "../../lib/universe-data-builder.ts";
 import UniverseOutputGenerator from "../../lib/universe-output-generator.ts";
 import SceneModel from "../../models/scene.ts";
 import Container from "../components/Container/Container.tsx";
@@ -44,9 +44,11 @@ function App() {
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
     useFixtureChannelSelectionStore((state) => state);
 
-  const selectedCompositeFixtures = compositeFixturesStore.filter((fixture) =>
-    fixtureChannelSelectionStore.has(fixture.channel),
-  );
+  const selectedCompositeFixtures = compositeFixturesStore
+    ? compositeFixturesStore.filter((fixture) =>
+        fixtureChannelSelectionStore.has(fixture.channel),
+      )
+    : [];
 
   useInitialize();
   useUniverseOutput();
@@ -65,7 +67,7 @@ function App() {
       ) {
         outputGenerator.outputStart = cloneDeep(prevOutputState.current);
         // Fade between previous and current values over 5000ms (adjust duration as needed)
-        outputGenerator.fadeOutputValues(5000);
+        outputGenerator.fadeOutputValues(2000);
       }
 
       prevOutputState.current = cloneDeep(outputValuesStore);
@@ -73,7 +75,7 @@ function App() {
       // consistent output of sACN values
       const intervalId = setInterval(() => {
         // outputGenerator.sendOutput(packets);
-      }, 1000);
+      }, 60);
 
       return () => {
         clearInterval(intervalId);

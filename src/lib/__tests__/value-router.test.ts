@@ -220,8 +220,8 @@ describe("ValueRouter Tests", () => {
         profileAdapterDimmer,
         fixture,
       );
-      expect(router.channelIs16Bit()).toBe(true);
-      expect(router.channelIs8Bit()).toBe(false);
+      expect(router.channelIs16Btest()).toBe(true);
+      expect(router.channelIs8Btest()).toBe(false);
       router.buildResult();
       expect(router.parse16BitChannels()).toStrictEqual([
         [1, 255],
@@ -237,8 +237,8 @@ describe("ValueRouter Tests", () => {
         profileAdapterColorTemp,
         fixture,
       );
-      expect(router.channelIs16Bit()).toBe(true);
-      expect(router.channelIs8Bit()).toBe(false);
+      expect(router.channelIs16Btest()).toBe(true);
+      expect(router.channelIs8Btest()).toBe(false);
       router.buildResult();
       expect(router.parse16BitChannels()).toStrictEqual([
         [3, 255],
@@ -253,8 +253,8 @@ describe("ValueRouter Tests", () => {
         profileAdapter,
         fixture,
       );
-      expect(router.channelIs16Bit()).toBe(false);
-      expect(router.channelIs8Bit()).toBe(true);
+      expect(router.channelIs16Btest()).toBe(false);
+      expect(router.channelIs8Btest()).toBe(true);
       router.buildResult();
 
       expect(router.parse8BitChannel()).toStrictEqual([[1, 255]]);

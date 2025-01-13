@@ -10,8 +10,7 @@ import useFixtureChannelSelectionStore from "../store/useFixtureChannelSelection
 import useManualFixtureStore from "../store/useManualFixtureStore.ts";
 
 export default function useCommandLineRouter(action: ActionObject | null) {
-  const { compositeFixturesStore, updateCompositeFixturesStore } =
-    useCompositeFixtureStore((state) => state);
+  const { compositeFixturesStore } = useCompositeFixtureStore((state) => state);
 
   const fixtureChannelSelectionStore = useFixtureChannelSelectionStore(
     (state) => state.fixtureChannelSelectionStore,
@@ -60,9 +59,5 @@ export default function useCommandLineRouter(action: ActionObject | null) {
         ...nextManualFixtureState,
       });
     }
-
-    console.log("action", action);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [action, updateCompositeFixturesStore]);
+  }, [action, updateManualFixturesStore]);
 }

@@ -51,7 +51,7 @@ describe("ControlPanelButton", () => {
     jest.clearAllMocks();
   });
 
-  it("should render button with correct label", () => {
+  test("should render button with correct label", () => {
     render(
       <ControlPanelButton
         buttonData={buttonData}
@@ -63,7 +63,7 @@ describe("ControlPanelButton", () => {
     expect(screen.getByText("2800")).toBeTruthy();
   });
 
-  it("should enable the button when a valid fixture is selected", () => {
+  test("should enable the button when a valid fixture is selected", () => {
     const selectedFixtures = [buildFixture({ colorTempLow: 2000 })];
 
     render(
@@ -82,7 +82,7 @@ describe("ControlPanelButton", () => {
     });
   });
 
-  it("should enable the button when no fixtures are selected", () => {
+  test("should enable the button when no fixtures are selected", () => {
     render(
       <ControlPanelButton
         buttonData={buttonData}
@@ -99,7 +99,7 @@ describe("ControlPanelButton", () => {
     });
   });
 
-  it("should disable the button if the selected fixture has incompatible color temperature", () => {
+  test("should disable the button if the selected fixture has incompatible color temperature", () => {
     const selectedFixtures = [buildFixture({ colorTempLow: 3000 })]; // Set an incompatible color temp
 
     render(
@@ -115,7 +115,7 @@ describe("ControlPanelButton", () => {
     expect(button.props.style).toMatchObject({ backgroundColor: "gray" });
   });
 
-  it("should call handleTouch when button is pressed and enabled", () => {
+  test("should call handleTouch when button is pressed and enabled", () => {
     const selectedFixtures = [buildFixture({ colorTempLow: 2800 })];
 
     render(
@@ -130,7 +130,7 @@ describe("ControlPanelButton", () => {
     expect(handleTouchMock).toHaveBeenCalledWith(buttonData);
   });
 
-  it("should not call handleTouch when button is pressed and disabled", () => {
+  test("should not call handleTouch when button is pressed and disabled", () => {
     render(
       <ControlPanelButton
         buttonData={buttonData}
