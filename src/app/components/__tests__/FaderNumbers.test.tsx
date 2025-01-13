@@ -15,10 +15,8 @@ describe("FaderNumbers", () => {
     currentTime = 0;
     jest.useFakeTimers();
 
-    // Mock Date.now
     global.Date.now = jest.fn(() => currentTime);
 
-    // Mock requestAnimationFrame
     global.requestAnimationFrame = (callback: FrameRequestCallback) => {
       animationFrame = setTimeout(() => {
         callback(Date.now());
@@ -26,7 +24,6 @@ describe("FaderNumbers", () => {
       return animationFrame;
     };
 
-    // Mock cancelAnimationFrame
     global.cancelAnimationFrame = (id: number) => {
       clearTimeout(id);
     };
@@ -66,7 +63,6 @@ describe("FaderNumbers", () => {
       <FaderNumbers start={0} end={100} duration={1000} />,
     );
 
-    // Test halfway point
     await advanceAnimation(500);
     const midValue = parseInt(
       getByTestId("fader-number").props.children.join(""),
@@ -75,7 +71,6 @@ describe("FaderNumbers", () => {
     expect(midValue).toBeGreaterThanOrEqual(45);
     expect(midValue).toBeLessThanOrEqual(55);
 
-    // Test completion
     await advanceAnimation(500);
     expect(getByTestId("fader-number").props.children.join("")).toBe(" 100");
   });
@@ -104,9 +99,7 @@ describe("FaderNumbers", () => {
 
     await advanceAnimation(500);
 
-    await act(async () => {
-      rerender(<FaderNumbers start={50} end={75} duration={1000} />);
-    });
+    rerender(<FaderNumbers start={50} end={75} duration={1000} />);
 
     await advanceAnimation(1000);
     expect(getByTestId("fader-number").props.children.join("")).toBe(" 75");

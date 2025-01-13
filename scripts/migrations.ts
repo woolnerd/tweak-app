@@ -13,6 +13,6 @@ export default async function runMigrations() {
       console.error(`🚨 Error running migrations: ${err.message}`);
     }
 
-    process.extest(1);
+    process.exit(1);
   }
 }

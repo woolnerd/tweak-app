@@ -1,10 +1,9 @@
+import { AddressTuples } from "../../../../models/types/scene-to-fixture-assignment.ts";
 import {
-  // handleChannelValues,
   processChannelValues,
   buildObjectDetailData,
   buildObjectDetailManualStyleObj,
 } from "../helpers.ts";
-import { AddressTuples } from "../../../../models/types/scene-to-fixture-assignment.ts";
 
 describe("handleChannelValues properly merges 16bit channels, and 8bit channel with profile name", () => {
   test("it correctly handles 16bit channels", () => {
@@ -29,19 +28,6 @@ describe("handleChannelValues properly merges 16bit channels, and 8bit channel w
 
     const values = processChannelValues(values1, channelPairs16Bit1, is16Bit);
 
-    // const { objectDetails: result1 } = handleChannelValues(
-    //   profileChannels1,
-    //   values1,
-    //   channelPairs16Bit1,
-    //   true,
-    //   () => true,
-    // );
-
-    // expect(values).toStrictEqual([
-    //   [1, 65535],
-    //   [3, 32896],
-    // ]);
-
     const profileChannels2 = {
       3: "Color Temp",
       4: "Color Temp fine",
@@ -58,15 +44,6 @@ describe("handleChannelValues properly merges 16bit channels, and 8bit channel w
       [1, 2],
       [3, 4],
     ];
-
-    // const { objectDetails: result2 } = handleChannelValues(
-    //   profileChannels2,
-    //   values2,
-    //   channelPairs16Bit2,
-    //   true,
-    //   () => true,
-    // );
-    // expect(result2).toStrictEqual({ "Color Temp": 32896 });
   });
 
   test("it handles 16bit values that contain 0", () => {
@@ -84,16 +61,6 @@ describe("handleChannelValues properly merges 16bit channels, and 8bit channel w
       [1, 2],
       [3, 4],
     ];
-
-    // const { objectDetails } = handleChannelValues(
-    //   profileChannels,
-    //   values,
-    //   channelPairs16Bit,
-    //   true,
-    //   () => true,
-    // );
-
-    // expect(objectDetails).toStrictEqual({ Dimmer: 65280 });
   });
 
   test("it handles 8bit channels", () => {
@@ -103,16 +70,6 @@ describe("handleChannelValues properly merges 16bit channels, and 8bit channel w
     const values: AddressTuples = [[1, 255]];
 
     const channelPairs16Bit = [];
-
-    // const { objectDetails } = handleChannelValues(
-    //   profileChannels,
-    //   values,
-    //   channelPairs16Bit,
-    //   true,
-    //   () => true,
-    // );
-
-    // expect(objectDetails).toStrictEqual({ Dimmer: 255 });
   });
 });
 

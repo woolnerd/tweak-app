@@ -79,7 +79,6 @@ export default class ValueRouter {
     if (Object.keys(manualFixtureObj).length === 0) return;
 
     this.channelTuples.forEach(([channel, output]) => {
-      // const channel = tuple[0];
       const idxOfTupleToMutate = manualFixtureObj.values.findIndex(
         ([manualChannel, _]) => manualChannel === channel,
       );

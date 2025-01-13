@@ -1,9 +1,10 @@
 import { create } from "zustand";
-import { ManualFixtureState } from "../components/Fixture/types/Fixture.ts"; // Make sure this import is correct
+
+import { ManualFixtureState } from "../components/Fixture/types/Fixture.ts";
 
 type State = {
   manualFixturesStore: ManualFixtureState;
-  previousManualFixtureStore: ManualFixtureState; // Store for the previous state
+  previousManualFixtureStore: ManualFixtureState;
 };
 
 type Action = {
@@ -12,17 +13,15 @@ type Action = {
 
 export default create<State & Action>((set, get) => ({
   manualFixturesStore: {},
-  previousManualFixtureStore: {}, // Initialize previous store as an empty object
+  previousManualFixtureStore: {},
 
   updateManualFixturesStore: (manualFixturesStore: ManualFixtureState) => {
     set(() => {
-      // Capture the current state as previousStore before updating
       const previousManualFixtureStore = get().manualFixturesStore;
 
-      // Return updated state with previousStore
       return {
-        previousManualFixtureStore, // Save the current state to previousStore
-        manualFixturesStore, // Set the new state
+        previousManualFixtureStore,
+        manualFixturesStore,
       };
     });
   },
