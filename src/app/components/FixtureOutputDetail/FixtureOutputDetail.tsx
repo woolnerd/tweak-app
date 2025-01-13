@@ -1,14 +1,10 @@
 import { Text, View } from "react-native";
 
+import { handleDifferentProfileFields } from "./helpers.ts";
 import {
   AddressTuples,
   ParsedCompositeFixtureInfo,
 } from "../../../models/types/scene-to-fixture-assignment.ts";
-import {
-  percentageToColorTemperature,
-  percentageToIntensityLevel,
-  convertDmxValueToPercent,
-} from "../../../util/helpers.ts";
 import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
 import FaderNumbers from "../FaderNumbers/FaderNumbers.tsx";
 import {
@@ -52,40 +48,20 @@ export default function FixtureOutputDetail({
 
   const fixtureTextStyles = `text-center text-lg font-extrabold `;
 
-  const isColorTempField = (
-    colorTempLowArg: number,
-    colorTempHighArg: number,
-    profileField: string,
-  ) =>
-    profileField.toLowerCase().includes("temp") &&
-    colorTempHighArg &&
-    colorTempLowArg;
-
-  // only handles color temp and intensity right now, needs to handle tint, plus more
-  const handleDifferentProfileFields = (
-    profileField: string,
+  const handleOutputValue = (
     details: Record<string, number>,
     previousDetails: Record<string, number>,
+    profileField: string,
   ) => {
-    const profileValue = details[profileField];
-    const previousValue = previousDetails[profileField] || 0;
-
-    if (isColorTempField(colorTempLow, colorTempHigh, profileField)) {
-      return percentageToColorTemperature(
-        convertDmxValueToPercent(profileValue),
-        colorTempLow,
-        colorTempHigh,
-      );
-    }
-
-    const start = percentageToIntensityLevel(
-      convertDmxValueToPercent(previousValue),
-    );
-    const end = percentageToIntensityLevel(
-      convertDmxValueToPercent(profileValue),
+    const detailProps = handleDifferentProfileFields(
+      profileField,
+      details,
+      previousDetails,
+      colorTempLow,
+      colorTempHigh,
     );
 
-    return <FaderNumbers start={start} end={end} duration={2000} />;
+    return <FaderNumbers {...detailProps} />;
   };
 
   const outputDetail = (
@@ -103,9 +79,7 @@ export default function FixtureOutputDetail({
           fixtureTextDetailStyles(styleOptions[profileField])
         }>
         {`${profileField}:`}
-        {details
-          ? handleDifferentProfileFields(profileField, details, previousDetails)
-          : ""}
+        {handleOutputValue(details, previousDetails, profileField)}
       </Text>
     </View>
   );

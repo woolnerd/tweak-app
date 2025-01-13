@@ -5,9 +5,15 @@ type FaderNumberProps = {
   start: number;
   end: number;
   duration: number;
+  displayString?: string;
 };
 
-const FaderNumbers = ({ start, end, duration }: FaderNumberProps) => {
+const FaderNumbers = ({
+  start,
+  end,
+  duration,
+  displayString = "",
+}: FaderNumberProps) => {
   const [displayValue, setDisplayValue] = useState(start);
 
   useEffect(() => {
@@ -48,7 +54,7 @@ const FaderNumbers = ({ start, end, duration }: FaderNumberProps) => {
     };
   }, [start, end, duration]);
 
-  return <Text testID="fader-number">{displayValue}%</Text>;
+  return <Text testID="fader-number"> {displayValue + displayString}</Text>;
 };
 
 export default FaderNumbers;

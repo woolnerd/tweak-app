@@ -36,8 +36,6 @@ export default function Fixture({
   const previousValues =
     previousManualFixtureStore[channel]?.values || dbValues;
 
-  // console.log({ dbValues }, { channel });
-
   const removeFixtureFromState = (fixtureChannel: number): void => {
     const dupe = new Set([...fixtureChannelSelectionStore]);
     dupe.delete(fixtureChannel);
@@ -66,13 +64,6 @@ export default function Fixture({
 
   const fixtureStyles = `bg-purple-800 w-52 h-52 border-4 rounded-lg m-2 ${fixtureSelectStyles}`;
 
-  // if (channel === 1) {
-  //   console.log("--------start render-------");
-
-  //   console.log("prev", previousValues);
-  //   console.log("cur_values", values);
-  //   console.log("--------end render-------");
-  // }
   return (
     <View
       key={fixtureAssignmentId}
