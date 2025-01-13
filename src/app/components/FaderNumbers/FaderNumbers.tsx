@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Text } from "react-native";
 
 type FaderNumberProps = {
   start: number;
@@ -8,43 +8,47 @@ type FaderNumberProps = {
 };
 
 const FaderNumbers = ({ start, end, duration }: FaderNumberProps) => {
-  const currentValueRef = useRef(start);
-  const [displayValue, setDisplayValue] = useState(start); // To trigger re-renders
-  // console.log("useFader", { start });
-  // console.log("useFader", { end });
+  const [displayValue, setDisplayValue] = useState(start);
 
   useEffect(() => {
-    const steps = 100; // Number of steps for smooth transition
-    const intervalTime = duration / steps; // Time per step
-    const increment =
-      end > start ? (end - start) / steps : (start - end) / steps; // Correctly handle both directions
+    if (duration === 0) {
+      setDisplayValue(end);
+      return;
+    }
 
-    let stepCount = 0;
+    let animationFrameId: number;
+    const startTime = Date.now();
 
-    const timer = setInterval(() => {
-      stepCount += 1;
-      if (end > start) {
-        currentValueRef.current += increment;
-      } else {
-        currentValueRef.current -= increment;
+    const animate = () => {
+      const elapsedTime = Date.now() - startTime;
+      const progress = Math.min(elapsedTime / duration, 1);
+
+      // Use easeInOutQuad easing function for smoother animation
+      const easeProgress =
+        progress < 0.5
+          ? 2 * progress * progress
+          : 1 - (-2 * progress + 2) ** 2 / 2;
+
+      const currentValue = Math.round(start + (end - start) * easeProgress);
+
+      setDisplayValue(currentValue);
+
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(animate);
       }
+    };
 
-      // Update state for UI
-      setDisplayValue(Math.round(currentValueRef.current));
+    animationFrameId = requestAnimationFrame(animate);
 
-      if (stepCount >= steps) {
-        clearInterval(timer); // Stop when steps are complete
-        currentValueRef.current = end; // Ensure the final value is precise
-        setDisplayValue(end); // Final UI update
-      }
-    }, intervalTime);
-
+    // eslint-disable-next-line consistent-return
     return () => {
-      clearInterval(timer); // Clean up timer on component unmount
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
     };
   }, [start, end, duration]);
 
-  return ` ${displayValue}%`;
+  return <Text testID="fader-number">{displayValue}%</Text>;
 };
 
 export default FaderNumbers;

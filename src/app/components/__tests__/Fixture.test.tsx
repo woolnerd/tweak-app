@@ -5,6 +5,7 @@ import {
   screen,
   waitFor,
   fireEvent,
+  act,
 } from "@testing-library/react-native";
 import "@testing-library/react-native/extend-expect";
 import React from "react";
@@ -177,7 +178,7 @@ describe("Fixture component", () => {
     expect(component).toHaveStyle({ borderLeftColor: "#eab308" });
   });
 
-  test("once manual values are entered in the ControlPanel, the details turn red", async () => {
+  test("once manual values are entered in the ControlPanel, the profile names turn red", async () => {
     render(
       <ErrorBoundary>
         <App />
