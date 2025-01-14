@@ -102,11 +102,20 @@ export default class CommandLineService {
 
   getValueDirective() {
     const directive = this.getDirectiveButtonEvent();
+
+    if (!directive) {
+      console.log("No directive");
+      return;
+    }
     this.valueDirective = directive.value;
   }
 
   getProfileTarget() {
     const directive = this.getDirectiveButtonEvent();
+    if (!directive) {
+      console.log("No directive");
+      return;
+    }
     this.profileTarget = directive.profileTarget;
   }
 
@@ -116,7 +125,11 @@ export default class CommandLineService {
     );
 
     if (!directive) {
-      throw new Error("Directive not found");
+      // throw new Error("Directive not found");
+      console.log(this.commandEvents);
+      this.buildSelectionArray();
+      console.log(this.selection);
+      return;
     }
 
     return directive as DirectActionButton;
@@ -175,7 +188,7 @@ export default class CommandLineService {
       id: `MergedKeyPadButton${idx}`,
       type: Buttons.KEYPAD_BUTTON,
       label: "",
-      styles: { color: "" },
+      styles: { background: "" },
     };
   }
 

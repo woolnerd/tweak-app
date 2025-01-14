@@ -46,6 +46,8 @@ export default class CommandLine {
   }
 
   process(data: ControlButton) {
+    console.log(data.label);
+
     const emptyAction: ActionObject = {
       directive: 0,
       selection: this.fixtureSelection,
@@ -63,8 +65,8 @@ export default class CommandLine {
     if (CommandLine.atSignPressed(data)) {
       console.log("not implemented");
 
-      // this.service = new CommandLineService(this.commandEvents.commands);
-      // return this.service.buildSelectionFeedback();
+      this.service = new CommandLineService(this.commandEvents.commands);
+      return this.service.buildSelectionFeedback();
     }
 
     if (this.clearPressed(data)) {

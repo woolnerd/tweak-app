@@ -45,6 +45,7 @@ export default function ControlPanel({
           new Set(commandLineAction.selection),
         );
       }
+
       setAction(commandLineAction);
     },
 
@@ -67,13 +68,7 @@ export default function ControlPanel({
       handleTouch(mockZeroButton);
       setGoToOut(false);
     }
-  }, [
-    action,
-    goToOut,
-    setGoToOut,
-    updateFixtureChannelSelectionStore,
-    handleTouch,
-  ]);
+  }, [goToOut, setGoToOut, handleTouch]);
 
   useEffect(() => {
     if (action?.directive === COMMAND.CLEAR) {
