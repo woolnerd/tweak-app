@@ -20,7 +20,7 @@ export enum COMMAND {
 interface BaseButton {
   id: string;
   label: string;
-  styles: { color: string };
+  styles: { background: string; font?: string };
 }
 
 export interface DirectActionButton extends BaseButton {

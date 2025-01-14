@@ -97,10 +97,10 @@ export default function ControlPanel({
       <View
         key={col.id}
         style={{
-          flex: 2,
+          flex: 1,
           flexGrow: 1,
-          justifyContent: "center",
-          alignItems: "center",
+          // justifyContent: "center",
+          // alignItems: "center",
         }}>
         {col.buttons.map((buttonData) => (
           <ControlPanelButton
