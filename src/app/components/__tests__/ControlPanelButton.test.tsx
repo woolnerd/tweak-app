@@ -44,7 +44,7 @@ describe("ControlPanelButton", () => {
     label: "2800",
     type: Buttons.DIRECT_ACTION_BUTTON,
     profileTarget: ProfileTarget.COLOR_TEMP,
-    styles: { color: "orange" },
+    styles: { background: "bg-orange-400", font: "text-white" },
   };
 
   beforeEach(() => {
@@ -75,11 +75,11 @@ describe("ControlPanelButton", () => {
     );
 
     const button = screen.getByRole("button");
-    const textNode = screen.getByText("2800");
+
     expect(button.props.accessibilityState.disabled).toBe(false);
-    expect(textNode.props.style).toMatchObject({
-      backgroundColor: "orange",
-    });
+    expect(button.props.style).toEqual(
+      expect.arrayContaining([{ backgroundColor: "#fb923c" }]),
+    );
   });
 
   test("should enable the button when no fixtures are selected", () => {
@@ -92,11 +92,10 @@ describe("ControlPanelButton", () => {
     );
 
     const button = screen.getByRole("button");
-    const textNode = screen.getByText("2800");
     expect(button.props.accessibilityState.disabled).toBe(false);
-    expect(textNode.props.style).toMatchObject({
-      backgroundColor: "orange",
-    });
+    expect(button.props.style).toEqual(
+      expect.arrayContaining([{ backgroundColor: "#fb923c" }]),
+    );
   });
 
   test("should disable the button if the selected fixture has incompatible color temperature", () => {
@@ -112,7 +111,9 @@ describe("ControlPanelButton", () => {
 
     const button = screen.getByRole("button");
     expect(button.props.accessibilityState.disabled).toBe(true);
-    expect(button.props.style).toMatchObject({ backgroundColor: "gray" });
+    expect(button.props.style).toEqual(
+      expect.arrayContaining([{ backgroundColor: "#4b5563" }]),
+    );
   });
 
   test("should call handleTouch when button is pressed and enabled", () => {
