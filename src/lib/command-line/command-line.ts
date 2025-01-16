@@ -4,6 +4,7 @@ import CommandLineStack from "./command-line-stack.ts";
 import { ActionObject } from "./types/command-line-types.ts";
 import {
   Buttons,
+  COMMAND_NUMERIC,
   COMMAND,
   ControlButton,
   ProfileTarget,
@@ -18,6 +19,8 @@ export default class CommandLine {
   private errors: CommandLineErrorHandler;
 
   private service: CommandLineService;
+
+  private waitingForValueLevels = false;
 
   fixtureSelection: number[];
 
@@ -34,9 +37,11 @@ export default class CommandLine {
       CommandLine.instance = new CommandLine();
     }
     CommandLine.instance.fixtureSelection = fixtureSelection;
+
     return CommandLine.instance;
   }
 
+  // not implemented
   displayErrors(): string[] {
     return this.errors.errors;
   }
@@ -48,49 +53,67 @@ export default class CommandLine {
   process(data: ControlButton) {
     console.log(data.label);
 
-    const emptyAction: ActionObject = {
-      directive: 0,
-      selection: this.fixtureSelection,
-      profileTarget: ProfileTarget.EMPTY,
-      complete: false,
-    };
-
+    // push latest button data onto command stack
     this.commandEvents.add(data);
-    console.log(this.commandEvents.commands);
 
+    // bypass further setup if button is type direct action
     if (data.type === Buttons.DIRECT_ACTION_BUTTON) {
       return this.actionProc();
     }
 
-    if (CommandLine.atSignPressed(data)) {
-      console.log("not implemented");
-
-      this.service = new CommandLineService(this.commandEvents.commands);
-      return this.service.buildSelectionFeedback();
-    }
-
+    // clears out selection
     if (this.clearPressed(data)) {
       console.log("Cleared");
       this.clearCommands();
       return {
         complete: false,
-        directive: COMMAND.CLEAR,
+        directive: COMMAND_NUMERIC.CLEAR,
         profileTarget: ProfileTarget.EMPTY,
         selection: [],
       };
     }
 
-    if (CommandLine.enterPressed(data)) {
-      this.commandEvents.clearLast();
-
-      if (this.commandLineEmpty()) {
-        console.log("Command Line is Empty");
-        return emptyAction;
-      }
-
-      this.actionProc();
+    // once the "@" sign is pressed we want to await a value string like "55" or "3200"
+    if (CommandLine.atSignPressed(data)) {
+      this.waitingForValueLevels = true;
     }
-    return emptyAction;
+
+    console.log(this.waitingForValueLevels, "waiting");
+    console.log(this.hasFixtureSelection(), "has selection");
+
+    if (this.waitingForValueLevels && CommandLine.enterPressed(data)) {
+      console.log("all two mets");
+
+      // this.actionProc();
+      this.service = new CommandLineService(
+        this.commandEvents.commands,
+        // this.fixtureSelection,
+      );
+      this.service.process();
+      const action = this.sendAction();
+      // this.clearCommands();
+      // this.commandEvents = new CommandLineStack();
+      return action;
+    }
+
+    if (this.waitingForValueLevels || CommandLine.enterPressed(data)) {
+      // instantiate CommandLineService with latest command stack
+      this.service = new CommandLineService(this.commandEvents.commands);
+      return this.service.buildSelectionFeedback();
+    }
+
+    // if (CommandLine.enterPressed(data)) {
+    //   this.commandEvents.clearLast();
+
+    //   if (this.commandLineEmpty()) {
+    //     console.log("Command Line is Empty");
+    //     return emptyAction;
+    //   }
+
+    //   this.actionProc();
+    // }
+
+    return this.emptyAction();
   }
 
   actionProc() {
@@ -106,16 +129,16 @@ export default class CommandLine {
   }
 
   static enterPressed(data: ControlButton) {
-    return data.label.toLowerCase() === "confirm";
+    return data.label.toLowerCase() === COMMAND.CONFIRM;
   }
 
   clearPressed(data: ControlButton) {
     this.fixtureSelection = [];
-    return data.label.toLowerCase() === "clear";
+    return data.label.toLowerCase() === COMMAND.CLEAR;
   }
 
   static atSignPressed(data: ControlButton) {
-    return data.label.toLowerCase() === "@";
+    return data.label.toLowerCase() === COMMAND.AT_SIGN;
   }
 
   commandLineEmpty() {
@@ -124,5 +147,25 @@ export default class CommandLine {
 
   clearCommands() {
     this.commandEvents = new CommandLineStack();
+    this.waitingForValueLevels = false;
+  }
+
+  allButtonsAreKeypad() {
+    return this.commandEvents.commands.every(
+      (command) => command.type !== Buttons.DIRECT_ACTION_BUTTON,
+    );
+  }
+
+  hasFixtureSelection() {
+    return this.fixtureSelection.length > 0;
+  }
+
+  emptyAction(): ActionObject {
+    return {
+      directive: COMMAND_NUMERIC.EMPTY,
+      selection: this.fixtureSelection,
+      profileTarget: ProfileTarget.EMPTY,
+      complete: false,
+    };
   }
 }

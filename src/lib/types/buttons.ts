@@ -13,8 +13,15 @@ export enum ProfileTarget {
   EMPTY = "",
 }
 
-export enum COMMAND {
+export enum COMMAND_NUMERIC {
   CLEAR = 999,
+  EMPTY = 0,
+}
+
+export enum COMMAND {
+  CLEAR = "clear",
+  AT_SIGN = "@",
+  CONFIRM = "confirm",
 }
 
 interface BaseButton {

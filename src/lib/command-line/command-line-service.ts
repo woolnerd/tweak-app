@@ -5,6 +5,7 @@ import ProfileAdapter from "../adapters/profile-adapter.ts";
 import HistoryStack from "../history-stack.ts";
 import {
   Buttons,
+  COMMAND,
   ControlButton,
   DirectActionButton,
   KeyPadButton,
@@ -36,8 +37,8 @@ export default class CommandLineService {
     } else {
       this.buildSelectionArray();
     }
-    this.getValueDirective();
     this.getProfileTarget();
+    this.getValueDirective();
   }
 
   process() {
@@ -45,6 +46,10 @@ export default class CommandLineService {
   }
 
   buildAction(): void {
+    if (!this.valueDirective) {
+      this.getValueDirective();
+    }
+
     this.action = {
       selection: this.selection,
       directive: this.valueDirective,
@@ -53,6 +58,7 @@ export default class CommandLineService {
     };
   }
 
+  // does not change output levels, only effects fixture selection
   buildSelectionFeedback(): ActionObject {
     return {
       selection: this.selection,
@@ -83,10 +89,14 @@ export default class CommandLineService {
   }
 
   private buildSelectionArray() {
-    // ["Chan", "1", "thru", "10", "+", "20", "@", "3200"];
+    // "Channel" is default, allow "Group" and future categories
+    // ["1", "thru", "10", "+", "20", "@", "3200"];
     this.selection = this.getRangeAndAddAdditionals();
+    console.log("here", this.selection);
   }
 
+  // Then "thru" button pressed, selects items in a range.
+  // "1", "thru", "3" --> [1,2,3]
   getRange() {
     const labelArray = this.buildCommandArray();
     const index = labelArray.indexOf("thru"); // handles one 'thru' for now
@@ -101,10 +111,24 @@ export default class CommandLineService {
   }
 
   getValueDirective() {
-    const directive = this.getDirectiveButtonEvent();
+    let directive = this.getDirectiveButtonEvent();
 
     if (!directive) {
-      console.log("No directive");
+      if (this.profileTarget === ProfileTarget.DIMMER) {
+        directive = {
+          value: parseInt(
+            this.getKeypadValues()
+              .slice(this.getKeypadValues().length - 2)
+              .join(""),
+            10,
+          ),
+        };
+        this.valueDirective = directive?.value;
+
+        console.log({ directive });
+      } else {
+        console.log("From getValueDirective No directive");
+      }
       return;
     }
     this.valueDirective = directive.value;
@@ -113,7 +137,11 @@ export default class CommandLineService {
   getProfileTarget() {
     const directive = this.getDirectiveButtonEvent();
     if (!directive) {
-      console.log("No directive");
+      // TODO default profile target to dimmer
+      // TODO allow selection of color temp and tint
+      console.log("Default to Dimmer");
+      this.profileTarget = ProfileTarget.DIMMER;
+
       return;
     }
     this.profileTarget = directive.profileTarget;
@@ -125,11 +153,8 @@ export default class CommandLineService {
     );
 
     if (!directive) {
-      // throw new Error("Directive not found");
-      console.log(this.commandEvents);
-      this.buildSelectionArray();
-      console.log(this.selection);
-      return;
+      console.log("No direct action button");
+      return null;
     }
 
     return directive as DirectActionButton;
@@ -155,6 +180,8 @@ export default class CommandLineService {
         buildingRange.push(parseInt(labelArray[idx + 1], 10));
       }
     });
+    console.log({ buildingRange });
+
     return buildingRange;
   }
 
@@ -180,6 +207,8 @@ export default class CommandLineService {
       }
     });
 
+    console.log({ result });
+
     return result;
   }
 
@@ -198,5 +227,28 @@ export default class CommandLineService {
         (entry) => entry.type === Buttons.KEYPAD_BUTTON,
       ).length === 1
     );
+  }
+
+  // check if @ was pressed
+  // take all KEYPAD entries after it, and join together
+  // check if profile target is dimmer, then limit to 100 or less
+
+  indexOfAtPress() {
+    return this.commandEvents.findLastIndex(
+      (btnPress) => btnPress.label === COMMAND.AT_SIGN,
+    );
+  }
+
+  getKeypadValues() {
+    if (this.indexOfAtPress() === -1) {
+      return [];
+    }
+
+    const atSignIdx = this.indexOfAtPress();
+
+    return this.commandEvents
+      .slice(atSignIdx)
+      .filter((btn) => btn.type === Buttons.KEYPAD_BUTTON)
+      .map((keypadBtn) => parseInt(keypadBtn.label, 10));
   }
 }

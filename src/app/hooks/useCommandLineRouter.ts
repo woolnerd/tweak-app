@@ -39,7 +39,7 @@ export default function useCommandLineRouter(action: ActionObject | null) {
     if (action !== null && action.complete) {
       const { selection } = action;
 
-      // when selecting channels, and pressing "@", the profile target will be empty
+      // when selecting channels with control buttons, and pressing "@", the profile target will be empty
       // but a selection is made
       if (action.profileTarget === ProfileTarget.EMPTY) {
         updateFixtureChannelSelectionStore(new Set(selection));

@@ -12,13 +12,13 @@ describe("CommandLineService", () => {
         type: Buttons.KEYPAD_BUTTON,
         id: "",
         label: "1",
-        styles: { color: "red" },
+        styles: { background: "red" },
       },
       {
         type: Buttons.KEYPAD_BUTTON,
         id: "",
         label: "@",
-        styles: { color: "red" },
+        styles: { background: "red" },
       },
       {
         type: Buttons.DIRECT_ACTION_BUTTON,
@@ -26,7 +26,7 @@ describe("CommandLineService", () => {
         profileTarget: ProfileTarget.DIMMER,
         id: "",
         label: "50%",
-        styles: { color: "red" },
+        styles: { background: "red" },
       },
     ];
     commandLineService = new CommandLineService(commmandLineEvents);

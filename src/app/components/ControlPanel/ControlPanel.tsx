@@ -8,7 +8,7 @@ import {
   ControlButton,
   ProfileTarget,
   Buttons,
-  COMMAND,
+  COMMAND_NUMERIC,
 } from "../../../lib/types/buttons.ts";
 import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import useCommandLineRouter from "../../hooks/useCommandLineRouter.ts";
@@ -71,7 +71,7 @@ export default function ControlPanel({
   }, [goToOut, setGoToOut, handleTouch]);
 
   useEffect(() => {
-    if (action?.directive === COMMAND.CLEAR) {
+    if (action?.directive === COMMAND_NUMERIC.CLEAR) {
       updateFixtureChannelSelectionStore(new Set());
       updateManualFixturesStore([]);
       setLoadFixtures(true);
