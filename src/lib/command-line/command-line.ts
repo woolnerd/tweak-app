@@ -51,7 +51,12 @@ export default class CommandLine {
   }
 
   process(data: ControlButton) {
-    console.log(data.label);
+    const clearAction = {
+      complete: false,
+      directive: COMMAND_NUMERIC.CLEAR,
+      profileTarget: ProfileTarget.EMPTY,
+      selection: [],
+    };
 
     // push latest button data onto command stack
     this.commandEvents.add(data);
@@ -65,53 +70,21 @@ export default class CommandLine {
     if (this.clearPressed(data)) {
       console.log("Cleared");
       this.clearCommands();
-      return {
-        complete: false,
-        directive: COMMAND_NUMERIC.CLEAR,
-        profileTarget: ProfileTarget.EMPTY,
-        selection: [],
-      };
+      return clearAction;
     }
 
-    // once the "@" sign is pressed we want to await a value string like "55" or "3200"
-    if (CommandLine.atSignPressed(data)) {
-      this.waitingForValueLevels = true;
+    this.atSignPressed(data);
+
+    // "@" button has been pressed, we are awaiting a string of KEYPAD input ie ["5", "0"], for 50%
+    if (this.waitingForValueLevels && CommandLine.confirmPressed(data)) {
+      return this.actionProcForValueInput();
     }
 
-    console.log(this.waitingForValueLevels, "waiting");
-    console.log(this.hasFixtureSelection(), "has selection");
-
-    if (this.waitingForValueLevels && CommandLine.enterPressed(data)) {
-      console.log("all two mets");
-
-      // this.actionProc();
-      this.service = new CommandLineService(
-        this.commandEvents.commands,
-        // this.fixtureSelection,
-      );
-      this.service.process();
-      const action = this.sendAction();
-      // this.clearCommands();
-      // this.commandEvents = new CommandLineStack();
-      return action;
-    }
-
-    if (this.waitingForValueLevels || CommandLine.enterPressed(data)) {
-      // instantiate CommandLineService with latest command stack
+    // instantiate CommandLineService with latest command stack
+    if (this.waitingForValueLevels || CommandLine.confirmPressed(data)) {
       this.service = new CommandLineService(this.commandEvents.commands);
       return this.service.buildSelectionFeedback();
     }
-
-    // if (CommandLine.enterPressed(data)) {
-    //   this.commandEvents.clearLast();
-
-    //   if (this.commandLineEmpty()) {
-    //     console.log("Command Line is Empty");
-    //     return emptyAction;
-    //   }
-
-    //   this.actionProc();
-    // }
 
     return this.emptyAction();
   }
@@ -128,7 +101,14 @@ export default class CommandLine {
     return action;
   }
 
-  static enterPressed(data: ControlButton) {
+  actionProcForValueInput() {
+    this.service = new CommandLineService(this.commandEvents.commands);
+    this.service.process();
+    const action = this.sendAction();
+    return action;
+  }
+
+  static confirmPressed(data: ControlButton) {
     return data.label.toLowerCase() === COMMAND.CONFIRM;
   }
 
@@ -137,8 +117,13 @@ export default class CommandLine {
     return data.label.toLowerCase() === COMMAND.CLEAR;
   }
 
-  static atSignPressed(data: ControlButton) {
-    return data.label.toLowerCase() === COMMAND.AT_SIGN;
+  // sets a flag once the "@" sign is pressed we want to await a value string like "55" or "3200"
+  atSignPressed(data: ControlButton) {
+    if (data.label.toLowerCase() === COMMAND.AT_SIGN) {
+      this.waitingForValueLevels = true;
+      return true;
+    }
+    return false;
   }
 
   commandLineEmpty() {
