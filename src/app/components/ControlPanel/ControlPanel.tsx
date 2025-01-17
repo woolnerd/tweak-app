@@ -56,12 +56,12 @@ export default function ControlPanel({
 
   useEffect(() => {
     if (goToOut) {
-      const mockZeroButton = {
+      const mockZeroButton: ControlButton = {
         id: "button13",
         type: Buttons.DIRECT_ACTION_BUTTON,
         label: "0%",
         value: 0,
-        styles: { color: "red" },
+        styles: { background: "red" },
         profileTarget: ProfileTarget.DIMMER,
       };
 

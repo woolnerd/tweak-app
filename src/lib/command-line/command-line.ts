@@ -73,7 +73,9 @@ export default class CommandLine {
       return clearAction;
     }
 
-    this.atSignPressed(data);
+    if (CommandLine.atSignPressed(data)) {
+      this.setAtSignFlag();
+    }
 
     // "@" button has been pressed, we are awaiting a string of KEYPAD input ie ["5", "0"], for 50%
     if (this.waitingForValueLevels && CommandLine.confirmPressed(data)) {
@@ -118,12 +120,12 @@ export default class CommandLine {
   }
 
   // sets a flag once the "@" sign is pressed we want to await a value string like "55" or "3200"
-  atSignPressed(data: ControlButton) {
-    if (data.label.toLowerCase() === COMMAND.AT_SIGN) {
-      this.waitingForValueLevels = true;
-      return true;
-    }
-    return false;
+  static atSignPressed(data: ControlButton) {
+    return data.label.toLowerCase() === COMMAND.AT_SIGN;
+  }
+
+  setAtSignFlag() {
+    this.waitingForValueLevels = true;
   }
 
   commandLineEmpty() {

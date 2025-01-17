@@ -39,21 +39,8 @@ describe("CommandLineService", () => {
     commandLineService.errors = [];
   });
 
-  test("test_buildAction_assigns_ActionObject", () => {
+  test("buildAction assigns ActionObject", () => {
     // commandLineService.buildAction();
     // expect(commandLineService.action).toBeDefined();
   });
-
-  // test("test_checkUndoEvent_identifies_undo", () => {
-  //   // commandLineService.commandEvents = comandLineEvents;
-  //   const hasUndo = commandLineService.checkUndoEvent();
-  //   expect(hasUndo).toBe(true);
-  // });
-
-  // test("test_addToHistory_adds_commandEvents_to_history", () => {
-  //   const spyAdd = jest.spyOn(commandLineService.history, "add");
-  //   commandLineService.commandEvents = ["event1", "event2"];
-  //   commandLineService.addToHistory();
-  //   expect(spyAdd).toHaveBeenCalledWith(["event1", "event2"]);
-  // });
 });

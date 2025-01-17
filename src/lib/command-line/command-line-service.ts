@@ -8,6 +8,7 @@ import {
   COMMAND,
   ControlButton,
   DirectActionButton,
+  ComposedValueButton,
   KeyPadButton,
   ProfileTarget,
 } from "../types/buttons.ts";
@@ -68,7 +69,8 @@ export default class CommandLineService {
     };
   }
 
-  checkUndoEvent(): boolean {
+  // not implemented
+  private checkUndoEvent(): boolean {
     return (
       this.commandEvents.filter((event) =>
         event.label.toLowerCase().match("undo"),
@@ -76,11 +78,8 @@ export default class CommandLineService {
     );
   }
 
-  // adaptProfile(): void {
-  // this.profileAdapter.parse();
-  // }
-
-  addToHistory(): void {
+  // not implemented
+  private addToHistory(): void {
     this.history.add(this.commandEvents);
   }
 
@@ -88,18 +87,17 @@ export default class CommandLineService {
     return this.concatKeyPadEntries().map((event) => event.label.toLowerCase());
   }
 
+  // "Channel" is default, allow "Group" and future categories
+  // ["1", "thru", "10", "+", "20", "@", "3200"];
   private buildSelectionArray() {
-    // "Channel" is default, allow "Group" and future categories
-    // ["1", "thru", "10", "+", "20", "@", "3200"];
     this.selection = this.getRangeAndAddAdditionals();
-    console.log("here", this.selection);
   }
 
   // Then "thru" button pressed, selects items in a range.
   // "1", "thru", "3" --> [1,2,3]
-  getRange() {
+  private getRange() {
     const labelArray = this.buildCommandArray();
-    const index = labelArray.indexOf("thru"); // handles one 'thru' for now
+    const index = labelArray.indexOf("thru"); // handles one instnace of 'thru' press for now
 
     if (index === -1) {
       return -1;
@@ -110,36 +108,32 @@ export default class CommandLineService {
     );
   }
 
-  getValueDirective() {
-    let directive = this.getDirectiveButtonEvent();
+  // Concats value inputs for setting a level, ie not DirectAction
+  private buildValueFromKeypadInput() {
+    return parseInt(this.getKeypadValues().join(""), 10);
+  }
+
+  private getValueDirective() {
+    let directive: DirectActionButton | ComposedValueButton | null =
+      this.getDirectiveButtonEvent();
 
     if (!directive) {
-      if (this.profileTarget === ProfileTarget.DIMMER) {
-        directive = {
-          value: parseInt(
-            this.getKeypadValues()
-              .slice(this.getKeypadValues().length - 2)
-              .join(""),
-            10,
-          ),
-        };
-        this.valueDirective = directive?.value;
-
-        console.log({ directive });
-      } else {
-        console.log("From getValueDirective No directive");
-      }
-      return;
+      directive = this.buildValueDirectiveFromInputs();
     }
+
+    console.log({ directive }); // will need to show input values in UI eventually
     this.valueDirective = directive.value;
   }
 
-  getProfileTarget() {
+  private getProfileTarget() {
     const directive = this.getDirectiveButtonEvent();
+
     if (!directive) {
-      // TODO default profile target to dimmer
-      // TODO allow selection of color temp and tint
-      console.log("Default to Dimmer");
+      const button = this.getProfileTargetWithoutDirectPress();
+      if (button?.label.toLowerCase() === "color temp") {
+        this.profileTarget = ProfileTarget.COLOR_TEMP;
+      }
+
       this.profileTarget = ProfileTarget.DIMMER;
 
       return;
@@ -147,20 +141,15 @@ export default class CommandLineService {
     this.profileTarget = directive.profileTarget;
   }
 
-  getDirectiveButtonEvent() {
+  private getDirectiveButtonEvent() {
     const directive = this.commandEvents.find(
       (event) => event.type === Buttons.DIRECT_ACTION_BUTTON,
     );
 
-    if (!directive) {
-      console.log("No direct action button");
-      return null;
-    }
-
-    return directive as DirectActionButton;
+    return directive ?? null;
   }
 
-  getRangeAndAddAdditionals() {
+  private getRangeAndAddAdditionals() {
     if (this.oneChannelSelection()) {
       return [parseInt(this.buildCommandArray()[0], 10)];
     }
@@ -185,7 +174,7 @@ export default class CommandLineService {
     return buildingRange;
   }
 
-  concatKeyPadEntries() {
+  private concatKeyPadEntries() {
     let btnIdx = 1;
     let dummyBtn: KeyPadButton = CommandLineService.makeDummyButton(btnIdx);
 
@@ -221,7 +210,7 @@ export default class CommandLineService {
     };
   }
 
-  oneChannelSelection() {
+  private oneChannelSelection() {
     return (
       this.concatKeyPadEntries().filter(
         (entry) => entry.type === Buttons.KEYPAD_BUTTON,
@@ -229,17 +218,13 @@ export default class CommandLineService {
     );
   }
 
-  // check if @ was pressed
-  // take all KEYPAD entries after it, and join together
-  // check if profile target is dimmer, then limit to 100 or less
-
-  indexOfAtPress() {
+  private indexOfAtPress() {
     return this.commandEvents.findLastIndex(
       (btnPress) => btnPress.label === COMMAND.AT_SIGN,
     );
   }
 
-  getKeypadValues() {
+  private getKeypadValues() {
     if (this.indexOfAtPress() === -1) {
       return [];
     }
@@ -250,5 +235,22 @@ export default class CommandLineService {
       .slice(atSignIdx)
       .filter((btn) => btn.type === Buttons.KEYPAD_BUTTON)
       .map((keypadBtn) => parseInt(keypadBtn.label, 10));
+  }
+
+  private getProfileTargetWithoutDirectPress() {
+    return this.commandEvents.findLast(
+      (btn) => btn.type === Buttons.COMMAND_BUTTON,
+    );
+  }
+
+  private buildValueDirectiveFromInputs(): ComposedValueButton {
+    return {
+      type: Buttons.COMPOSED_VALUE_BUTTON,
+      value: this.buildValueFromKeypadInput(),
+      profileTarget: this.profileTarget,
+      label: Buttons.COMPOSED_VALUE_BUTTON,
+      id: Buttons.COMPOSED_VALUE_BUTTON,
+      styles: { background: "" },
+    };
   }
 }
