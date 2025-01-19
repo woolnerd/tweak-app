@@ -1,27 +1,8 @@
-/* eslint-disable import/prefer-default-export */
-
-import {
-  getManualFixtureKeys,
-  getAllFixturesFromSceneKeys,
-} from "./fixture-cache.ts";
 import {
   ParsedCompositeFixtureInfo,
   AddressTuples,
 } from "../models/types/scene-to-fixture-assignment.ts";
 
-type FetchCallback = () => Promise<ParsedCompositeFixtureInfo[]>;
-
-type SetCallback = (compositeFixtures: ParsedCompositeFixtureInfo[]) => void;
-
-/**
- *
- * @param resultValueArray
- * @param tupleArray
- * @param compute16bitVal
- * @param channel
- * @param dmxVal
- * @param valuesArray
- */
 function choose8bitOrBuildValueTupleFor16btest(
   resultValueArray: number[][],
   tupleArray: number[][],
@@ -48,12 +29,6 @@ function choose8bitOrBuildValueTupleFor16btest(
   }
 }
 
-/**
- *
- * @param channelPairs16Bit
- * @param values
- * @returns
- */
 export function merge16BitValues(
   channelPairs16Bit: ParsedCompositeFixtureInfo["channelPairs16Bit"],
   values: ParsedCompositeFixtureInfo["values"],
@@ -77,11 +52,6 @@ export function merge16BitValues(
   return newValues;
 }
 
-/**
- *
- * @param num
- * @returns
- */
 function dynamicRound(num: number) {
   const decimalPart = num - Math.floor(num);
 
@@ -95,7 +65,7 @@ function dynamicRound(num: number) {
  * Handles 8-bit and 16-bit values and converts 0-100
  * @param val
  * @param rounding
- * @returns
+ * @returns Percentage value
  */
 export function convertDmxValueToPercent(
   val: number,
@@ -113,7 +83,7 @@ export function convertDmxValueToPercent(
  * @param percentage
  * @param lowTemp
  * @param highTemp
- * @returns
+ * @returns Color temp value. Example: 3400, 5600
  */
 export function percentageToColorTemperature(
   percentage: number,
@@ -129,58 +99,10 @@ export function percentageToColorTemperature(
 }
 
 /**
- *
+ * Converts an intensity level to a rounded percentage
  * @param percentage
- * @returns
+ * @returns integer
  */
 export function percentageToIntensityLevel(percentage: number) {
   return Math.round(percentage);
-}
-
-//* Not implemented -- remove?
-export function mergeTupleArrays(
-  dbStateArray: number[][],
-  manualStateArray: number[][],
-) {
-  return dbStateArray.map(([dbStateFirst, dbStateSecond]) => {
-    const matchingTuple = manualStateArray.find(
-      ([manualFirst]) => manualFirst === dbStateFirst,
-    );
-    return matchingTuple || [dbStateFirst, dbStateSecond];
-  });
-}
-
-// * Not implemented. Add cache work in the future.
-export async function mergeCacheWithDBFixtures(
-  selectedSceneId: number,
-  fetchCallback: FetchCallback,
-  setCallback: SetCallback,
-) {
-  try {
-    const keys = await getManualFixtureKeys();
-    if (keys) {
-      const cachedFixtures = await getAllFixturesFromSceneKeys(
-        keys,
-        selectedSceneId,
-      );
-
-      const dbFixtures = await fetchCallback();
-
-      if (cachedFixtures instanceof Array && dbFixtures instanceof Array) {
-        setCallback(
-          [...cachedFixtures, ...dbFixtures].sort(
-            // sort by id, later use X,Y for draggable interface
-            (a, b) => a.channel - b.channel,
-          ),
-        );
-      } else {
-        throw new Error();
-      }
-
-      return;
-    }
-    throw new Error("Something went wrong");
-  } catch (err) {
-    console.log(err);
-  }
 }

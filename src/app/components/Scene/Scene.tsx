@@ -8,7 +8,7 @@ import {
   TextInputSubmitEditingEventData,
 } from "react-native";
 
-import { batchUpdateFixtureValuesInScene } from "./helpers.ts";
+import batchUpdateFixtureValuesInScene from "./helpers.ts";
 import { db } from "../../../db/client.ts";
 import SceneModel from "../../../models/scene.ts";
 import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
