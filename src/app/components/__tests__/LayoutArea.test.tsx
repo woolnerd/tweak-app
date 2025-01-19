@@ -4,7 +4,6 @@ import { render, screen, waitFor } from "@testing-library/react-native";
 import React from "react";
 import ErrorBoundary from "react-native-error-boundary";
 
-jest.mock("../../../util/fixture-cache.ts");
 jest.mock("../../../db/client.ts");
 jest.mock("../../store/useCompositeFixtureStore.ts");
 jest.mock("../../store/useFixtureChannelSelectionStore.ts");
