@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { openDatabaseSync } from "expo-sqlite/next";
 import { cloneDeep, isEqual } from "lodash";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { View, Text, Pressable } from "react-native";
 import ErrorBoundary from "react-native-error-boundary";
 
@@ -96,7 +96,7 @@ function App() {
       .catch((err) => console.log(err));
   }, [reloadScenes]);
 
-  const handleGoToOut = () => {
+  const handleGoToOut = useCallback(() => {
     const tempSet = new Set<number>();
     compositeFixturesStore
       .map((fixture) => fixture.channel)
@@ -104,7 +104,7 @@ function App() {
 
     setGoToOut(true);
     updateFixtureChannelSelectionStore(tempSet);
-  };
+  }, [setGoToOut, updateFixtureChannelSelectionStore, compositeFixturesStore]);
 
   const bigButtonStyles =
     "border-blue-700 min-h-16 min-w-16 m-4 border-2 rounded-md h-20";

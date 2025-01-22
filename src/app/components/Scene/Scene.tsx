@@ -4,7 +4,6 @@ import {
   Pressable,
   Text,
   TextInput,
-  StyleSheet,
   NativeSyntheticEvent,
   TextInputSubmitEditingEventData,
 } from "react-native";
@@ -86,9 +85,9 @@ export const Scene = ({
   const handleTextLabel = (text: string) => setNewLabelText(text);
 
   const handleLabelBorder = () => {
-    if (pressLong) return "#cba601";
+    if (pressLong) return "border-yellow-600";
 
-    return selectedSceneId === id ? "#cb09f1" : "#9806b5";
+    return selectedSceneId === id ? "border-purple-600" : "border-purple-900";
   };
 
   const handleEnterBtn = (
@@ -105,46 +104,43 @@ export const Scene = ({
     updateManualFixturesStore([]);
   };
 
+  const recStyles = `active:bg-red-600 border-2 mr-1 text-white text-center min-w-[60px] min-h-[40px] p-1 rounded-md ${selectedSceneId === id ? "border-red-600" : "border-red-900"}`;
+  const sceneCtrlStyles = "flex-row flex-2 h-11 mt-2 mb-2 ml-1 justify-evenly";
+  const sceneStyle = `active:bg-blue-600 border-purple-500 border-2 h-full min-w-[130px] rounded-md ${handleLabelBorder()}`;
+  const textStyle = "text-white text-center text-xs m-auto";
+
   return (
-    <View style={{ flex: 2, flexDirection: "row", ...styles.sceneCtrl }}>
+    <View className={sceneCtrlStyles}>
       <Pressable
         testID="rec-btn"
-        style={{
-          ...styles.rec,
-          borderColor: selectedSceneId === id ? "#df010f" : "#82000a",
-        }}
+        className={recStyles}
         onPress={handleRecPress}
         disabled={selectedSceneId !== id}>
-        <Text style={styles.btnText} testID="rec-text">
+        <Text className={textStyle} testID="rec-text">
           REC
         </Text>
       </Pressable>
       <View
-        style={{
-          backgroundColor: selectedSceneId === id ? "blue" : "#000",
-        }}>
+        className={`${selectedSceneId === id ? "bg-blue-800" : "bg-black"}`}>
         <Pressable
-          style={{
-            ...styles.scene,
-            borderColor: handleLabelBorder(),
-          }}
+          className={sceneStyle}
           onPress={handleSceneChange}
           onLongPress={handleLabelScene}
           testID="label-btn">
           {pressLong ? (
             <TextInput
-              style={styles.btnText}
+              className={textStyle}
               onChangeText={handleTextLabel}
               value={newLabelText}
               placeholder="New Label"
-              placeholderTextColor={styles.btnText.color}
+              placeholderTextColor="#fff"
               keyboardType="numeric"
               onSubmitEditing={handleEnterBtn}
               autoFocus
               testID="input-label"
             />
           ) : (
-            <Text style={styles.btnText} testID="text-label">
+            <Text className={textStyle} testID="text-label">
               {name}
             </Text>
           )}
@@ -153,40 +149,3 @@ export const Scene = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  scene: {
-    borderColor: "purple",
-    borderWidth: 2,
-    height: "100%",
-    minWidth: 130,
-    borderRadius: 4,
-  },
-
-  rec: {
-    borderColor: "red",
-    borderWidth: 2,
-    marginRight: 4,
-    color: "#fff",
-    textAlign: "center",
-    minWidth: 60,
-    minHeight: 40,
-    padding: 4,
-    borderRadius: 4,
-  },
-
-  sceneCtrl: {
-    minHeight: 40,
-    marginTop: 8,
-    marginBottom: 8,
-    marginLeft: 4,
-    justifyContent: "space-evenly",
-  },
-
-  btnText: {
-    color: "#fff",
-    textAlign: "center",
-    fontSize: 12,
-    margin: "auto",
-  },
-});

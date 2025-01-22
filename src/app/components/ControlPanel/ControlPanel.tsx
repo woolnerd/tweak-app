@@ -8,7 +8,7 @@ import {
   ControlButton,
   ProfileTarget,
   Buttons,
-  COMMAND,
+  COMMAND_NUMERIC,
 } from "../../../lib/types/buttons.ts";
 import { ParsedCompositeFixtureInfo } from "../../../models/types/scene-to-fixture-assignment.ts";
 import useCommandLineRouter from "../../hooks/useCommandLineRouter.ts";
@@ -45,6 +45,7 @@ export default function ControlPanel({
           new Set(commandLineAction.selection),
         );
       }
+
       setAction(commandLineAction);
     },
 
@@ -55,28 +56,22 @@ export default function ControlPanel({
 
   useEffect(() => {
     if (goToOut) {
-      const mockZeroButton = {
+      const mockZeroButton: ControlButton = {
         id: "button13",
         type: Buttons.DIRECT_ACTION_BUTTON,
         label: "0%",
         value: 0,
-        styles: { color: "red" },
+        styles: { background: "red" },
         profileTarget: ProfileTarget.DIMMER,
       };
 
       handleTouch(mockZeroButton);
       setGoToOut(false);
     }
-  }, [
-    action,
-    goToOut,
-    setGoToOut,
-    updateFixtureChannelSelectionStore,
-    handleTouch,
-  ]);
+  }, [goToOut, setGoToOut, handleTouch]);
 
   useEffect(() => {
-    if (action?.directive === COMMAND.CLEAR) {
+    if (action?.directive === COMMAND_NUMERIC.CLEAR) {
       updateFixtureChannelSelectionStore(new Set());
       updateManualFixturesStore([]);
       setLoadFixtures(true);
@@ -97,10 +92,10 @@ export default function ControlPanel({
       <View
         key={col.id}
         style={{
-          flex: 2,
+          flex: 1,
           flexGrow: 1,
-          justifyContent: "center",
-          alignItems: "center",
+          // justifyContent: "center",
+          // alignItems: "center",
         }}>
         {col.buttons.map((buttonData) => (
           <ControlPanelButton

@@ -5,8 +5,10 @@ import ProfileAdapter from "../adapters/profile-adapter.ts";
 import HistoryStack from "../history-stack.ts";
 import {
   Buttons,
+  COMMAND,
   ControlButton,
   DirectActionButton,
+  ComposedValueButton,
   KeyPadButton,
   ProfileTarget,
 } from "../types/buttons.ts";
@@ -36,8 +38,8 @@ export default class CommandLineService {
     } else {
       this.buildSelectionArray();
     }
-    this.getValueDirective();
     this.getProfileTarget();
+    this.getValueDirective();
   }
 
   process() {
@@ -45,6 +47,10 @@ export default class CommandLineService {
   }
 
   buildAction(): void {
+    if (!this.valueDirective) {
+      this.getValueDirective();
+    }
+
     this.action = {
       selection: this.selection,
       directive: this.valueDirective,
@@ -53,6 +59,7 @@ export default class CommandLineService {
     };
   }
 
+  // does not change output levels, only effects fixture selection
   buildSelectionFeedback(): ActionObject {
     return {
       selection: this.selection,
@@ -62,7 +69,8 @@ export default class CommandLineService {
     };
   }
 
-  checkUndoEvent(): boolean {
+  // not implemented
+  private checkUndoEvent(): boolean {
     return (
       this.commandEvents.filter((event) =>
         event.label.toLowerCase().match("undo"),
@@ -70,11 +78,8 @@ export default class CommandLineService {
     );
   }
 
-  // adaptProfile(): void {
-  // this.profileAdapter.parse();
-  // }
-
-  addToHistory(): void {
+  // not implemented
+  private addToHistory(): void {
     this.history.add(this.commandEvents);
   }
 
@@ -82,14 +87,17 @@ export default class CommandLineService {
     return this.concatKeyPadEntries().map((event) => event.label.toLowerCase());
   }
 
+  // "Channel" is default, allow "Group" and future categories
+  // ["1", "thru", "10", "+", "20", "@", "3200"];
   private buildSelectionArray() {
-    // ["Chan", "1", "thru", "10", "+", "20", "@", "3200"];
     this.selection = this.getRangeAndAddAdditionals();
   }
 
-  getRange() {
+  // Then "thru" button pressed, selects items in a range.
+  // "1", "thru", "3" --> [1,2,3]
+  private getRange() {
     const labelArray = this.buildCommandArray();
-    const index = labelArray.indexOf("thru"); // handles one 'thru' for now
+    const index = labelArray.indexOf("thru"); // handles one instnace of 'thru' press for now
 
     if (index === -1) {
       return -1;
@@ -100,29 +108,48 @@ export default class CommandLineService {
     );
   }
 
-  getValueDirective() {
-    const directive = this.getDirectiveButtonEvent();
+  // Concats value inputs for setting a level, ie not DirectAction
+  private buildValueFromKeypadInput() {
+    return parseInt(this.getKeypadValues().join(""), 10);
+  }
+
+  private getValueDirective() {
+    let directive: DirectActionButton | ComposedValueButton | null =
+      this.getDirectiveButtonEvent();
+
+    if (!directive) {
+      directive = this.buildValueDirectiveFromInputs();
+    }
+
+    console.log({ directive }); // will need to show input values in UI eventually
     this.valueDirective = directive.value;
   }
 
-  getProfileTarget() {
+  private getProfileTarget() {
     const directive = this.getDirectiveButtonEvent();
+
+    if (!directive) {
+      const button = this.getProfileTargetWithoutDirectPress();
+      if (button?.label.toLowerCase() === "color temp") {
+        this.profileTarget = ProfileTarget.COLOR_TEMP;
+      }
+
+      this.profileTarget = ProfileTarget.DIMMER;
+
+      return;
+    }
     this.profileTarget = directive.profileTarget;
   }
 
-  getDirectiveButtonEvent() {
+  private getDirectiveButtonEvent() {
     const directive = this.commandEvents.find(
       (event) => event.type === Buttons.DIRECT_ACTION_BUTTON,
     );
 
-    if (!directive) {
-      throw new Error("Directive not found");
-    }
-
-    return directive as DirectActionButton;
+    return directive ?? null;
   }
 
-  getRangeAndAddAdditionals() {
+  private getRangeAndAddAdditionals() {
     if (this.oneChannelSelection()) {
       return [parseInt(this.buildCommandArray()[0], 10)];
     }
@@ -142,10 +169,12 @@ export default class CommandLineService {
         buildingRange.push(parseInt(labelArray[idx + 1], 10));
       }
     });
+    console.log({ buildingRange });
+
     return buildingRange;
   }
 
-  concatKeyPadEntries() {
+  private concatKeyPadEntries() {
     let btnIdx = 1;
     let dummyBtn: KeyPadButton = CommandLineService.makeDummyButton(btnIdx);
 
@@ -167,6 +196,8 @@ export default class CommandLineService {
       }
     });
 
+    console.log({ result });
+
     return result;
   }
 
@@ -175,15 +206,51 @@ export default class CommandLineService {
       id: `MergedKeyPadButton${idx}`,
       type: Buttons.KEYPAD_BUTTON,
       label: "",
-      styles: { color: "" },
+      styles: { background: "" },
     };
   }
 
-  oneChannelSelection() {
+  private oneChannelSelection() {
     return (
       this.concatKeyPadEntries().filter(
         (entry) => entry.type === Buttons.KEYPAD_BUTTON,
       ).length === 1
     );
+  }
+
+  private indexOfAtPress() {
+    return this.commandEvents.findLastIndex(
+      (btnPress) => btnPress.label === COMMAND.AT_SIGN,
+    );
+  }
+
+  private getKeypadValues() {
+    if (this.indexOfAtPress() === -1) {
+      return [];
+    }
+
+    const atSignIdx = this.indexOfAtPress();
+
+    return this.commandEvents
+      .slice(atSignIdx)
+      .filter((btn) => btn.type === Buttons.KEYPAD_BUTTON)
+      .map((keypadBtn) => parseInt(keypadBtn.label, 10));
+  }
+
+  private getProfileTargetWithoutDirectPress() {
+    return this.commandEvents.findLast(
+      (btn) => btn.type === Buttons.COMMAND_BUTTON,
+    );
+  }
+
+  private buildValueDirectiveFromInputs(): ComposedValueButton {
+    return {
+      type: Buttons.COMPOSED_VALUE_BUTTON,
+      value: this.buildValueFromKeypadInput(),
+      profileTarget: this.profileTarget,
+      label: Buttons.COMPOSED_VALUE_BUTTON,
+      id: Buttons.COMPOSED_VALUE_BUTTON,
+      styles: { background: "" },
+    };
   }
 }

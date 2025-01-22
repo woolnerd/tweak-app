@@ -86,16 +86,12 @@ describe("ChannelValueCalculator", () => {
       expect(() => new ChannelValueCalculator(50)).not.toThrow();
     });
 
-    test("should throw an error with the correct message when the percentage is -101", () => {
-      expect(() => new ChannelValueCalculator(-101)).toThrow(
-        "Percentage cannot be less than -100",
-      );
+    test("should force values below 0 to be 0;", () => {
+      expect(new ChannelValueCalculator(-1)["percentage"]).toEqual(0);
     });
 
-    test("should throw an error with the correct message when the percentage is over 100", () => {
-      expect(() => new ChannelValueCalculator(101)).toThrow(
-        "Percentage cannot be greater than 100",
-      );
+    test("should force values above 100 to be 100;", () => {
+      expect(new ChannelValueCalculator(101)["percentage"]).toEqual(100);
     });
   });
 });
