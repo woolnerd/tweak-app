@@ -8,7 +8,7 @@ describe("Show", () => {
     show = new Show(dbMock as any);
   });
 
-  it("should create a new show", async () => {
+  test("should create a new show", async () => {
     const mockData = {
       name: "New Show",
       createdAt: "2023-04-01",

@@ -26,3 +26,10 @@ export const mockScenesDesc = [
 
 mockOrderBy.mockResolvedValue(mockScenes);
 mockOrderByDsc.mockResolvedValue(mockScenesDesc);
+
+const Scene = jest.fn().mockImplementation(() => ({
+  getAllOrdered: jest.fn(() => Promise.resolve()),
+  handleError: jest.fn(),
+}));
+
+export default Scene;

@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, Switch } from "react-native";
-// import { styled } from "nativewind";
 
 const UserSettings = () => {
   const [isEnabled, setIsEnabled] = React.useState(false);

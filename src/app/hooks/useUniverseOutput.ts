@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 
 import UniverseDataBuilder from "../../lib/universe-data-builder.ts";
-import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
-import { useManualFixtureStore } from "../store/useManualFixtureStore.ts";
-import { useOutputValuesStore } from "../store/useOutputValuesStore.ts";
+import useCompositeFixtureStore from "../store/useCompositeFixtureStore.ts";
+import useManualFixtureStore from "../store/useManualFixtureStore.ts";
+import useOutputValuesStore from "../store/useOutputValuesStore.ts";
 
 export default function useUniverseOutput() {
   const { updateOutputValuesStore } = useOutputValuesStore((state) => state);
@@ -13,7 +13,7 @@ export default function useUniverseOutput() {
   useEffect(() => {
     if (compositeFixturesStore.length > 0) {
       const universeObjs = compositeFixturesStore.map((compFixture) => {
-        if (compFixture.channel in manualFixturesStore) {
+        if (manualFixturesStore && compFixture.channel in manualFixturesStore) {
           compFixture.values = manualFixturesStore[compFixture.channel].values;
         }
         return new UniverseDataBuilder(compFixture).buildUniverses();
@@ -28,6 +28,5 @@ export default function useUniverseOutput() {
 
       updateOutputValuesStore(outputUniverses);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [compositeFixturesStore, manualFixturesStore]);
+  }, [compositeFixturesStore, manualFixturesStore, updateOutputValuesStore]);
 }

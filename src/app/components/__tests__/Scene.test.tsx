@@ -9,8 +9,8 @@ import {
 import React, { createRef } from "react";
 
 import SceneModel from "../../../models/scene.ts";
-import { useFixtureChannelSelectionStore } from "../../store/useFixtureChannelSelectionStore.ts";
-import { useManualFixtureStore } from "../../store/useManualFixtureStore.ts";
+import useFixtureChannelSelectionStore from "../../store/useFixtureChannelSelectionStore.ts";
+import useManualFixtureStore from "../../store/useManualFixtureStore.ts";
 import { Scene } from "../Scene/Scene.tsx";
 
 // Mock props
@@ -46,10 +46,10 @@ beforeEach(() => {
 });
 
 test("renders SceneComponent correctly", () => {
-  const { getByText } = render(<Scene {...mockProps} />);
+  render(<Scene {...mockProps} />);
 
-  expect(getByText(/Test Scene/i)).toBeTruthy();
-  expect(getByText(/REC/i)).toBeTruthy();
+  expect(screen.getByText(/Test Scene/i)).toBeTruthy();
+  expect(screen.getByText(/REC/i)).toBeTruthy();
 });
 
 test("labelRef is assigned correctly", () => {
@@ -60,9 +60,9 @@ test("labelRef is assigned correctly", () => {
 });
 
 test("handles label scene on long press", () => {
-  const { getByTestId } = render(<Scene {...mockProps} />);
+  render(<Scene {...mockProps} />);
 
-  const scenePressable = getByTestId("label-btn");
+  const scenePressable = screen.getByTestId("label-btn");
 
   fireEvent(scenePressable, "onLongPress");
 

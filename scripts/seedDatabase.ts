@@ -86,6 +86,6 @@ export default async function seedDatabase() {
       console.error(`🚨 Error running seeds: ${err.message}`);
     }
 
-    process.exit(1);
+    process.extest(1);
   }
 }

@@ -2,7 +2,9 @@ import { create } from "zustand";
 
 import { UniverseDataObjectCollection } from "../../lib/universe-data-builder.ts";
 
-type State = { outputValuesStore: UniverseDataObjectCollection };
+type State = {
+  outputValuesStore: UniverseDataObjectCollection;
+};
 
 type Action = {
   updateOutputValuesStore: (
@@ -10,9 +12,10 @@ type Action = {
   ) => void;
 };
 
-// eslint-disable-next-line import/prefer-default-export
-export const useOutputValuesStore = create<State & Action>((set) => ({
+export default create<State & Action>((set) => ({
   outputValuesStore: {},
   updateOutputValuesStore: (outputValuesStore: UniverseDataObjectCollection) =>
-    set(() => ({ outputValuesStore })),
+    set(() => ({
+      outputValuesStore,
+    })),
 }));

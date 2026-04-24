@@ -1,23 +1,25 @@
-// import AsyncStorage from "@react-native-async-storage/async-storage";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { openDatabaseSync } from "expo-sqlite/next";
-import React, { useEffect, useRef, useState } from "react";
-import { View, Text, Pressable, ScrollView } from "react-native";
+import { cloneDeep, isEqual } from "lodash";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import { View, Text, Pressable } from "react-native";
 import ErrorBoundary from "react-native-error-boundary";
 
 import * as schema from "../../db/schema.ts";
 import { SelectScene } from "../../db/types/tables.ts";
 import PacketSender from "../../lib/packets/packet-sender.ts";
+import { UniverseDataObjectCollection } from "../../lib/universe-data-builder.ts";
 import UniverseOutputGenerator from "../../lib/universe-output-generator.ts";
 import SceneModel from "../../models/scene.ts";
+import Container from "../components/Container/Container.tsx";
 import ControlPanel from "../components/ControlPanel/ControlPanel.tsx";
 import LayoutArea from "../components/LayoutArea/LayoutArea.tsx";
 import { Scene } from "../components/Scene/Scene.tsx";
 import useInitialize from "../hooks/useInitialize.ts";
 import useUniverseOutput from "../hooks/useUniverseOutput.ts";
-import { useCompositeFixtureStore } from "../store/useCompositeFixtureStore.ts";
-import { useFixtureChannelSelectionStore } from "../store/useFixtureChannelSelectionStore.ts";
-import { useOutputValuesStore } from "../store/useOutputValuesStore.ts";
+import useCompositeFixtureStore from "../store/useCompositeFixtureStore.ts";
+import useFixtureChannelSelectionStore from "../store/useFixtureChannelSelectionStore.ts";
+import useOutputValuesStore from "../store/useOutputValuesStore.ts";
 
 const expoDb = openDatabaseSync("dev.db");
 const db = drizzle(expoDb, { schema });
@@ -30,6 +32,7 @@ function App() {
   const [reloadScenes, setReloadScenes] = useState(false);
   const [sacnState, setSacnState] = useState(false);
   const labelRef = useRef<boolean>(false);
+  const prevOutputState = useRef<UniverseDataObjectCollection | null>(null);
 
   const fetchScenes = async () => {
     const response = await new SceneModel(db).getAllOrdered();
@@ -41,9 +44,11 @@ function App() {
   const { fixtureChannelSelectionStore, updateFixtureChannelSelectionStore } =
     useFixtureChannelSelectionStore((state) => state);
 
-  const selectedCompositeFixtures = compositeFixturesStore.filter((fixture) =>
-    fixtureChannelSelectionStore.has(fixture.channel),
-  );
+  const selectedCompositeFixtures = compositeFixturesStore
+    ? compositeFixturesStore.filter((fixture) =>
+        fixtureChannelSelectionStore.has(fixture.channel),
+      )
+    : [];
 
   useInitialize();
   useUniverseOutput();
@@ -55,9 +60,22 @@ function App() {
         new PacketSender(),
       );
       const packets = outputGenerator.generateOutput();
+
+      if (
+        prevOutputState.current &&
+        !isEqual(prevOutputState.current, outputValuesStore)
+      ) {
+        outputGenerator.outputStart = cloneDeep(prevOutputState.current);
+        // Fade between previous and current values over 5000ms (adjust duration as needed)
+        outputGenerator.fadeOutputValues(2000);
+      }
+
+      prevOutputState.current = cloneDeep(outputValuesStore);
+
+      // consistent output of sACN values
       const intervalId = setInterval(() => {
-        outputGenerator.sendOutput(packets);
-      }, 25);
+        // outputGenerator.sendOutput(packets);
+      }, 60);
 
       return () => {
         clearInterval(intervalId);
@@ -78,7 +96,7 @@ function App() {
       .catch((err) => console.log(err));
   }, [reloadScenes]);
 
-  const handleGoToOut = () => {
+  const handleGoToOut = useCallback(() => {
     const tempSet = new Set<number>();
     compositeFixturesStore
       .map((fixture) => fixture.channel)
@@ -86,7 +104,7 @@ function App() {
 
     setGoToOut(true);
     updateFixtureChannelSelectionStore(tempSet);
-  };
+  }, [setGoToOut, updateFixtureChannelSelectionStore, compositeFixturesStore]);
 
   const bigButtonStyles =
     "border-blue-700 min-h-16 min-w-16 m-4 border-2 rounded-md h-20";
@@ -94,11 +112,9 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <ScrollView className="flex-1 flex flex-col space-y-4 m-auto bg-black p-5 border-4 border-yellow-500 w-full">
-        <View className="bg-black m-1 border-2 flex-1 border-[#cba601]">
-          <View>
-            <View className="flex-1 border-yellow-500 h-24" />
-
+      <Container>
+        <View className="bg-black border-2 border-yellow-500">
+          <View className="m-2">
             <Pressable className={bigButtonStyles} onPress={handleGoToOut}>
               <Text className={textStyles}>Go to Out</Text>
             </Pressable>
@@ -111,23 +127,19 @@ function App() {
               </Text>
             </Pressable>
 
-            {scenes?.map((scene, i) => (
+            {scenes?.map((scene) => (
               <Scene
                 key={scene.id}
-                id={scene.id}
-                name={scene.name}
-                timeRate={scene.timeRate}
-                showId={scene.showId}
-                order={scene.order}
                 setSelectedSceneId={setSelectedSceneId}
                 selectedSceneId={selectedSceneId}
                 setReloadScenes={setReloadScenes}
                 labelRef={labelRef}
+                {...scene}
               />
             ))}
           </View>
         </View>
-        <View className="bg-black m-1 border-2 flex-2 border-[#cba601]">
+        <View className="bg-black border-2 flex-1 border-[#cba601]">
           <LayoutArea
             selectedSceneId={selectedSceneId}
             loadFixtures={loadFixtures}
@@ -135,7 +147,7 @@ function App() {
           />
         </View>
 
-        <View className="bg-black m-1 border-2 flex-2 border-[#cba601] flex-row">
+        <View className="bg-black border-2 flex-1 border-[#cba601] flex-row">
           <ControlPanel
             selectedFixtures={selectedCompositeFixtures}
             goToOut={goToOut}
@@ -143,7 +155,7 @@ function App() {
             setLoadFixtures={setLoadFixtures}
           />
         </View>
-      </ScrollView>
+      </Container>
     </ErrorBoundary>
   );
 }

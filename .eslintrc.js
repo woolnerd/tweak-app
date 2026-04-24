@@ -32,6 +32,15 @@ module.exports = {
     ],
     "no-return-await": "off",
     "react/require-default-props": "off",
+    "react/jsx-props-no-spreading": "off",
+    "no-bitwise": "off",
   },
   plugins: ["drizzle"],
+  overrides: [
+    {
+      // Test files only
+      files: ["**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[jt]s?(x)"],
+      extends: ["plugin:testing-library/react"],
+    },
+  ],
 };

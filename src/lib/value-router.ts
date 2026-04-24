@@ -1,3 +1,5 @@
+import { cloneDeep } from "lodash";
+
 import ProfileAdapter from "./adapters/profile-adapter.ts";
 import { ActionObject } from "./command-line/types/command-line-types.ts";
 import { ProfileTarget } from "./types/buttons.ts";
@@ -43,7 +45,9 @@ export default class ValueRouter {
   createManualFixtureObj(
     manualFixturesStore: ManualFixtureState,
   ): ManualFixtureState {
-    const manualFixtureObj = this.setUpManualFixture(manualFixturesStore);
+    const manualFixtureObj = this.setUpManualFixture(
+      cloneDeep(manualFixturesStore),
+    );
 
     this.mutateOrMergeOutputValues(manualFixtureObj);
 
@@ -63,7 +67,7 @@ export default class ValueRouter {
             manualChannels: [],
           };
 
-    const channelList = this.channelTuples.map((tuple) => tuple[0]);
+    const channelList = this.channelTuples.map(([channel, _]) => channel);
 
     manualFixtureObj.manualChannels = Array.from(
       new Set((manualFixtureObj.manualChannels ?? []).concat(channelList)),
@@ -74,18 +78,18 @@ export default class ValueRouter {
 
   private mutateOrMergeOutputValues(manualFixtureObj: ManualFixtureObj) {
     if (Object.keys(manualFixtureObj).length === 0) return;
-    this.channelTuples.forEach((tuple) => {
-      const channel = tuple[0];
-      const tupleToMutateIdx = manualFixtureObj.values.findIndex(
-        (fixtureTuple) => fixtureTuple[0] === channel,
+
+    this.channelTuples.forEach(([channel, output]) => {
+      const idxOfTupleToMutate = manualFixtureObj.values.findIndex(
+        ([manualChannel, _]) => manualChannel === channel,
       );
 
-      if (tupleToMutateIdx === -1) {
+      if (idxOfTupleToMutate === -1) {
         // don't mutate just push tuple into channel list.
-        manualFixtureObj.values.push(tuple);
+        manualFixtureObj.values.push([channel, output]);
       } else {
         // otherwise mutate
-        manualFixtureObj.values[tupleToMutateIdx] = tuple;
+        manualFixtureObj.values[idxOfTupleToMutate] = [channel, output];
       }
     });
 
@@ -94,21 +98,17 @@ export default class ValueRouter {
 
   // outputs a tuple of [ channel, Value (btw 0-255) ]
   buildResult() {
-    if (this.channelIs16Bit()) {
+    if (this.channelIs16Btest()) {
       this.values = this.calculator.calc16BitValues();
       this.channelTuples = this.parse16BitChannels();
-
-      return this;
-    }
-
-    if (this.channelIs8Bit()) {
+    } else if (this.channelIs8Btest()) {
       this.values = this.calculator.calc8BitValues();
       this.channelTuples = this.parse8BitChannel();
-
-      return this;
+    } else {
+      throw new Error("Could not route Values");
     }
 
-    throw new Error("Could not route Values");
+    return this;
   }
 
   convertColorTempToPercentage(fixture: ParsedCompositeFixtureInfo) {
@@ -137,19 +137,18 @@ export default class ValueRouter {
     return this.actionObject.profileTarget === ProfileTarget.COLOR_TEMP;
   }
 
-  channelIs16Bit() {
+  channelIs16Btest() {
     return this.channels.length === 2;
   }
 
-  channelIs8Bit() {
+  channelIs8Btest() {
     return this.channels.length === 1;
   }
 
   parse16BitChannels() {
+    const [coarseOutputValue, fineOutputValue] = this.values;
     const coarseChannelNumber = parseInt(this.channels[0][0], 10);
-    const coarseOutputValue = this.values[0];
     const fineChannelNumber = parseInt(this.channels[1][0], 10);
-    const fineOutputValue = this.values[1];
     return [
       [coarseChannelNumber, coarseOutputValue],
       [fineChannelNumber, fineOutputValue],
@@ -158,7 +157,7 @@ export default class ValueRouter {
 
   parse8BitChannel() {
     const coarseChannelNumber = parseInt(this.channels[0][0], 10);
-    const coarseOutputValue = this.values[0];
+    const [coarseOutputValue, _] = this.values;
     return [[coarseChannelNumber, coarseOutputValue]];
   }
 }

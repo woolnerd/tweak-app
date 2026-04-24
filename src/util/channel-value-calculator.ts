@@ -1,4 +1,3 @@
-/* eslint-disable no-bitwise */
 export default class ChannelValueCalculator {
   private percentage: number;
 
@@ -12,7 +11,7 @@ export default class ChannelValueCalculator {
 
   constructor(percentage: number) {
     this.percentage = percentage;
-    this.boundsCheck();
+    this.ensureBounds();
     this.calcPercentOfFullDMXVal = Math.round(
       (this.FULL_DMX_VALUE * this.percentage) / 100,
     );
@@ -28,13 +27,12 @@ export default class ChannelValueCalculator {
     return [Math.trunc(this.coarseValue)];
   }
 
-  private boundsCheck() {
-    if (this.percentage < -100) {
-      throw new Error("Percentage cannot be less than -100");
+  private ensureBounds() {
+    if (this.percentage < 0) {
+      this.percentage = 0;
     }
-
     if (this.percentage > 100) {
-      throw new Error("Percentage cannot be greater than 100");
+      this.percentage = 100;
     }
   }
 
@@ -52,5 +50,16 @@ export default class ChannelValueCalculator {
     }
     // 8- Bit
     return Math.trunc((channel1 / 255) * 100);
+  }
+
+  static split16BitValues(sixteenBitValue: number) {
+    const coarseIncrement = Math.floor(sixteenBitValue >> 8) & 0xff; // Coarse part
+    const fineIncrement = Math.floor(sixteenBitValue) & 0xff; // Fine part
+
+    return [coarseIncrement, fineIncrement];
+  }
+
+  static build16BitValue(coarseVal: number, fineVal: number) {
+    return (coarseVal << 8) + fineVal;
   }
 }
