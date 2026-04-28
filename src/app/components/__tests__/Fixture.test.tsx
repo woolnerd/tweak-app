@@ -6,7 +6,6 @@ import {
   waitFor,
   fireEvent,
 } from "@testing-library/react-native";
-import "@testing-library/react-native/extend-expect";
 import React from "react";
 import ErrorBoundary from "react-native-error-boundary";
 

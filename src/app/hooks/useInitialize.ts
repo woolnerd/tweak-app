@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as FileSystem from "expo-file-system";
+import { documentDirectory } from "expo-file-system";
 import { useEffect, useState } from "react";
 
 import runMigrations from "../../../scripts/migrations.ts";
@@ -69,6 +69,6 @@ export default function useInitialize() {
   }, [migrationsRan]);
 
   if (PRINT_DB_DIRECTORY) {
-    console.log(FileSystem.documentDirectory);
+    console.log(documentDirectory);
   }
 }

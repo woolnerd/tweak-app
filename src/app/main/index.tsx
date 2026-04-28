@@ -1,5 +1,5 @@
 import { drizzle } from "drizzle-orm/expo-sqlite";
-import { openDatabaseSync } from "expo-sqlite/next";
+import { openDatabaseSync } from "expo-sqlite";
 import { cloneDeep, isEqual } from "lodash";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { View, Text, Pressable } from "react-native";
