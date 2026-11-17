@@ -1,6 +1,17 @@
 # Tweak App
 
-Welcome to the Tweak App repository! This guide will help you get started with setting up the app on your local machine and running it on an iOS simulator.
+Lighting control for film sets on iPhone and iPad. Tweak sends sACN to professional lighting fixtures from a portable interface.
+
+## Stack
+
+- React Native and Expo, written in TypeScript
+- SQLite with Drizzle ORM for local data
+- NativeWind (Tailwind) for styling
+- Jest for tests
+
+## Getting started
+
+This guide covers setting up the app on your local machine and running it on an iOS simulator.
 
 ## Prerequisites
 
@@ -15,7 +26,7 @@ Welcome to the Tweak App repository! This guide will help you get started with s
    Clone this repository to your local machine:
 
    ```bash
-   git clone https://github.com/woolner/tweak-app
+   git clone https://github.com/woolnerd/tweak-app
    ```
 
 2. **Navigate to the Project Directory**
